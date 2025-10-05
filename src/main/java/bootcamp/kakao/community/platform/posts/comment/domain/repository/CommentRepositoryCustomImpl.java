@@ -2,6 +2,7 @@ package bootcamp.kakao.community.platform.posts.comment.domain.repository;
 
 import bootcamp.kakao.community.common.response.paging.SliceRequest;
 import bootcamp.kakao.community.platform.posts.comment.domain.entity.Comment;
+import bootcamp.kakao.community.platform.posts.comment.domain.entity.QComment;
 import bootcamp.kakao.community.platform.posts.comment.domain.repository.dto.CommentWithChildren;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPAExpressions;
@@ -17,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import static bootcamp.kakao.community.platform.posts.comment.domain.entity.QComment.comment;
-
 @Repository
 @RequiredArgsConstructor
 public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
@@ -33,33 +33,29 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
         /// 1차로 루트 먼저 가져오게끔
         /// 2차로 해당 루트의 자식 댓글 가져오게끔
 
-        /// 1차
-        var child = new bootcamp.kakao.community.platform.posts.comment.domain.entity.QComment("child");
+        // 루트 댓글과 자식 댓글 존재 여부를 left join 해 존재하는지 판단
+        QComment child = new QComment("child");
 
+        /// 1차
         List<Comment> rootComments = queryFactory
                 .selectFrom(comment)
+                .leftJoin(child).on(child.parent.id.eq(comment.id), child.deleted.isFalse())
                 .where(
                         eqPostId(postId),
                         ltLastId(sliceRequest.lastId()),
                         comment.parent.isNull(),
-                        // 삭제 필터: (not deleted) OR (deleted AND exists(not-deleted child))
                         comment.deleted.isFalse()
-                                .or(
-                                        comment.deleted.isTrue()
-                                                .and(
-                                                        JPAExpressions.selectOne()
-                                                                .from(child)
-                                                                .where(
-                                                                        child.parent.id.eq(comment.id),
-                                                                        child.deleted.isFalse()
-                                                                )
-                                                                .exists()
-                                                )
-                                )
+                                .or(comment.deleted.isTrue().and(child.id.isNotNull()))
                 )
+                .groupBy(comment.id)
                 .orderBy(comment.id.desc())
-                .limit(sliceRequest.offSet() + 1) // hasNext 판별용 +1
+                .limit(sliceRequest.offSet() + 1)
                 .fetch();
+
+        /// 없으면 그대로 리턴
+        if (rootComments.isEmpty()) {
+            return new SliceImpl<>(List.of(), PageRequest.of(0, sliceRequest.offSet()), false);
+        }
 
         // 루트 순서 보존용(LinkedHashMap) + id 목록
         List<Long> rootIds = rootComments.stream().map(Comment::getId).toList();
