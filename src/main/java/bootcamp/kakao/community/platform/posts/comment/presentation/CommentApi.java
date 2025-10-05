@@ -4,6 +4,7 @@ import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.common.response.paging.SliceRequest;
 import bootcamp.kakao.community.common.response.paging.SliceResponse;
 import bootcamp.kakao.community.platform.posts.comment.application.CommentUseCase;
+import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentListResponse;
 import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentRequest;
 import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentResponse;
 import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentUpdateRequest;
@@ -37,7 +38,7 @@ public class CommentApi implements CommentApiSpec {
 
     /// 게시글에 따른 댓글 조회
     @GetMapping
-    public ApiResponse<SliceResponse<CommentResponse>> listComments(
+    public ApiResponse<SliceResponse<CommentListResponse>> listComments(
             SliceRequest sliceRequest,
             @RequestParam Long postId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
@@ -47,7 +48,7 @@ public class CommentApi implements CommentApiSpec {
         Long userId = customUserDetails != null ? customUserDetails.getId() : null;
 
         /// 서비스 실행
-        SliceResponse<CommentResponse> response = service.getComments(sliceRequest, postId, userId);
+        SliceResponse<CommentListResponse> response = service.getComments(sliceRequest, postId, userId);
 
         /// 리턴
         return ApiResponse.ok(response);

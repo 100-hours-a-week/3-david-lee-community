@@ -2,6 +2,7 @@ package bootcamp.kakao.community.platform.posts.comment.domain.repository;
 
 import bootcamp.kakao.community.common.response.paging.SliceRequest;
 import bootcamp.kakao.community.platform.posts.comment.domain.entity.Comment;
+import bootcamp.kakao.community.platform.posts.comment.domain.repository.dto.CommentWithChildren;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +13,9 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 import static bootcamp.kakao.community.platform.posts.comment.domain.entity.QComment.comment;
-import static bootcamp.kakao.community.platform.posts.post.domain.entity.QPost.post;
 
 @Repository
 @RequiredArgsConstructor
@@ -22,30 +23,63 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
+    /// 고민해보다가, 매핑하는 부분에서GPT의 도움을 좀 받았습니다 ㅠㅠ
     @Override
-    public Slice<Comment> findCommentsByCursor(SliceRequest sliceRequest, Long postId) {
+    public Slice<CommentWithChildren> findCommentsByCursor(SliceRequest sliceRequest, Long postId) {
 
         /// QueryDSL 조회
         /// 기존 댓글(루트 댓글) + 대댓글까지 한번에 가져오게 하려면?
         /// 1차로 루트 먼저 가져오게끔
         /// 2차로 해당 루트의 자식 댓글 가져오게끔
 
-        List<Comment> fetch = queryFactory
+        /// 1차
+        List<Comment> rootComments = queryFactory
                 .selectFrom(comment)
                 .where(
                         eqPostId(postId),
                         ltLastId(sliceRequest.lastId()),
                         comment.parent.isNull())    /// 루트 댓글만 조회
-                .orderBy(post.id.desc())
+                .orderBy(comment.id.desc())
                 .limit(sliceRequest.offSet() + 1) // hasNext 확인용 +1
                 .fetch();
 
+        // 루트 순서 보존용(LinkedHashMap) + id 목록
+        List<Long> rootIds = rootComments.stream().map(Comment::getId).toList();
+
+        /// 2차
+        List<Comment> childComments = queryFactory
+                .selectFrom(comment)
+                .where(
+                        comment.parent.id.in(rootIds),   /// 루트 댓글이 있는 것만 가져오도록
+                        eqPostId(postId)        /// 게시글 ID 가져오기
+                )
+                .orderBy(comment.parent.id.asc(), comment.id.asc())
+                .fetch();
+
+        /// 매핑 시키기 (GPT 도움 ..)
+        // parentId를 바탕으로 children 리스트로 그룹핑
+        Map<Long, List<Comment>> childrenByParentId = childComments.stream()
+                .collect(java.util.stream.Collectors.groupingBy(
+                        c -> c.getParent().getId(),
+                        java.util.LinkedHashMap::new,
+                        java.util.stream.Collectors.toList()
+                ));
+
+        /// List 매핑
+        List<CommentWithChildren> mappedComments = rootComments.stream()
+                .map(root -> CommentWithChildren.from(
+                        root,
+                        childrenByParentId.getOrDefault(root.getId(), List.of())
+                ))
+                .toList();
+        /// 도움 끝
+
         /// Slice 객체 생성
         boolean hasNext = false;
-        if (fetch.size() > sliceRequest.offSet()) {
+        if (rootComments.size() > sliceRequest.offSet()) {
 
             /// 조회했던 값은 삭제
-            fetch.remove(sliceRequest.offSet());
+            rootComments.remove(sliceRequest.offSet());
             hasNext = true;
         }
 
@@ -53,7 +87,8 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
         Pageable pageable = PageRequest.of(0, sliceRequest.offSet());
 
         /// 리턴
-        return new SliceImpl<>(fetch, pageable, hasNext);
+        return new SliceImpl<>(mappedComments, pageable, hasNext);
+
     }
 
     /// 커서 조건 (id 기반 커서)

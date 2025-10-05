@@ -31,7 +31,7 @@ public class LocalSwaggerConfig {
     public OpenApiCustomizer removeGenericSchemas() {
         return openApi -> {
             openApi.getComponents().getSchemas().keySet().removeIf(name ->
-                    name.contains("ApiResponse") || name.contains("SliceRequest") || name.contains("SliceResponse") || name.contains("FieldErrorResponse")
+                    name.contains("ApiResponse") || name.contains("SliceResponse") || name.contains("FieldErrorResponse")
             );
         };
     }

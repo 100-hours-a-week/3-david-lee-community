@@ -2,11 +2,12 @@ package bootcamp.kakao.community.platform.posts.comment.application;
 
 import bootcamp.kakao.community.common.response.paging.SliceRequest;
 import bootcamp.kakao.community.common.response.paging.SliceResponse;
+import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentListResponse;
 import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentRequest;
-import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentResponse;
 import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentUpdateRequest;
 import bootcamp.kakao.community.platform.posts.comment.domain.entity.Comment;
 import bootcamp.kakao.community.platform.posts.comment.domain.repository.CommentRepository;
+import bootcamp.kakao.community.platform.posts.comment.domain.repository.dto.CommentWithChildren;
 import bootcamp.kakao.community.platform.posts.post.application.PostQueryUseCase;
 import bootcamp.kakao.community.platform.posts.post.domain.entity.Post;
 import bootcamp.kakao.community.platform.user.application.UserUseCase;
@@ -56,29 +57,23 @@ public class CommentService implements CommentUseCase{
      */
     @Override
     @Transactional(readOnly = true)
-    public SliceResponse<CommentResponse> getComments(SliceRequest request, Long postId, Long userId) {
-
-
+    public SliceResponse<CommentListResponse> getComments(SliceRequest request, Long postId, Long userId) {
 
         /// 게시글 예외처리
         Post post = postService.loadPost(postId);
 
-        /// 가져오기
-        Slice<Comment> comments = repository.findCommentsByCursor(request, post.getId());
-
-        if (userId == null){
-            Slice<CommentResponse> var = CommentResponse.from(comments, userId);
-            return SliceResponse.from(var);
-        }
+        /// 가져오기 (부모 댓글과 대댓글 존재 )
+        Slice<CommentWithChildren> comments = repository.findCommentsByCursor(request, post.getId());
 
         /// 리턴
-        Slice<CommentResponse> var = CommentResponse.from(comments, userId);
+        Slice<CommentListResponse> var = CommentListResponse.from(comments, userId);
         return SliceResponse.from(var);
     }
 
+    /// 인기 게시글 조회하기
     @Override
     @Transactional(readOnly = true)
-    public SliceResponse<CommentResponse> getFavoriteComments(SliceRequest request, Long postId) {
+    public SliceResponse<CommentListResponse> getFavoriteComments(SliceRequest request, Long postId) {
 
         /// 게시글 예외처리
         Post post = postService.loadPost(postId);
