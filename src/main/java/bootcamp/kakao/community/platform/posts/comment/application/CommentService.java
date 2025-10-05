@@ -55,7 +55,7 @@ public class CommentService implements CommentUseCase{
         Post post = postService.loadPost(postId);
 
         /// 가져오기
-        Slice<Comment> comments = repository.findCommentsByCursor(request, post.getId(), false);
+        Slice<Comment> comments = repository.findCommentsByCursor(request, post.getId());
 
         /// 리턴
         Slice<CommentResponse> var = CommentResponse.from(comments);

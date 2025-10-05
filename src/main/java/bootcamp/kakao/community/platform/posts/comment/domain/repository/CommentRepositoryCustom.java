@@ -11,6 +11,6 @@ public interface CommentRepositoryCustom {
      * @param sliceRequest  슬라이싱 요청
      * @param postId        게시글 ID
      */
-    Slice<Comment> findCommentsByCursor(SliceRequest sliceRequest, Long postId, boolean deleted);
+    Slice<Comment> findCommentsByCursor(SliceRequest sliceRequest, Long postId);
 
 }
