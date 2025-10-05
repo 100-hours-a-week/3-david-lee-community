@@ -39,11 +39,15 @@ public class CommentApi implements CommentApiSpec {
     @GetMapping
     public ApiResponse<SliceResponse<CommentResponse>> listComments(
             SliceRequest sliceRequest,
-            @RequestParam Long postId
+            @RequestParam Long postId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
 
+        /// 유저가 없다면 null 저장
+        Long userId = customUserDetails != null ? customUserDetails.getId() : null;
+
         /// 서비스 실행
-        SliceResponse<CommentResponse> response = service.getComments(sliceRequest, postId);
+        SliceResponse<CommentResponse> response = service.getComments(sliceRequest, postId, userId);
 
         /// 리턴
         return ApiResponse.ok(response);

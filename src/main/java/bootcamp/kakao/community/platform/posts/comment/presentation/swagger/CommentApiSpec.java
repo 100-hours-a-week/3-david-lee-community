@@ -33,7 +33,9 @@ public interface CommentApiSpec {
     )
     ApiResponse<SliceResponse<CommentResponse>> listComments(
             SliceRequest sliceRequest,
-            @RequestParam Long postId);
+            @RequestParam Long postId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    );
 
 
     /// 댓글 수정

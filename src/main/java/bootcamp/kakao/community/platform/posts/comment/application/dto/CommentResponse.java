@@ -29,19 +29,32 @@ public record CommentResponse(
 ) {
 
     /// 정적 팩토리 메서드
-    public static CommentResponse from(Comment comment) {
+    public static CommentResponse from(Comment comment, Long userId) {
+
+        /// 수정 가능 여부, 기본 값 설정
+        boolean editable = false;
+
+        /// 로그인된 상태 + 유저 일치
+        if (userId != null
+                && comment.getUser() != null
+                && userId.equals(comment.getUser().getId())) {
+            editable = true;
+        }
+
         return CommentResponse.builder()
                 .user(UserResponse.from(comment.getUser()))
                 .parentId(comment.getParent() != null ? comment.getParent().getId() : null)
                 .content(comment.getContent())
+                .editable(editable)
                 .build();
     }
 
-    public static Slice<CommentResponse> from(Slice<Comment> posts) {
+    /// 정적 팩토리 메서드 반복
+    public static Slice<CommentResponse> from(Slice<Comment> posts, Long userId) {
 
         /// 값 생성
         List<CommentResponse> commentResponses = posts.stream()
-                .map(CommentResponse::from)
+                .map(comment -> CommentResponse.from(comment, userId))
                 .toList();
 
         /// Slice 객체 생성

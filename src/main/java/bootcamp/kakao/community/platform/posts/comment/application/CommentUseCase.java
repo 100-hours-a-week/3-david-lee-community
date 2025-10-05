@@ -13,7 +13,7 @@ public interface CommentUseCase {
     void createComment(CommentRequest request, Long userId);
 
     /// 게시글에 따른 댓글 목록 조회 (무한스크롤)
-    SliceResponse<CommentResponse> getComments(SliceRequest request, Long postI);
+    SliceResponse<CommentResponse> getComments(SliceRequest request, Long postId, Long userId);
 
     /// 인기 댓글 목록 조회
     SliceResponse<CommentResponse> getFavoriteComments(SliceRequest request, Long postId);
