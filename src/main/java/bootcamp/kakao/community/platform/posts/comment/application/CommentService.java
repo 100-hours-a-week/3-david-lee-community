@@ -2,11 +2,12 @@ package bootcamp.kakao.community.platform.posts.comment.application;
 
 import bootcamp.kakao.community.common.response.paging.SliceRequest;
 import bootcamp.kakao.community.common.response.paging.SliceResponse;
+import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentListResponse;
 import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentRequest;
-import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentResponse;
 import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentUpdateRequest;
 import bootcamp.kakao.community.platform.posts.comment.domain.entity.Comment;
 import bootcamp.kakao.community.platform.posts.comment.domain.repository.CommentRepository;
+import bootcamp.kakao.community.platform.posts.comment.domain.repository.dto.CommentWithChildren;
 import bootcamp.kakao.community.platform.posts.post.application.PostQueryUseCase;
 import bootcamp.kakao.community.platform.posts.post.domain.entity.Post;
 import bootcamp.kakao.community.platform.user.application.UserUseCase;
@@ -26,6 +27,7 @@ public class CommentService implements CommentUseCase{
     private final PostQueryUseCase postService;
     private final UserUseCase userService;
 
+    /// 댓글 생성
     @Override
     @Transactional
     public void createComment(CommentRequest request, Long userId) {
@@ -42,29 +44,37 @@ public class CommentService implements CommentUseCase{
             parent = loadComment(request.parentId());
         }
 
-        /// 객체 생성
-        Comment.of(post, user, parent, request.content());
-
+        /// 객체 생성 및 저장
+        var reqComment = Comment.of(post, user, parent, request.content());
+        repository.save(reqComment);
     }
 
+    /**
+     * 게시글에 따른 댓글 목록 조회
+     * @param request   Slice 요청 DTO
+     * @param postId    조회할 게시글
+     * @param userId    조회하는 유저 (편집 가능 여부 판단)
+     */
     @Override
     @Transactional(readOnly = true)
-    public SliceResponse<CommentResponse> getComments(SliceRequest request, Long postId) {
+    public SliceResponse<CommentListResponse> getComments(SliceRequest request, Long postId, Long userId) {
 
         /// 게시글 예외처리
         Post post = postService.loadPost(postId);
 
-        /// 가져오기
-        Slice<Comment> comments = repository.findCommentsByCursor(request, post.getId());
+        /// 가져오기 (부모 댓글과 대댓글 존재 )
+        Slice<CommentWithChildren> comments = repository.findCommentsByCursor(request, post.getId());
 
         /// 리턴
-        Slice<CommentResponse> var = CommentResponse.from(comments);
+        Slice<CommentListResponse> var = CommentListResponse.from(comments, userId);
         return SliceResponse.from(var);
     }
 
+    /// 인기 게시글 조회하기
     @Override
     @Transactional(readOnly = true)
-    public SliceResponse<CommentResponse> getFavoriteComments(SliceRequest request, Long postId) {
+    public SliceResponse<CommentListResponse> getFavoriteComments(SliceRequest request, Long postId) {
+
         /// 게시글 예외처리
         Post post = postService.loadPost(postId);
 

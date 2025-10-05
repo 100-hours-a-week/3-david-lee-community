@@ -4,11 +4,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 @Schema(name = "[요청][유저] 회원가입 Request", description = "회원가입을 위한 DTO입니다.")
 public record SignUpRequest(
+
+        @Schema(example = "이도연")
         String name,
+
+        @Schema(example = "null")
         String imageUrl,
 
         @NotBlank(message = "닉네임을 입력해주세요. (띄어쓰기 불가)")
         @Size(max = 10, message = "닉네임은 10글자 이내입니다.")
+        @Schema(example = "david")
         String nickname,
 
         @NotBlank(message = "이메일을 입력해주세요.")

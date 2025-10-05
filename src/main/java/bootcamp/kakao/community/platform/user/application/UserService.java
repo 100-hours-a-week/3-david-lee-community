@@ -62,16 +62,31 @@ public class UserService implements UserUseCase{
             throw new IllegalArgumentException("패스워드가 일치하지 않는 문제입니다.");
         }
 
-        /// 객체 생성 후, 저장
-        var requestUser = User.of(request.name(), request.imageUrl(), request.nickname(), request.email(), passwordEncoder.encode(request.password()));
-        User user = repository.save(requestUser);
+        User user;
 
-        /// 이미지가 존재하는지 확인 및 매핑시키기 (트랜잭션 & 영속성 컨텍스트)
-        /// 여기서 에러가 나면, 회원가입 전부 롤백
-        Image image = imageService.getImage(request.imageUrl());
+        /// 이미지가 존재한다면,
+        if (request.imageUrl() != null) {
 
-        /// 이미지 상태를 확정 (더티체킹)
-        image.confirm(user);
+            String imageUrl = request.imageUrl();
+
+            /// 이미지가 존재하는지 확인 및 매핑시키기 (트랜잭션 & 영속성 컨텍스트)
+            /// 여기서 에러가 나면, 회원가입 전부 롤백
+            Image image = imageService.getImage(imageUrl);
+
+            /// 객체 생성 후, 저장
+            var requestUser = User.of(request.name(), imageUrl, request.nickname(), request.email(), passwordEncoder.encode(request.password()));
+            user = repository.save(requestUser);
+
+            /// 이미지 상태를 확정 (더티체킹)
+            image.confirm(user);
+
+        } else {
+            /// 이미지가 없다면,
+            /// 객체 생성 후, 저장
+            var requestUser = User.of(request.name(), null, request.nickname(), request.email(), passwordEncoder.encode(request.password()));
+            user = repository.save(requestUser);
+
+        }
 
         /// 로그인했다면, JWT 발급하기
         var jwtRequest = JwtTokenRequest.from(user);

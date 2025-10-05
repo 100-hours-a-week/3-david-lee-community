@@ -1,5 +1,6 @@
 package bootcamp.kakao.community.platform.posts.post.application.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -12,6 +13,7 @@ import java.util.List;
  * @param content       내용
  * @param imageUrls     이미지 URLs
  */
+@Schema(name = "[요청][게시글] 게시글 생성 Request", description = "게시글 생성을 위한 요청 DTO입니다.")
 public record PostRequest(
 
         @NotNull(message = "카테고리없이 게시글을 작성할 수 없습니다.")
