@@ -4,6 +4,7 @@ import bootcamp.kakao.community.common.response.paging.SliceRequest;
 import bootcamp.kakao.community.platform.posts.comment.domain.entity.Comment;
 import bootcamp.kakao.community.platform.posts.comment.domain.repository.dto.CommentWithChildren;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -33,14 +34,31 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
         /// 2차로 해당 루트의 자식 댓글 가져오게끔
 
         /// 1차
+        var child = new bootcamp.kakao.community.platform.posts.comment.domain.entity.QComment("child");
+
         List<Comment> rootComments = queryFactory
                 .selectFrom(comment)
                 .where(
                         eqPostId(postId),
                         ltLastId(sliceRequest.lastId()),
-                        comment.parent.isNull())    /// 루트 댓글만 조회
+                        comment.parent.isNull(),
+                        // 삭제 필터: (not deleted) OR (deleted AND exists(not-deleted child))
+                        comment.deleted.isFalse()
+                                .or(
+                                        comment.deleted.isTrue()
+                                                .and(
+                                                        JPAExpressions.selectOne()
+                                                                .from(child)
+                                                                .where(
+                                                                        child.parent.id.eq(comment.id),
+                                                                        child.deleted.isFalse()
+                                                                )
+                                                                .exists()
+                                                )
+                                )
+                )
                 .orderBy(comment.id.desc())
-                .limit(sliceRequest.offSet() + 1) // hasNext 확인용 +1
+                .limit(sliceRequest.offSet() + 1) // hasNext 판별용 +1
                 .fetch();
 
         // 루트 순서 보존용(LinkedHashMap) + id 목록
@@ -51,7 +69,8 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
                 .selectFrom(comment)
                 .where(
                         comment.parent.id.in(rootIds),   /// 루트 댓글이 있는 것만 가져오도록
-                        eqPostId(postId)        /// 게시글 ID 가져오기
+                        eqPostId(postId),        /// 게시글 ID 가져오기
+                        comment.deleted.isFalse()
                 )
                 .orderBy(comment.parent.id.asc(), comment.id.asc())
                 .fetch();

@@ -18,6 +18,9 @@ public record CommentResponse(
         @Schema(description = "댓글 작성자 정보")
         UserResponse user,
 
+        @Schema(description = "댓글 아이디", example = "1")
+        long id,
+
         @Schema(description = "부모 댓글 아이디", example = "null")
         Long parentId,
 
@@ -31,6 +34,14 @@ public record CommentResponse(
     /// 정적 팩토리 메서드
     public static CommentResponse from(Comment comment, Long userId) {
 
+        /// 삭제 여부 체크
+        String content;
+        if (comment.isDeleted()) {
+            content = "삭제된 메시지입니다.";
+        } else {
+            content = comment.getContent();
+        }
+
         /// 수정 가능 여부, 기본 값 설정
         boolean editable = false;
 
@@ -43,8 +54,9 @@ public record CommentResponse(
 
         return CommentResponse.builder()
                 .user(UserResponse.from(comment.getUser()))
+                .id(comment.getId())
                 .parentId(comment.getParent() != null ? comment.getParent().getId() : null)
-                .content(comment.getContent())
+                .content(content)
                 .editable(editable)
                 .build();
     }

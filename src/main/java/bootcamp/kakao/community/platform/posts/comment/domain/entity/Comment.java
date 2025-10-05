@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "comments")
+@Table(name = "comments", indexes = {@Index(name = "idx_comment_",columnList = "parent_id, deleted")})
 public class Comment extends BaseTimeEntity {
 
     @Id
