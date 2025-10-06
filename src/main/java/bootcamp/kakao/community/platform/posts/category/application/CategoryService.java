@@ -1,6 +1,7 @@
 package bootcamp.kakao.community.platform.posts.category.application;
 
 import bootcamp.kakao.community.platform.posts.category.application.dto.CategoryRequest;
+import bootcamp.kakao.community.platform.posts.category.application.dto.CategoryResponse;
 import bootcamp.kakao.community.platform.posts.category.domain.entity.Category;
 import bootcamp.kakao.community.platform.posts.category.domain.repository.CategoryRepository;
 import bootcamp.kakao.community.platform.user.application.UserUseCase;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -66,6 +68,17 @@ public class CategoryService implements CategoryUseCase{
 
         /// 바로 삭제
         repository.delete(category);
+    }
+
+    /// 루트 카테고리 목록 조회하기
+    @Override
+    public List<CategoryResponse> readRootCategories() {
+
+        /// 카테고리 목록 조회
+        List<Category> categories = repository.findByParentNull();
+
+        /// 리턴
+        return CategoryResponse.from(categories);
     }
 
     // =================
