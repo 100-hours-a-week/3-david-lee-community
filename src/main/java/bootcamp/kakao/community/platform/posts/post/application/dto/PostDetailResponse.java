@@ -29,13 +29,13 @@ public record PostDetailResponse(
         String content,
 
         @Schema(description = "좋아요 수", example = "53")
-        int likeCount,
+        long likeCount,
 
         @Schema(description = "조회수", example = "1201")
-        int viewCount,
+        long viewCount,
 
         @Schema(description = "댓글수", example = "37")
-        int commentCount,
+        long commentCount,
 
         @Schema(description = "이미지 목록", example = "[{\"thumbnailUrl\": \"https://sample.com/image1.png\"}]")
         List<PostImageResponse> image,
@@ -54,8 +54,7 @@ public record PostDetailResponse(
 ) {
 
     /// (비회원용) 정적 팩토리 메서드
-    public static PostDetailResponse from(Post post, List<PostImage> imageList) {
-
+    public static PostDetailResponse from(Post post, List<PostImage> imageList, Long viewCount, Long commentCount, Long likeCount) {
         /// 정보 조회
         var stat = post.getPostStat();
 
@@ -65,9 +64,9 @@ public record PostDetailResponse(
                 .category(post.getCategory().getName())
                 .title(post.getTitle())
                 .content(post.getContent())
-                .likeCount(stat.getLikeCount())
-                .viewCount(stat.getViewCount())
-                .commentCount(stat.getCommentCount())
+                .likeCount(likeCount == null ? 0 : likeCount)
+                .viewCount(viewCount == null ? 0 : viewCount)
+                .commentCount(commentCount == null ? 0 : commentCount)
                 .image(PostImageResponse.from(imageList))
                 .liked(false)
                 .editable(false)
@@ -77,19 +76,15 @@ public record PostDetailResponse(
     }
 
     /// (회원용) 정적 팩토리 메서드
-    public static PostDetailResponse from(Post post, List<PostImage> imageList, boolean liked, boolean editable) {
-
-        /// 정보 조회
-        var stat = post.getPostStat();
-
+    public static PostDetailResponse from(Post post, List<PostImage> imageList, Long viewCount, Long commentCount, Long likeCount, boolean liked, boolean editable) {
         return PostDetailResponse.builder()
                 .author(UserResponse.from(post.getUser()))
                 .category(post.getCategory().getName())
                 .title(post.getTitle())
                 .content(post.getContent())
-                .likeCount(stat.getLikeCount())
-                .viewCount(stat.getViewCount())
-                .commentCount(stat.getCommentCount())
+                .likeCount(likeCount == null ? 0 : likeCount)
+                .viewCount(viewCount == null ? 0 : viewCount)
+                .commentCount(commentCount == null ? 0 : commentCount)
                 .image(PostImageResponse.from(imageList))
                 .liked(liked)
                 .editable(editable)
@@ -97,7 +92,4 @@ public record PostDetailResponse(
                 .updatedAt(post.getModifiedDate().toString())
                 .build();
     }
-
-
-
 }

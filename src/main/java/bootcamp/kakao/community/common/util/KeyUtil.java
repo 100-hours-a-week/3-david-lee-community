@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class KeyUtil {
 
-    /// 개별 키 목록
+    /// 공통 키
     private static final String SEPARATOR = ":";
     private static final String DELIMITER = "-";
 
@@ -13,23 +13,40 @@ public class KeyUtil {
     private static final String POST = "post";
     private static final String VIEW = "view";
 
+    /// 댓글
+    private static final String COMMENT = "comment";
+
+    /// 좋아요
+    private static final String LIKES = "likes";
+
     /// JWT
     public static final String REFRESH_TOKEN = "refresh_token";
     public static final String ACCESS_TOKEN = "access_token";
     public static final String ID_CLAIM = "user_id";
-    public static final String EMAIL_CLAIM = "email";
     public static final String ROLE_CLAIM = "role";
 
-    /// 합쳐서 사용하는 키 목록
+    // =====================
+    //  합쳐서 사용하는 키 목록
+    // =====================
 
     /// 키 생성 함수
     public static String getRefreshTokenKey(Long userId, String deviceType) {
         return REFRESH_TOKEN + SEPARATOR + userId + SEPARATOR + deviceType;
     }
 
+    /// 게시글 조회수 키 생성 함수
     public static String getPostView(Long postId) {
         return POST + DELIMITER + VIEW + SEPARATOR + postId;
     }
 
+    /// 게시글 댓글수 키 생성 함수
+    public static String getPostComment(Long postId) {
+        return POST + DELIMITER + COMMENT + SEPARATOR + postId;
+    }
+
+    /// 게시글 좋아요수 키 생성 함수
+    public static String getPostLike(Long postId) {
+        return POST + DELIMITER + LIKES + SEPARATOR + postId;
+    }
 
 }

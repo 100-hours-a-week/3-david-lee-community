@@ -15,29 +15,29 @@ import bootcamp.kakao.community.platform.posts.post_likes.application.PostLikeUs
 import bootcamp.kakao.community.platform.user.application.UserUseCase;
 import bootcamp.kakao.community.platform.user.domain.entity.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostQueryService implements PostQueryUseCase{
 
     private final PostRepository repository;
-    private final RedisTemplate<String, Object> redisTemplate;
 
-    /// 의존성
+    /// 레디스 정의
+    private final StringRedisTemplate redisTemplate;
+
+    /// 외부 의존성
     private final UserUseCase userService;
     private final CategoryUseCase categoryService;
-
-    /// 이미지
     private final PostImageUseCase postImageService;
-
-    /// 좋아요 여부 파악
     private final PostLikeUseCase likeUseCase;
 
     /// 게시글 목록 조회
@@ -66,7 +66,7 @@ public class PostQueryService implements PostQueryUseCase{
     /// 게시글 상세 조회
     /// 조회수가 상승해야한다.
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public PostDetailResponse getPost(Long postId, Long userId) {
 
         /// 게시글 DB 조회
@@ -75,21 +75,25 @@ public class PostQueryService implements PostQueryUseCase{
         /// 게시글 이미지 조회하기
         List<PostImage> images = postImageService.loadPostImages(post);
 
-        /// 조회했기에, 레디스에서 조회수 증가시키기
-        String redisKey = KeyUtil.getPostView(post.getId());
-        redisTemplate.opsForValue().increment(redisKey, 1);
+        /// 조회수 증가시키기 및 가져오기
+        String postViewKey = KeyUtil.getPostView(post.getId());
+        Long viewCount = redisTemplate.opsForValue().increment(postViewKey, 1L);
 
-        /// 레디스에서 조회 수, 댓글 수,좋아요 수를 가져와야한다.
-        // TODO! 레디스에서 값 가져오기
+        /// 댓글 수
+        String postCommentKey = KeyUtil.getPostComment(post.getId());
+        String commentStr = redisTemplate.opsForValue().get(postCommentKey);
+        Long commentCount = (commentStr != null) ? Long.parseLong(commentStr) : 0L;
+
+        /// 좋아요 수
+        String postLikeKey = KeyUtil.getPostLike(post.getId());
+        String likeStr = redisTemplate.opsForValue().get(postLikeKey);
+        Long likeCount = (likeStr != null) ? Long.parseLong(likeStr) : 0L;
 
         /// 비회원이 조회했다면
         if (userId == null) {
-
             /// 게시글의 정보만 전달하면 된다.
-            return PostDetailResponse.from(post, images);
-
+            return PostDetailResponse.from(post, images, viewCount, commentCount, likeCount);
         } else {
-
             /// 회원이 조회했다면,
             User user = loadUser(userId);
 
@@ -101,7 +105,7 @@ public class PostQueryService implements PostQueryUseCase{
             boolean editable = post.getUser().getId().equals(user.getId());
 
             /// 응답
-            return PostDetailResponse.from(post, images, liked, editable);
+            return PostDetailResponse.from(post, images, viewCount, commentCount, likeCount, liked, editable);
         }
     }
 

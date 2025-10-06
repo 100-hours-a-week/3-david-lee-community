@@ -2,6 +2,7 @@ package bootcamp.kakao.community.platform.posts.comment.application;
 
 import bootcamp.kakao.community.common.response.paging.SliceRequest;
 import bootcamp.kakao.community.common.response.paging.SliceResponse;
+import bootcamp.kakao.community.common.util.KeyUtil;
 import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentListResponse;
 import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentRequest;
 import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentUpdateRequest;
@@ -14,6 +15,7 @@ import bootcamp.kakao.community.platform.user.application.UserUseCase;
 import bootcamp.kakao.community.platform.user.domain.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +28,9 @@ public class CommentService implements CommentUseCase{
     private final CommentRepository repository;
     private final PostQueryUseCase postService;
     private final UserUseCase userService;
+
+    /// 레디스 정의
+    private final StringRedisTemplate redisTemplate;
 
     /// 댓글 생성
     @Override
@@ -47,6 +52,10 @@ public class CommentService implements CommentUseCase{
         /// 객체 생성 및 저장
         var reqComment = Comment.of(post, user, parent, request.content());
         repository.save(reqComment);
+
+        /// 레디스에 값 1개 추가
+        String postViewKey = KeyUtil.getPostComment(post.getId());
+        redisTemplate.opsForValue().increment(postViewKey, 1L);
     }
 
     /**
@@ -117,6 +126,10 @@ public class CommentService implements CommentUseCase{
 
         /// 삭제
         comment.delete();
+
+        /// 레디스에 값 1개 삭제
+        String postViewKey = KeyUtil.getPostComment(comment.getPost().getId());
+        redisTemplate.opsForValue().decrement(postViewKey, 1L);
 
     }
 
