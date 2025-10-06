@@ -66,7 +66,7 @@ public class PostQueryService implements PostQueryUseCase{
     /// 게시글 상세 조회
     /// 조회수가 상승해야한다.
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public PostDetailResponse getPost(Long postId, Long userId) {
 
         /// 게시글 DB 조회
@@ -79,15 +79,15 @@ public class PostQueryService implements PostQueryUseCase{
         String postViewKey = KeyUtil.getPostView(post.getId());
         Long viewCount = redisTemplate.opsForValue().increment(postViewKey, 1L);
 
-        /// 댓글 수
+        /// 댓글 수, 레디스 조회하고, 없으면 DB 조회
         String postCommentKey = KeyUtil.getPostComment(post.getId());
         String commentStr = redisTemplate.opsForValue().get(postCommentKey);
-        Long commentCount = (commentStr != null) ? Long.parseLong(commentStr) : 0L;
+        Long commentCount = (commentStr != null) ? Long.parseLong(commentStr) : post.getPostStat().getCommentCount();
 
         /// 좋아요 수
         String postLikeKey = KeyUtil.getPostLike(post.getId());
         String likeStr = redisTemplate.opsForValue().get(postLikeKey);
-        Long likeCount = (likeStr != null) ? Long.parseLong(likeStr) : 0L;
+        Long likeCount = (likeStr != null) ? Long.parseLong(likeStr) : post.getPostStat().getLikeCount();
 
         /// 비회원이 조회했다면
         if (userId == null) {

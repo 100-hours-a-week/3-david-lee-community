@@ -1,5 +1,6 @@
 package bootcamp.kakao.community.platform.posts.post_likes.application;
 
+import bootcamp.kakao.community.common.util.KeyUtil;
 import bootcamp.kakao.community.platform.posts.post.domain.entity.Post;
 import bootcamp.kakao.community.platform.posts.post.domain.repository.PostRepository;
 import bootcamp.kakao.community.platform.posts.post_likes.application.dto.PostLikeRequest;
@@ -8,6 +9,7 @@ import bootcamp.kakao.community.platform.posts.post_likes.domain.repository.Post
 import bootcamp.kakao.community.platform.user.application.UserUseCase;
 import bootcamp.kakao.community.platform.user.domain.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +28,10 @@ public class PostLikeService implements PostLikeUseCase {
     private final PostRepository postRepository;
     private final UserUseCase userService;
 
+    /// 레디스 의존성
+    private final StringRedisTemplate redisTemplate;
+
+    /// 좋아요 하기
     @Override
     @Transactional
     public void like(PostLikeRequest request, Long userId) {
@@ -40,8 +46,13 @@ public class PostLikeService implements PostLikeUseCase {
         PostLike reqLike = PostLike.of(user, post);
         repository.save(reqLike);
 
+        /// 레디스에서 값 추가
+        String postLikeKey = KeyUtil.getPostLike(post.getId());
+        redisTemplate.opsForValue().increment(postLikeKey, 1L);
+
     }
 
+    /// 좋아요 취소하기
     @Override
     @Transactional
     public void unlike(Long postId, Long userId) {
@@ -60,6 +71,10 @@ public class PostLikeService implements PostLikeUseCase {
 
         /// 삭제 처리 (바로 삭제)
         repository.delete(optionalPostLike.get());
+
+        /// 레디스에서 값 빼기
+        String postLikeKey = KeyUtil.getPostLike(post.getId());
+        redisTemplate.opsForValue().decrement(postLikeKey, 1L);
     }
 
     /**
