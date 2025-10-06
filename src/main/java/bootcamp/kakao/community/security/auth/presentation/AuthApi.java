@@ -1,6 +1,7 @@
 package bootcamp.kakao.community.security.auth.presentation;
 
 import bootcamp.kakao.community.common.response.ApiResponse;
+import bootcamp.kakao.community.security.auth.presentation.swagger.AuthApiSpec;
 import bootcamp.kakao.community.security.jwt.application.HttpUtil;
 import bootcamp.kakao.community.security.auth.application.AuthUseCase;
 import bootcamp.kakao.community.security.auth.application.dto.LoginRequest;
@@ -18,7 +19,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/v1/auth")
 @RequiredArgsConstructor
-public class AuthApi {
+public class AuthApi implements AuthApiSpec {
 
     private final AuthUseCase service;
 
