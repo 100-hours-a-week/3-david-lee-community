@@ -43,8 +43,6 @@ public class PostQueryService implements PostQueryUseCase{
     private final PostLikeUseCase likeUseCase;
 
     /// 게시글 목록 조회
-    // PostQueryService.java
-
     @Override
     @Transactional(readOnly = true)
     public SliceResponse<PostListResponse> getPosts(SliceRequest req, Long categoryId) {
@@ -74,18 +72,18 @@ public class PostQueryService implements PostQueryUseCase{
         List<String> commentCounts = redisTemplate.opsForValue().multiGet(commentCountKeys);
         List<String> likeCounts = redisTemplate.opsForValue().multiGet(likeCountKeys);
 
-        /// Post 목록을 순회하며 PostListResponse DTO 생성
+        /// Post 목록을 순회하며 PostListResponse 생성
         List<PostListResponse> responses = new ArrayList<>();
 
         for (int i = 0; i < postList.size(); i++) {
             Post post = postList.get(i);
 
-            // Redis에서 가져온 값
+            /// Redis에서 가져온 값
             String redisViewCount = viewCounts.get(i);
             String redisCommentCount = commentCounts.get(i);
             String redisLikeCount = likeCounts.get(i);
 
-            // Redis에 값이 없으면 DB의 PostStat 값 사용
+            /// Redis에 값이 없으면 DB의 PostStat 값 사용
             Long finalViewCount = (redisViewCount != null) ? Long.parseLong(redisViewCount) : post.getPostStat().getViewCount();
             Long finalCommentCount = (redisCommentCount != null) ? Long.parseLong(redisCommentCount) : post.getPostStat().getCommentCount();
             Long finalLikeCount = (redisLikeCount != null) ? Long.parseLong(redisLikeCount) : post.getPostStat().getLikeCount();

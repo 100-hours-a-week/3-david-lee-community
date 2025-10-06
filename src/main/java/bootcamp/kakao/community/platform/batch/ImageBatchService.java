@@ -1,4 +1,4 @@
-package bootcamp.kakao.community.platform.images.image.application;
+package bootcamp.kakao.community.platform.batch;
 
 import bootcamp.kakao.community.platform.images.image.domain.entity.Image;
 import bootcamp.kakao.community.platform.images.image.domain.repository.ImageRepository;
@@ -6,6 +6,7 @@ import bootcamp.kakao.community.platform.images.image.external.ImageCloudUseCase
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,6 +23,7 @@ public class ImageBatchService {
     private final ImageRepository repository;
 
     /// 3시마다 삭제 프로세싱
+    @Transactional
     @Scheduled(cron = "0 0 3 * * *")
     public void deleteBatchEveryDay() throws IOException {
 
