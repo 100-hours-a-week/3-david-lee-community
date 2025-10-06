@@ -75,19 +75,10 @@ public class PostQueryService implements PostQueryUseCase{
         /// 게시글 이미지 조회하기
         List<PostImage> images = postImageService.loadPostImages(post);
 
-        /// 조회수 증가시키기 및 가져오기
-        String postViewKey = KeyUtil.getPostView(post.getId());
-        Long viewCount = redisTemplate.opsForValue().increment(postViewKey, 1L);
-
-        /// 댓글 수, 레디스 조회하고, 없으면 DB 조회
-        String postCommentKey = KeyUtil.getPostComment(post.getId());
-        String commentStr = redisTemplate.opsForValue().get(postCommentKey);
-        Long commentCount = (commentStr != null) ? Long.parseLong(commentStr) : post.getPostStat().getCommentCount();
-
-        /// 좋아요 수
-        String postLikeKey = KeyUtil.getPostLike(post.getId());
-        String likeStr = redisTemplate.opsForValue().get(postLikeKey);
-        Long likeCount = (likeStr != null) ? Long.parseLong(likeStr) : post.getPostStat().getLikeCount();
+        /// 조회수, 댓글수,좋아요수 가져오기
+        Long viewCount = getViewCount(post);
+        Long commentCount = getCommentCount(post);
+        Long likeCount = getLikeCount(post);
 
         /// 비회원이 조회했다면
         if (userId == null) {
@@ -125,6 +116,106 @@ public class PostQueryService implements PostQueryUseCase{
 
     private Category loadCategory(Long categoryId) {
         return categoryService.loadCategory(categoryId);
+    }
+
+    /// 조회 수 가져오기
+    private Long getViewCount(Post post) {
+
+        /// 레디스 키 조회
+        String postViewKey = KeyUtil.getPostView(post.getId());
+        Long value;
+
+        try {
+            /// Redis 값 조회
+            String redisValue = redisTemplate.opsForValue().get(postViewKey);
+
+            if (redisValue != null) {
+                /// Redis 값 존재 -> +1 증가
+                value = Long.parseLong(redisValue) + 1L;
+            } else {
+                /// Redis 값 없음 -> DB 값 기반 초기화
+                value = post.getPostStat().getViewCount() + 1L;
+            }
+
+            /// Redis 업데이트
+            redisTemplate.opsForValue().set(postViewKey, String.valueOf(value));
+
+        } catch (Exception e) {
+            /// 예외 발생 시 DB 조회 및 저장
+            value = post.getPostStat().getViewCount() + 1L;
+
+            /// 저장
+            post.getPostStat().updateViewCount(value);
+            repository.save(post);
+        }
+
+        return value;
+    }
+
+    /// 댓글 수 가져오기
+    private Long getCommentCount(Post post) {
+
+        /// 레디스 키 조회
+        String postCommentKey = KeyUtil.getPostComment(post.getId());
+        Long value;
+
+        try {
+            /// Redis 값 조회
+            String redisValue = redisTemplate.opsForValue().get(postCommentKey);
+
+            if (redisValue != null) {
+                /// Redis 값 존재 -> +1 증가
+                value = Long.parseLong(redisValue);
+            } else {
+                /// Redis 값 없음 -> DB 값 기반 초기화
+                value = post.getPostStat().getCommentCount();
+            }
+
+            /// Redis 업데이트
+            log.info("레디스 업데이트");
+            redisTemplate.opsForValue().set(postCommentKey, String.valueOf(value));
+
+        } catch (Exception e) {
+            /// 예외 발생 시 DB 조회
+            log.info("DB 업데이트");
+            value = post.getPostStat().getCommentCount();
+        }
+
+        return value;
+
+
+    }
+
+    /// 좋아요 수 가져오기
+    private Long getLikeCount(Post post) {
+
+        /// 레디스 키 조회
+        String postLikeKey = KeyUtil.getPostLike(post.getId());
+        Long value;
+
+        try {
+            /// Redis 값 조회
+            String redisValue = redisTemplate.opsForValue().get(postLikeKey);
+
+            if (redisValue != null) {
+                /// Redis 값 존재 -> +1 증가
+                value = Long.parseLong(redisValue);
+            } else {
+                /// Redis 값 없음 -> DB 값 기반 초기화
+                value = post.getPostStat().getLikeCount();
+            }
+
+            /// Redis 업데이트
+            redisTemplate.opsForValue().set(postLikeKey, String.valueOf(value));
+
+        } catch (Exception e) {
+            /// 예외 발생 시 DB 조회
+            value = post.getPostStat().getLikeCount();
+        }
+
+        return value;
+
+
     }
 
 }

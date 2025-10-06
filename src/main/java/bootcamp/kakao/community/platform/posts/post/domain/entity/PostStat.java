@@ -12,19 +12,24 @@ import lombok.Getter;
 public class PostStat {
 
     @Column(nullable = false)
-    private int viewCount;
+    private long viewCount;
 
     @Column(nullable = false)
-    private int commentCount;
+    private long commentCount;
 
     @Column(nullable = false)
-    private int likeCount;
+    private long likeCount;
 
     /// 기본 값으로 생성자
     protected PostStat() {
         this.viewCount = 0;
         this.commentCount = 0;
         this.likeCount = 0;
+    }
+
+    ///  비즈니스 로직
+    public void updateViewCount(long viewCount) {
+        this.viewCount = viewCount;
     }
 
 }

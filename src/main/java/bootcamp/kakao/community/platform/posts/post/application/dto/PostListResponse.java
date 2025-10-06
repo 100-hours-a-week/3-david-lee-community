@@ -34,10 +34,10 @@ public record PostListResponse(
         String content,
 
         @Schema(description = "조회수", example = "102")
-        int viewCount,
+        long viewCount,
 
         @Schema(description = "댓글수", example = "18")
-        int commentCount,
+        long commentCount,
 
         @Schema(description = "작성일시", example = "2023-10-02T14:30:00")
         String createdAt
