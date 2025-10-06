@@ -39,6 +39,9 @@ public record PostListResponse(
         @Schema(description = "댓글수", example = "18")
         long commentCount,
 
+        @Schema(description = "좋아요수", example = "18")
+        long likeCount,
+
         @Schema(description = "작성일시", example = "2023-10-02T14:30:00")
         String createdAt
 
@@ -58,6 +61,24 @@ public record PostListResponse(
                 .content(post.getContent())
                 .viewCount(stat.getViewCount())
                 .commentCount(stat.getCommentCount())
+                .likeCount(stat.getLikeCount())
+                .createdAt(post.getCreatedDate().toString())
+                .build();
+    }
+
+    /// 정적 팩토리 메서드
+    public static PostListResponse from(Post post, Long viewCount, Long commentCount, Long likeCount) {
+
+        return PostListResponse.builder()
+                .id(post.getId())
+                .user(UserResponse.from(post.getUser()))
+                .category(post.getCategory().getName())
+                .thumbnailUrl(post.getThumbnailUrl())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .viewCount(viewCount)
+                .commentCount(commentCount)
+                .likeCount(likeCount)
                 .createdAt(post.getCreatedDate().toString())
                 .build();
     }

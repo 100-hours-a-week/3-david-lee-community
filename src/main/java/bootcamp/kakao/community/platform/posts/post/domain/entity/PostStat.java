@@ -27,8 +27,16 @@ public class PostStat {
         this.likeCount = 0;
     }
 
-    ///  비즈니스 로직
+    /// 비즈니스 로직
+    /// 조회수 수정
     public void updateViewCount(long viewCount) {
+        this.viewCount = viewCount;
+    }
+
+    /// 전부 수정
+    public void updateStat(long commentCount, long likeCount, long viewCount) {
+        this.commentCount = commentCount;
+        this.likeCount = likeCount;
         this.viewCount = viewCount;
     }
 

@@ -17,10 +17,12 @@ import bootcamp.kakao.community.platform.user.domain.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -41,6 +43,8 @@ public class PostQueryService implements PostQueryUseCase{
     private final PostLikeUseCase likeUseCase;
 
     /// 게시글 목록 조회
+    // PostQueryService.java
+
     @Override
     @Transactional(readOnly = true)
     public SliceResponse<PostListResponse> getPosts(SliceRequest req, Long categoryId) {
@@ -48,12 +52,53 @@ public class PostQueryService implements PostQueryUseCase{
         /// 카테고리 예외처리
         Category category = loadCategory(categoryId);
 
-        /// 요청에 따라서 목록 조회
+        /// DB에서 게시글 목록 조회
         Slice<Post> posts = repository.findPostsByCursor(req, category.getName(), false);
+        List<Post> postList = posts.getContent();
 
-        /// DTO 변화
-        Slice<PostListResponse> response = PostListResponse.from(posts);
-        return SliceResponse.from(response);
+        /// Redis에서 한번에 조회할 키 목록 생성
+        List<String> viewCountKeys = postList.stream()
+                .map(p -> KeyUtil.getPostView(p.getId()))
+                .toList();
+
+        List<String> commentCountKeys = postList.stream()
+                .map(p -> KeyUtil.getPostComment(p.getId()))
+                .toList();
+
+        List<String> likeCountKeys = postList.stream()
+                .map(p -> KeyUtil.getPostLike(p.getId()))
+                .toList();
+
+        /// Redis에 multiGet 요청으로 데이터 한번에 가져오기
+        List<String> viewCounts = redisTemplate.opsForValue().multiGet(viewCountKeys);
+        List<String> commentCounts = redisTemplate.opsForValue().multiGet(commentCountKeys);
+        List<String> likeCounts = redisTemplate.opsForValue().multiGet(likeCountKeys);
+
+        /// Post 목록을 순회하며 PostListResponse DTO 생성
+        List<PostListResponse> responses = new ArrayList<>();
+
+        for (int i = 0; i < postList.size(); i++) {
+            Post post = postList.get(i);
+
+            // Redis에서 가져온 값
+            String redisViewCount = viewCounts.get(i);
+            String redisCommentCount = commentCounts.get(i);
+            String redisLikeCount = likeCounts.get(i);
+
+            // Redis에 값이 없으면 DB의 PostStat 값 사용
+            Long finalViewCount = (redisViewCount != null) ? Long.parseLong(redisViewCount) : post.getPostStat().getViewCount();
+            Long finalCommentCount = (redisCommentCount != null) ? Long.parseLong(redisCommentCount) : post.getPostStat().getCommentCount();
+            Long finalLikeCount = (redisLikeCount != null) ? Long.parseLong(redisLikeCount) : post.getPostStat().getLikeCount();
+
+            /// 추가
+            responses.add(
+                    PostListResponse.from(post, finalViewCount, finalCommentCount, finalLikeCount)
+            );
+        }
+
+        /// 리턴
+        Slice<PostListResponse> responseSlice = new SliceImpl<>(responses, posts.getPageable(), posts.hasNext());
+        return SliceResponse.from(responseSlice);
     }
 
     /// 인기 게시글 목록 조회
