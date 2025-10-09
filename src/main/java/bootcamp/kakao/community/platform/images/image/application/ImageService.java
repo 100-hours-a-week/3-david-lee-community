@@ -28,25 +28,6 @@ public class ImageService implements ImageUseCase {
     /// 의존성
     private final UserRepository userRepository;
 
-    /// 한 장의 이미지 처리
-    @Override
-    @Transactional
-    public ImageResponse upload(ImageRequest req, Long userId) throws IOException {
-
-        /// 요청한 유저
-        User user = loadUser(userId);
-
-        /// 클라우드 요청
-        ImageResponse presignedURL = cloudService.getUploadPresignedURL(req.file());
-
-        /// 객체 저장
-        Image image = Image.of(user, req.file(), presignedURL.preSignedUrl());
-        repository.save(image);
-
-        /// 리턴
-        return presignedURL;
-    }
-
 
     /// 여러개의 이미지 처리
     @Override
@@ -58,7 +39,7 @@ public class ImageService implements ImageUseCase {
 
         /// 요청한 이미지 목록 추출
         List<String> reqImages = req.stream()
-                .map(ImageRequest::file)
+                .map(ImageRequest::imageUrl)
                 .toList();
 
         /// 클라우드 요청
@@ -81,10 +62,10 @@ public class ImageService implements ImageUseCase {
     public ImageResponse uploadTemporaryImage(ImageRequest req) throws IOException {
 
         /// 클라우드 요청
-        ImageResponse presignedURL = cloudService.getUploadPresignedURL(req.file());
+        ImageResponse presignedURL = cloudService.getUploadPresignedURL(req.imageUrl());
 
         /// 객체 저장
-        Image image = Image.temporaryOf(req.file(), presignedURL.preSignedUrl());
+        Image image = Image.temporaryOf(req.imageUrl(), presignedURL.preSignedUrl());
         repository.save(image);
 
         /// 리턴

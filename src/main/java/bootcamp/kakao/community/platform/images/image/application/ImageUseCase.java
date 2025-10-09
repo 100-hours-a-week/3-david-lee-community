@@ -9,9 +9,6 @@ import java.util.List;
 
 public interface ImageUseCase {
 
-    /// 사진 저장하기
-    ImageResponse upload(ImageRequest req, Long userId) throws IOException;
-
     /// 여러 사진 저장하기
     List<ImageResponse> upload(List<ImageRequest> req, Long userId) throws IOException;
 
