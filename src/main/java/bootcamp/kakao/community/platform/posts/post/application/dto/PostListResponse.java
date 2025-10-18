@@ -1,5 +1,6 @@
 package bootcamp.kakao.community.platform.posts.post.application.dto;
 
+import bootcamp.kakao.community.common.util.DateUtil;
 import bootcamp.kakao.community.platform.posts.post.domain.entity.Post;
 import bootcamp.kakao.community.platform.user.application.dto.UserResponse;
 import lombok.Builder;
@@ -79,7 +80,7 @@ public record PostListResponse(
                 .viewCount(viewCount)
                 .commentCount(commentCount)
                 .likeCount(likeCount)
-                .createdAt(post.getCreatedDate().toString())
+                .createdAt(DateUtil.formatPostDate(post.getCreatedDate()))
                 .build();
     }
 
