@@ -48,11 +48,11 @@ public class User extends BaseTimeEntity {
         this.nickname = nickname;
         this.email = email;
         this.password = password;
-        this.role = UserRole.MEMBER;    /// 기본은 다 유저
+        this.role = role != null ? role : UserRole.MEMBER;
         this.deleted = false;
     }
 
-    /// 정적 팩토리 메서드
+    /// 정적 팩토리 메서드 (기본 유저)
     public static User of(String name, String imageUrl, String nickname, String email, String password) {
         return User.builder()
                 .name(name)
