@@ -42,7 +42,7 @@ public class UserApi implements UserApiSpec {
         JwtTokenResponse response = service.signUp(request, deviceType);
 
         /// 성공했다면, 토큰 발급
-        httpUtil.addAccessTokenCookie(httpServletResponse, response.accessToken());
+        httpUtil.addAccessTokenHeader(httpServletResponse, response.accessToken());
         httpUtil.addRefreshTokenCookie(httpServletResponse, response.refreshToken());
 
         /// 리턴
@@ -59,7 +59,6 @@ public class UserApi implements UserApiSpec {
         service.withdraw(customUserDetails.getId());
 
         /// 토큰 삭제
-        httpUtil.removeAccessTokenCookie(httpServletResponse);
         httpUtil.removeRefreshTokenCookie(httpServletResponse);
 
         /// 응답
