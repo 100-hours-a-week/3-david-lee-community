@@ -1,4 +1,4 @@
-package bootcamp.kakao.community.security.jwt.application;
+package bootcamp.kakao.community.common.util;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

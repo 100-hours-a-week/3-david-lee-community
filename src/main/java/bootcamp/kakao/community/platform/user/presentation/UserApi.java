@@ -5,7 +5,7 @@ import bootcamp.kakao.community.platform.user.application.UserUseCase;
 import bootcamp.kakao.community.platform.user.application.dto.*;
 import bootcamp.kakao.community.platform.user.presentation.swagger.UserApiSpec;
 import bootcamp.kakao.community.security.auth.domain.CustomUserDetails;
-import bootcamp.kakao.community.security.jwt.application.HttpUtil;
+import bootcamp.kakao.community.common.util.HttpUtil;
 import bootcamp.kakao.community.security.jwt.application.dto.JwtTokenResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
