@@ -78,7 +78,7 @@ public class ImageService implements ImageUseCase {
     public Image getImage(String url) {
 
         return repository.findByUrl(url)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new NoSuchElementException("해당 이미지가 존재하지 않습니다."));
     }
 
     /// URL 목록 바탕으로 이미지 배열 객체 조회하기
