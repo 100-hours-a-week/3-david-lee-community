@@ -133,8 +133,12 @@ public class CommentService implements CommentUseCase{
 
     }
 
+    // =================
+    //  외부 사용 로직
+    // =================
+    /// 외부 댓글 조회
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public Comment loadComment(Long commentId) {
         return repository.findById(commentId)
                 .orElseThrow(() -> new NoSuchElementException("해당 아이디를 가진 댓글은 존재하지않습니다."));

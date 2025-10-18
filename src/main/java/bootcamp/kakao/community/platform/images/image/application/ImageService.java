@@ -74,15 +74,16 @@ public class ImageService implements ImageUseCase {
 
     /// URL 바탕으로 이미지 객체 조회하기
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public Image getImage(String url) {
 
         return repository.findByUrl(url)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new NoSuchElementException("해당 이미지가 존재하지 않습니다."));
     }
 
     /// URL 목록 바탕으로 이미지 배열 객체 조회하기
     @Override
+    @Transactional
     public List<Image> getImage(List<String> urls) {
 
         /// 값 가져오기
@@ -102,7 +103,7 @@ public class ImageService implements ImageUseCase {
     // =============
     //   내부 함수
     // =============
-    @Transactional(readOnly = true)
+    @Transactional
     protected User loadUser(Long userId) {
         return userRepository.findByIdAndDeletedIsFalse(userId)
                 .orElseThrow(()-> new NoSuchElementException("해당 아이디를 가진 유저가 없습니다."));

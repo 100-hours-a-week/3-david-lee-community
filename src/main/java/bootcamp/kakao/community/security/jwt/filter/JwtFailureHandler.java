@@ -34,7 +34,7 @@ public class JwtFailureHandler implements AuthenticationEntryPoint {
         }
         /// 인증 자체가 없는 경우 (로그인 안 됨)
         else {
-            exception = new CustomException(ErrorCode.TOKEN_NOT_FOUND, null);
+            exception = new CustomException(ErrorCode.ACCESS_TOKEN_NOT_FOUND, null);
         }
 
         ApiResponse<Object> apiResponse = ApiResponse.fail(exception);
