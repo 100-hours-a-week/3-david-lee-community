@@ -85,7 +85,6 @@ public class CategoryService implements CategoryUseCase{
     //  외부 사용 로직
     // =================
     @Override
-    @Transactional(readOnly = true)
     public Category loadCategory(Long id) {
         return repository.findById(id)
                 .orElseThrow(NoSuchElementException::new);

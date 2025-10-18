@@ -188,7 +188,6 @@ public class UserService implements UserUseCase{
     //  외부 조회 로직
     // =================
     @Override
-    @Transactional(readOnly = true)
     public User loadUser(Long userId) {
         return repository.findByIdAndDeletedIsFalse(userId)
                 .orElseThrow(() -> new NoSuchElementException("해당 아이디가 존재하는 유저가 없습니다."));

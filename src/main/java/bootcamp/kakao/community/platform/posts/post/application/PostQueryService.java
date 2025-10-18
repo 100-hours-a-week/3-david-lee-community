@@ -145,13 +145,17 @@ public class PostQueryService implements PostQueryUseCase{
 
 
     // =================
-    //  내부 로직
+    //  외부 로직
     // =================
-    @Transactional(readOnly = true)
+    @Transactional
     public Post loadPost(Long postId) {
         return repository.findByIdAndDeletedIsFalse(postId)
                 .orElseThrow(() -> new NoSuchElementException("해당 아이디가 존재하는 게시글이 없습니다."));
     }
+
+    // =================
+    //  내부 로직
+    // =================
 
     private User loadUser(Long userId) {
         return userService.loadUser(userId);
