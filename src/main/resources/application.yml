@@ -23,6 +23,7 @@ spring:
         globally_quoted_identifiers: false
         format_sql: false
         show_sql: false
+    defer-datasource-initialization: true
     open-in-view: false
 
   ### 카테고리 SQL 실행
@@ -56,3 +57,7 @@ cloud:
       bucket: ${BUCKET}
     region:
       static: ${STATIC}
+
+cors:
+  front:
+    host: http://localhost:3000
