@@ -69,13 +69,17 @@ public class User extends BaseTimeEntity {
         this.deleted = true;
     }
 
-    /// 업데이트
-    public void update(String imageUrl, String nickname) {
+    /// 이미지 업데이트
+    public void updateImage(String imageUrl) {
 
         if (imageUrl != null) {
             /// 프로필이미지를 수정할 내용이 존재한다면,
             this.imageUrl = imageUrl;
         }
+    }
+
+    /// 닉네임 업데이트
+    public void updateNickname(String nickname) {
 
         if (nickname != null) {
             /// 닉네임을 수정할 내용이 존재한다면,

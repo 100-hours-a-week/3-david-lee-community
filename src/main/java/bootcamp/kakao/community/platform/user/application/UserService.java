@@ -1,7 +1,5 @@
 package bootcamp.kakao.community.platform.user.application;
 
-import bootcamp.kakao.community.platform.images.image.application.ImageService;
-import bootcamp.kakao.community.platform.images.image.domain.entity.Image;
 import bootcamp.kakao.community.platform.user.application.dto.*;
 import bootcamp.kakao.community.platform.user.domain.entity.User;
 import bootcamp.kakao.community.platform.user.domain.repository.UserRepository;
@@ -23,7 +21,9 @@ public class UserService implements UserUseCase{
     private final BCryptPasswordEncoder passwordEncoder;
 
     private final JwtProvider jwtProvider;
-    private final ImageService imageService;
+
+    /// 유저 이미지
+    private final ProfileImageUtil imageService;
 
     /// 이메일 중복 여부
     @Override
@@ -62,31 +62,12 @@ public class UserService implements UserUseCase{
             throw new IllegalArgumentException("패스워드가 일치하지 않는 문제입니다.");
         }
 
-        User user;
+        /// 유저 저장
+        var requestUser = User.of(request.name(), null, request.nickname(), request.email(), passwordEncoder.encode(request.password()));
+        User user = repository.save(requestUser);
 
-        /// 이미지가 존재한다면,
-        if (request.imageUrl() != null) {
-
-            String imageUrl = request.imageUrl();
-
-            /// 이미지가 존재하는지 확인 및 매핑시키기 (트랜잭션 & 영속성 컨텍스트)
-            /// 여기서 에러가 나면, 회원가입 전부 롤백
-            Image image = imageService.getImage(imageUrl);
-
-            /// 객체 생성 후, 저장
-            var requestUser = User.of(request.name(), imageUrl, request.nickname(), request.email(), passwordEncoder.encode(request.password()));
-            user = repository.save(requestUser);
-
-            /// 이미지 상태를 확정 (더티체킹)
-            image.confirm(user);
-
-        } else {
-            /// 이미지가 없다면,
-            /// 객체 생성 후, 저장
-            var requestUser = User.of(request.name(), null, request.nickname(), request.email(), passwordEncoder.encode(request.password()));
-            user = repository.save(requestUser);
-
-        }
+        /// 이미지가 있다면 더티체킹 수정 (관심사 분리)
+        imageService.assignAndConfirmProfileImage(user, request.imageUrl());
 
         /// 로그인했다면, JWT 발급하기
         var jwtRequest = JwtTokenRequest.from(user);
@@ -142,22 +123,11 @@ public class UserService implements UserUseCase{
         /// 유저 예외처리 및 영속성 컨테이너에 등록
         User user = loadUser(userId);
 
-        /// 새로운 프로필 이미지
-        String profileImageUrl = null;
+        /// 이미지 수정
+        imageService.updateImage(user, request.imageUrl());
 
-        /// 기존 이미지 삭제 처리
-        if (user.getImageUrl() != null) {
-            Image oldImage = imageService.getImage(user.getImageUrl());
-            oldImage.unConfirm();   /// 더티체킹으로 삭제처리
-        }
-
-        if (request.imageUrl() != null) {
-            /// 새로 넣을 이미지가 존재하는지 체크
-            profileImageUrl = imageService.getImage(request.imageUrl()).getUrl();
-        }
-
-        /// 존재한다면, 새롭게 수정 더티체킹
-        user.update(profileImageUrl, request.nickname());
+        /// 닉네임 수정
+        user.updateNickname(request.nickname());
 
     }
 
