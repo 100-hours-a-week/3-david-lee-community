@@ -1,4 +1,4 @@
-package bootcamp.kakao.community.security.jwt.application;
+package bootcamp.kakao.community.common.util;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,24 +18,33 @@ public class HttpUtil {
     @Value("${auth.jwt.refresh.expiration}")
     private long refreshExpiration;
 
-    /// 액세스 토큰 쿠키 가져오기
+    /// 액세스 토큰 헤더 가져오기
     public Optional<String> getAccessToken(HttpServletRequest request) {
-        return extractToken(request, ACCESS_TOKEN);
+
+        /// 헤더에서 가져오기
+        Optional<String> accessTokenOptional = extractHeader(request, AUTHORIZATION);
+
+        if (accessTokenOptional.isPresent()) {
+            /// 있다면 Bearer 빼고 가져오기
+            return Optional.of(getBearerToken(accessTokenOptional.get()));
+        }
+        return Optional.empty();
+
     }
 
     /// 리프레쉬 토큰 쿠키 가져오기
     public Optional<String> getRefreshToken(HttpServletRequest request) {
-        return extractToken(request, REFRESH_TOKEN);
+        return extractCookie(request, REFRESH_TOKEN);
     }
 
     /// 액세스 토큰을 쿠키에 저장하기
-    public void addAccessTokenCookie(HttpServletResponse httpServletResponse, String accessToken) {
+    public void addAccessTokenHeader(HttpServletResponse httpServletResponse, String accessToken) {
 
-        /// 쿠키 생성
-        Cookie cookie = createCookie(ACCESS_TOKEN, accessToken, accessExpiration);
+        /// Bearer 추가하기
+        String bearerAccessToken = setBearerToken(accessToken);
 
-        /// 쿠키 저장
-        httpServletResponse.addCookie(cookie);
+        /// 헤더 저장
+        createHeader(httpServletResponse, AUTHORIZATION, bearerAccessToken);
     }
 
     /// 리프레쉬 토큰을 쿠키에 저장하기
@@ -45,12 +54,6 @@ public class HttpUtil {
         Cookie cookie = createCookie(REFRESH_TOKEN, refreshToken, refreshExpiration);
 
         /// 쿠키 저장
-        httpServletResponse.addCookie(cookie);
-    }
-
-    /// 액세스 토큰을 삭제하기
-    public void removeAccessTokenCookie(HttpServletResponse httpServletResponse) {
-        Cookie cookie = createCookie(ACCESS_TOKEN, null, 0);
         httpServletResponse.addCookie(cookie);
     }
 
@@ -69,6 +72,21 @@ public class HttpUtil {
     //  내부 공통 함수
     // =================
 
+    /// 헤더로 발급하기
+    private void createHeader(HttpServletResponse httpServletResponse, String headerName, String headerValue) {
+
+        /// 헤더 설정하기
+        httpServletResponse.setHeader(headerName, headerValue);
+    }
+
+    /// 헤더에서 값 가져오기
+    private Optional<String> extractHeader(HttpServletRequest httpServletRequest, String headerName) {
+
+        /// 헤더 가져오기
+        return Optional.ofNullable(httpServletRequest.getHeader(headerName));
+    }
+
+
     /// 쿠키 생성하기
     private Cookie createCookie(String cookieName, String accessToken, long accessExpiration) {
 
@@ -80,7 +98,7 @@ public class HttpUtil {
     }
 
     /// 쿠키에서 토큰 가져오기
-    private Optional<String> extractToken(HttpServletRequest httpServletRequest, String type) {
+    private Optional<String> extractCookie(HttpServletRequest httpServletRequest, String type) {
 
         /// 쿠키 가져오기
         Cookie[] cookies = httpServletRequest.getCookies();
@@ -96,5 +114,20 @@ public class HttpUtil {
             }
         }
         return Optional.empty();
+    }
+
+    /// 토큰에서 Bearer 추가하기
+    private String setBearerToken(String accessToken) {
+
+        /// 토큰에서 Bearer 추가하기
+        return BEARER + " " + accessToken;
+    }
+
+    /// 헤더에서 Bearer 빼고 가져오기
+    private String getBearerToken(String headerToken) {
+
+        /// Bearer (띄어쓰기 포함 7글자) 빼고 가져오기
+        return headerToken.substring(7);
+
     }
 }

@@ -2,7 +2,7 @@ package bootcamp.kakao.community.security.auth.presentation;
 
 import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.security.auth.presentation.swagger.AuthApiSpec;
-import bootcamp.kakao.community.security.jwt.application.HttpUtil;
+import bootcamp.kakao.community.common.util.HttpUtil;
 import bootcamp.kakao.community.security.auth.application.AuthUseCase;
 import bootcamp.kakao.community.security.auth.application.dto.LoginRequest;
 import bootcamp.kakao.community.security.auth.domain.CustomUserDetails;
@@ -46,7 +46,7 @@ public class AuthApi implements AuthApiSpec {
         JwtTokenResponse response = service.login(request, deviceType);
 
         /// 쿠키로 전송하기
-        httpUtil.addAccessTokenCookie(httpServletResponse, response.accessToken());
+        httpUtil.addAccessTokenHeader(httpServletResponse, response.accessToken());
         httpUtil.addRefreshTokenCookie(httpServletResponse, response.refreshToken());
 
         /// 리턴
@@ -72,7 +72,6 @@ public class AuthApi implements AuthApiSpec {
         service.logout(customUserDetails.getId(), deviceType, refreshToken);
 
         /// 쿠키 삭제하기
-        httpUtil.removeAccessTokenCookie(httpServletResponse);
         httpUtil.removeRefreshTokenCookie(httpServletResponse);
 
         /// 리턴
@@ -97,7 +96,7 @@ public class AuthApi implements AuthApiSpec {
         JwtTokenResponse response = service.reissue(deviceType, refreshToken);
 
         /// 액세스 쿠키로 전송하기
-        httpUtil.addAccessTokenCookie(httpServletResponse, response.accessToken());
+        httpUtil.addAccessTokenHeader(httpServletResponse, response.accessToken());
 
         /// 리턴
         return ApiResponse.updated();

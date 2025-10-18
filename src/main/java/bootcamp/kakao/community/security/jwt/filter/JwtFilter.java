@@ -1,6 +1,6 @@
 package bootcamp.kakao.community.security.jwt.filter;
 
-import bootcamp.kakao.community.security.jwt.application.HttpUtil;
+import bootcamp.kakao.community.common.util.HttpUtil;
 import bootcamp.kakao.community.security.jwt.application.JwtValidator;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

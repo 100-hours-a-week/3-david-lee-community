@@ -28,15 +28,16 @@ public enum ErrorCode {
     // 401 Unauthorized
     // ========================
     ACCESS_TOKEN_EXPIRED(401_000, HttpStatus.UNAUTHORIZED, "액세스 토큰이 만료되었습니다."),
-    ACCESS_TOKEN_INVALID(401_001, HttpStatus.UNAUTHORIZED, "액세스 토큰이 유효하지 않은 토큰입니다."),
-    ACCESS_TOKEN_UNSUPPORTED(401_002, HttpStatus.UNAUTHORIZED, "액세스 토큰이 지원하지 않는 토큰 형식입니다."),
+    ACCESS_TOKEN_INVALID(401_001, HttpStatus.UNAUTHORIZED, "액세스 토큰이 유효하지 않습니다."),
+    ACCESS_TOKEN_UNSUPPORTED(401_002, HttpStatus.UNAUTHORIZED, "액세스 토큰이 지원하지 않는 형식입니다."),
+    ACCESS_TOKEN_MALFORMED(401_004, HttpStatus.UNAUTHORIZED, "액세스 토큰의 구조가 깨진 형식입니다."),
+    ACCESS_TOKEN_NOT_FOUND(401_002, HttpStatus.UNAUTHORIZED, "액세스 토큰이 존재하지 않습니다."),
 
     REFRESH_TOKEN_EXPIRED(401_004, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰이 만료되었습니다."),
     REFRESH_TOKEN_INVALID(401_005, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰이 유효하지 않은 토큰입니다."),
     REFRESH_TOKEN_UNSUPPORTED(401_006, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰이 지원하지 않는 토큰 형식입니다."),
 
 
-    TOKEN_NOT_FOUND(401_002, HttpStatus.UNAUTHORIZED, "토큰이 존재하지 않습니다."),
     REFRESH_INVALID_LOGIN(401_007, HttpStatus.UNAUTHORIZED, "리프레쉬 토큰이 없기에 재로그인이 필요합니다."),
     TOKEN_NOT_FOUND_COOKIE(401_010, HttpStatus.UNAUTHORIZED, "쿠키에 리프레시 토큰이 존재하지 않습니다."),
 

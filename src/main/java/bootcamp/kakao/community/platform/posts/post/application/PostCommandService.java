@@ -111,7 +111,7 @@ public class PostCommandService implements PostCommandUseCase{
     //  내부 로직
     // =================
 
-    @Transactional(readOnly = true)
+    @Transactional
     protected Post loadPost(Long postId) {
         return repository.findByIdAndDeletedIsFalse(postId)
                 .orElseThrow(() -> new NoSuchElementException("해당 아이디가 존재하는 게시글이 없습니다."));
