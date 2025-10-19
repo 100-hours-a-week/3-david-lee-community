@@ -67,16 +67,16 @@ public class PostCommandService implements PostCommandUseCase{
     /// 더티체킹으로 실행
     @Override
     @Transactional
-    public void update(PostUpdateRequest req, Long userId) {
+    public void update(Long postId, PostUpdateRequest req, Long userId) {
 
         /// 게시글 상세 조회 (영속성 컨테이너에 스냅샷)
-        Post post = loadPost(req.id());
+        Post post = loadPost(postId);
 
         /// 유저 예외 처리
         User user = loadUser(userId);
 
         /// 동일 유저인지 체크
-        if (!post.getUser().getId().equals(user.getId())){
+        if (!post.getUser().getId().equals(user.getId())) {
             throw new AccessDeniedException("수정할 권한이 없습니다.");
         }
 

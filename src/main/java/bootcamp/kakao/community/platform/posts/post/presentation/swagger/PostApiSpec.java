@@ -51,6 +51,7 @@ public interface PostApiSpec {
             description = "게시글을 수정하는 API 입니다."
     )
     ApiResponse<Void> updatePost(
+            @PathVariable Long postId,
             @RequestBody @Valid PostUpdateRequest request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails);
 

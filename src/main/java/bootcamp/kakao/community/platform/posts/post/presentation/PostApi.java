@@ -67,13 +67,14 @@ public class PostApi implements PostApiSpec {
 
 
     /// 글 수정
-    @PatchMapping()
+    @PatchMapping("/{postId}")
     public ApiResponse<Void> updatePost(
+            @PathVariable Long postId,
             @RequestBody @Valid PostUpdateRequest request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         /// 서비스 수정
-        commandService.update(request, customUserDetails.getId());
+        commandService.update(postId, request, customUserDetails.getId());
 
         /// 리턴
         return ApiResponse.updated();
