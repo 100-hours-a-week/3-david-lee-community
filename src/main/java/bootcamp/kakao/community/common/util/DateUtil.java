@@ -16,7 +16,7 @@ public class DateUtil {
         } else if (duration.toHours() < 24) {
             return duration.toHours() + "시간 전";
         } else {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd. yyyy.", Locale.ENGLISH);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MMM dd일", Locale.KOREAN);
             return created.format(formatter);
         }
     }
