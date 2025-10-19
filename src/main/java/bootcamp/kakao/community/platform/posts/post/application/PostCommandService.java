@@ -4,6 +4,7 @@ import bootcamp.kakao.community.platform.images.post_images.application.PostImag
 import bootcamp.kakao.community.platform.posts.category.application.CategoryUseCase;
 import bootcamp.kakao.community.platform.posts.category.domain.entity.Category;
 import bootcamp.kakao.community.platform.posts.post.application.dto.PostRequest;
+import bootcamp.kakao.community.platform.posts.post.application.dto.PostSaveResponse;
 import bootcamp.kakao.community.platform.posts.post.application.dto.PostUpdateRequest;
 import bootcamp.kakao.community.platform.posts.post.domain.entity.Post;
 import bootcamp.kakao.community.platform.posts.post.domain.repository.PostRepository;
@@ -32,7 +33,7 @@ public class PostCommandService implements PostCommandUseCase{
     /// 게시글 작성, 다중 이미지 고려해서 작성
     @Override
     @Transactional
-    public void create(PostRequest req, Long userId) {
+    public PostSaveResponse create(PostRequest req, Long userId) {
 
         /// 카테고리 예외처리
         Category category = loadCategory(req.categoryId());
@@ -57,6 +58,8 @@ public class PostCommandService implements PostCommandUseCase{
         /// 하나라도 에러나면, 롤백 처리
         postImageService.savePostImage(post, req.imageUrls());
 
+        /// 리턴
+        return PostSaveResponse.from(post);
     }
 
 
