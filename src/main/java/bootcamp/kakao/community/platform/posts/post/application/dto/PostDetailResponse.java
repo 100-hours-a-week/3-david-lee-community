@@ -1,5 +1,6 @@
 package bootcamp.kakao.community.platform.posts.post.application.dto;
 
+import bootcamp.kakao.community.common.util.DateUtil;
 import bootcamp.kakao.community.platform.images.post_images.application.dto.PostImageResponse;
 import bootcamp.kakao.community.platform.images.post_images.domain.entity.PostImage;
 import bootcamp.kakao.community.platform.posts.post.domain.entity.Post;
@@ -46,10 +47,10 @@ public record PostDetailResponse(
         @Schema(description = "수정/삭제 가능 여부", example = "false")
         boolean editable,
 
-        @Schema(description = "글 작성 시각", example = "2023-10-02T14:30:00")
+        @Schema(description = "글 작성 시각", example = "2023년 10월 5일")
         String createdAt,
 
-        @Schema(description = "글 수정 시각", example = "2023-10-03T09:00:00")
+        @Schema(description = "글 수정 시각", example = "2023년 10월 8일")
         String updatedAt
 ) {
 
@@ -70,8 +71,8 @@ public record PostDetailResponse(
                 .image(PostImageResponse.from(imageList))
                 .liked(false)
                 .editable(false)
-                .createdAt(post.getCreatedDate().toString())
-                .updatedAt(post.getModifiedDate().toString())
+                .createdAt(DateUtil.formatPostDate(post.getCreatedDate()))
+                .updatedAt(DateUtil.formatPostDate(post.getModifiedDate()))
                 .build();
     }
 
@@ -88,8 +89,9 @@ public record PostDetailResponse(
                 .image(PostImageResponse.from(imageList))
                 .liked(liked)
                 .editable(editable)
-                .createdAt(post.getCreatedDate().toString())
-                .updatedAt(post.getModifiedDate().toString())
+                .createdAt(DateUtil.formatPostDate(post.getCreatedDate()))
+                .updatedAt(DateUtil.formatPostDate(post.getModifiedDate()))
                 .build();
     }
+
 }
