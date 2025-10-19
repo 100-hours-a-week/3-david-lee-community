@@ -4,6 +4,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -11,9 +13,6 @@ import static bootcamp.kakao.community.common.util.KeyUtil.*;
 
 @Component
 public class HttpUtil {
-
-    @Value("${auth.jwt.access.expiration}")
-    private long accessExpiration;
 
     @Value("${auth.jwt.refresh.expiration}")
     private long refreshExpiration;
@@ -51,16 +50,14 @@ public class HttpUtil {
     public void addRefreshTokenCookie(HttpServletResponse httpServletResponse, String refreshToken) {
 
         /// 쿠키 생성
-        Cookie cookie = createCookie(REFRESH_TOKEN, refreshToken, refreshExpiration);
-
-        /// 쿠키 저장
-        httpServletResponse.addCookie(cookie);
+        createCookie(httpServletResponse, REFRESH_TOKEN, refreshToken, refreshExpiration);
     }
 
     /// 리프레쉬 토큰을 삭제하기
     public void removeRefreshTokenCookie(HttpServletResponse httpServletResponse) {
-        Cookie cookie = createCookie(REFRESH_TOKEN, null, 0);
-        httpServletResponse.addCookie(cookie);
+
+        /// 쿠키 생성
+        createCookie(httpServletResponse, REFRESH_TOKEN, null, 0);
     }
 
     /// Header에서 어떤 디바이스인지 체크
@@ -88,13 +85,18 @@ public class HttpUtil {
 
 
     /// 쿠키 생성하기
-    private Cookie createCookie(String cookieName, String accessToken, long accessExpiration) {
+    private void createCookie(HttpServletResponse response, String cookieName, String cookieValue, long maxAge) {
 
-        Cookie cookie = new Cookie(cookieName, accessToken);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge((int) accessExpiration);
-        return cookie;
+        ResponseCookie cookie = ResponseCookie.from(cookieName, cookieValue)
+                .maxAge(maxAge)
+                .path("/")
+                .httpOnly(true)
+                .secure(false)  // Dev/Prod 환경에 따라 설정됨
+                .sameSite("Lax")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
     }
 
     /// 쿠키에서 토큰 가져오기
@@ -131,3 +133,4 @@ public class HttpUtil {
 
     }
 }
+

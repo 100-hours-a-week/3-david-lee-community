@@ -12,12 +12,19 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class LogAspect {
 
+    /// 플랫폼 서비스
     @Pointcut("execution(* bootcamp.kakao.community.platform..*Service.*(..))")
     private void applicationLayer() {
     }
 
-    @Around("applicationLayer()")
+    /// 인증 서비스
+    @Pointcut("execution(* bootcamp.kakao.community.security..*Service.*(..))")
+    private void authLayer() {
+    }
+
+    @Around("applicationLayer() || authLayer()")
     public Object logProcessTime(ProceedingJoinPoint joinPoint) throws Throwable {
+
         long start = System.currentTimeMillis();
 
         Object proceed = joinPoint.proceed();  // 실제 메서드 실행
