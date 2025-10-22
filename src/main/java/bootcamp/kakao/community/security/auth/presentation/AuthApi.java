@@ -97,6 +97,7 @@ public class AuthApi implements AuthApiSpec {
 
         /// 액세스 쿠키로 전송하기
         httpUtil.addAccessTokenHeader(httpServletResponse, response.accessToken());
+        httpUtil.addRefreshTokenCookie(httpServletResponse, response.refreshToken());
 
         /// 리턴
         return ApiResponse.updated();

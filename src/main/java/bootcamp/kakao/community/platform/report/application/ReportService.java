@@ -1,5 +1,8 @@
 package bootcamp.kakao.community.platform.report.application;
 
+import bootcamp.kakao.community.common.response.CustomException;
+import bootcamp.kakao.community.common.response.ErrorCode;
+import bootcamp.kakao.community.common.response.code.ReportErrorCode;
 import bootcamp.kakao.community.platform.posts.comment.application.CommentUseCase;
 import bootcamp.kakao.community.platform.posts.post.application.PostQueryUseCase;
 import bootcamp.kakao.community.platform.report.application.dto.ReportRequest;
@@ -42,7 +45,7 @@ public class ReportService implements ReportUseCase {
                 userService.loadUser(request.contentId());
                 break;
             default:
-                throw new IllegalStateException("잘못된 값을 입력했습니다.");
+                throw new CustomException(ReportErrorCode.BAD_REQUEST_REPORT_TYPE);
         }
 
         /// 생성 및 저장

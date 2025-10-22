@@ -1,6 +1,7 @@
 package bootcamp.kakao.community.platform.images.image.external;
 
-import bootcamp.kakao.community.common.response.ErrorCode;
+import bootcamp.kakao.community.common.response.code.CommonErrorCode;
+import bootcamp.kakao.community.common.response.code.ImageErrorCode;
 import bootcamp.kakao.community.common.util.ImageUtil;
 import bootcamp.kakao.community.platform.images.image.application.dto.ImageResponse;
 import lombok.RequiredArgsConstructor;
@@ -66,7 +67,7 @@ public class S3Util implements ImageCloudUseCase {
                     try {
                         return getUploadPresignedURL(file);
                     } catch (IOException e) {
-                        throw new IllegalStateException(ErrorCode.INTERNAL_S3_URL_ERROR.getMessage());
+                        throw new IllegalStateException(ImageErrorCode.INTERNAL_S3_URL_ERROR.getMessage());
                     }
                 })
                 .toList();

@@ -1,6 +1,6 @@
 package bootcamp.kakao.community.common.config;
 
-import bootcamp.kakao.community.common.response.ErrorCode;
+import bootcamp.kakao.community.common.response.code.ImageErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +30,7 @@ public class AwsS3Config {
     @Bean
     public S3Presigner s3Presigner() {
         if (accessKey == null || accessSecret == null || region == null) {
-            throw new IllegalStateException(ErrorCode.INTERNAL_S3_ERROR.getMessage());
+            throw new IllegalStateException(ImageErrorCode.INTERNAL_S3_ERROR.getMessage());
         }
 
         AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, accessSecret);
@@ -46,7 +46,7 @@ public class AwsS3Config {
     @Bean
     public S3Client s3Client() {
         if (accessKey == null || accessSecret == null || region == null) {
-            throw new IllegalStateException(ErrorCode.INTERNAL_S3_ERROR.getMessage());
+            throw new IllegalStateException(ImageErrorCode.INTERNAL_S3_ERROR.getMessage());
         }
 
         AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, accessSecret);

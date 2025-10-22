@@ -15,6 +15,8 @@ public enum UserErrorCode implements ErrorCode {
     // ========================
     // 400 Bad Request
     // ========================
+    BAD_REQUEST_EQUAL_PASSWORD(400_000, HttpStatus.BAD_REQUEST, "패스워드가 일치하지 않는 문제입니다."),
+    BAD_REQUEST_OLD_PASSWORD(400_001, HttpStatus.BAD_REQUEST, "기존 비밀번호와 일치하지 않습니다."),
 
     // ========================
     // 401 Unauthorized
@@ -27,7 +29,7 @@ public enum UserErrorCode implements ErrorCode {
     // ========================
     // 404 Not Found
     // ========================
-    NOT_FOUND_USER(404_001, HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    NOT_FOUND_USER(404_001, HttpStatus.NOT_FOUND, "해당 사용자를 찾을 수 없습니다."),
 
     // ========================
     // 409 Conflict

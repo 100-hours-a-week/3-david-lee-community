@@ -15,6 +15,7 @@ public enum ReportErrorCode implements ErrorCode {
     // ========================
     // 400 Bad Request
     // ========================
+    BAD_REQUEST_REPORT_TYPE(400_300, HttpStatus.BAD_REQUEST, "신고 타입으로 잘못된 값을 입력했습니다."),
 
     // ========================
     // 401 Unauthorized

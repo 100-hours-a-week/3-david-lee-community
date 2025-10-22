@@ -1,5 +1,8 @@
 package bootcamp.kakao.community.platform.posts.category.application;
 
+import bootcamp.kakao.community.common.response.CustomException;
+import bootcamp.kakao.community.common.response.ErrorCode;
+import bootcamp.kakao.community.common.response.code.PostErrorCode;
 import bootcamp.kakao.community.platform.posts.category.application.dto.CategoryRequest;
 import bootcamp.kakao.community.platform.posts.category.application.dto.CategoryResponse;
 import bootcamp.kakao.community.platform.posts.category.domain.entity.Category;
@@ -36,13 +39,12 @@ public class CategoryService implements CategoryUseCase{
 
         /// 운영자가 일때만 가능
         if (!(user.getRole() == UserRole.ADMIN)) {
-            throw new IllegalStateException("운영자만 카테고리를 생성할 수 있습니다.");
+            throw new CustomException(PostErrorCode.FORBIDDEN_CATEGORY_CREATE);
         }
 
         /// 부모 값이 존재한다면,
         if (req.parentId() != null) {
-            parent = repository.findById(req.parentId())
-                    .orElseThrow(NoSuchElementException::new);
+            parent = loadCategory(req.parentId());
         }
         Category reqCategory = Category.of(parent, req.name());
 
@@ -63,7 +65,7 @@ public class CategoryService implements CategoryUseCase{
 
         /// 운영자가 일때만 가능
         if (!(user.getRole() == UserRole.ADMIN)) {
-            throw new IllegalStateException("운영자만 카테고리를 삭제할 수 있습니다.");
+            throw new CustomException(PostErrorCode.FORBIDDEN_CATEGORY_EDIT);
         }
 
         /// 바로 삭제
@@ -87,6 +89,6 @@ public class CategoryService implements CategoryUseCase{
     @Override
     public Category loadCategory(Long id) {
         return repository.findById(id)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new CustomException(PostErrorCode.NOT_FOUND_CATEGORY));
     }
 }

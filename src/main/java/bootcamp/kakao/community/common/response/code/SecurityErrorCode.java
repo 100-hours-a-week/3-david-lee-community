@@ -15,6 +15,7 @@ public enum SecurityErrorCode implements ErrorCode {
     // ========================
     // 400 Bad Request
     // ========================
+    BAD_REQUEST_LOGIN(400_000, HttpStatus.BAD_REQUEST, "로그인할 수 없습니다."),
 
     // ========================
     // 401 Unauthorized
@@ -35,7 +36,6 @@ public enum SecurityErrorCode implements ErrorCode {
     // ========================
     // 403 Forbidden
     // ========================
-
     FORBIDDEN(403_000, HttpStatus.FORBIDDEN, "접속 권한이 없습니다."),
     ACCESS_DENY(403_001, HttpStatus.FORBIDDEN, "접근이 거부되었습니다."),
     UNAUTHORIZED_POST_ACCESS(403_002, HttpStatus.FORBIDDEN, "해당 게시글에 접근할 권한이 없습니다."),
@@ -43,7 +43,9 @@ public enum SecurityErrorCode implements ErrorCode {
     // ========================
     // 404 Not Found
     // ========================
-    USER_NOT_FOUND_IN_COOKIE(404_002, HttpStatus.NOT_FOUND, "쿠키에서 사용자 정보를 찾을 수 없습니다.");
+    NOT_FOUND_EMAIL(404_400, HttpStatus.NOT_FOUND, "해당 이메일을 가진 유저가 없습니다"),
+    NOT_FOUND_ID(404_401, HttpStatus.NOT_FOUND, "해당 아이디을 가진 유저가 없습니다"),
+    USER_NOT_FOUND_IN_COOKIE(404_402, HttpStatus.NOT_FOUND, "쿠키에서 사용자 정보를 찾을 수 없습니다.");
 
     // ========================
     // 500 Internal Server Error

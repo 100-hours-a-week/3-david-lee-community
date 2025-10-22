@@ -45,7 +45,8 @@ public enum CommonErrorCode implements ErrorCode {
     // ========================
     // 500 Internal Server Error
     // ========================
-    INTERNAL_SERVER_ERROR(500_000, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다.");
+    INTERNAL_REDIS_SERVER_ERROR(500_000, HttpStatus.INTERNAL_SERVER_ERROR, "레디스 내부 오류입니다."),
+    INTERNAL_SERVER_ERROR(500_001, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다.");
 
 
     /**

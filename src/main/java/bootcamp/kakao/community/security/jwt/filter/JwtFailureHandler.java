@@ -2,7 +2,8 @@ package bootcamp.kakao.community.security.jwt.filter;
 
 import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.common.response.CustomException;
-import bootcamp.kakao.community.common.response.ErrorCode;
+import bootcamp.kakao.community.common.response.code.CommonErrorCode;
+import bootcamp.kakao.community.common.response.code.SecurityErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,16 +26,12 @@ public class JwtFailureHandler implements AuthenticationEntryPoint {
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
 
-        /// 401 Error 발생
-        CustomException exception ;
+        /// 인증 문제 발생시, 401 Error 발생
+        CustomException exception = new CustomException(CommonErrorCode.UNAUTHORIZED);
 
         /// JWT 예외인 경우
         if (authException instanceof JwtAuthenticationException jwtEx) {
-            exception = new CustomException(jwtEx.getErrorCode(), null);
-        }
-        /// 인증 자체가 없는 경우 (로그인 안 됨)
-        else {
-            exception = new CustomException(ErrorCode.ACCESS_TOKEN_NOT_FOUND, null);
+            exception = new CustomException(jwtEx.getErrorCode());
         }
 
         ApiResponse<Object> apiResponse = ApiResponse.fail(exception);

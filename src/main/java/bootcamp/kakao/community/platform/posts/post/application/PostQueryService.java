@@ -1,5 +1,7 @@
 package bootcamp.kakao.community.platform.posts.post.application;
 
+import bootcamp.kakao.community.common.response.CustomException;
+import bootcamp.kakao.community.common.response.code.PostErrorCode;
 import bootcamp.kakao.community.common.response.paging.SliceRequest;
 import bootcamp.kakao.community.common.response.paging.SliceResponse;
 import bootcamp.kakao.community.common.util.KeyUtil;
@@ -24,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -68,6 +69,7 @@ public class PostQueryService implements PostQueryUseCase{
                 .toList();
 
         /// Redis에 multiGet 요청으로 데이터 한번에 가져오기
+        // !TODO multiGET 대신 Key-value Map으로 변환하고 매칭하는 것으로 수정
         List<String> viewCounts = redisTemplate.opsForValue().multiGet(viewCountKeys);
         List<String> commentCounts = redisTemplate.opsForValue().multiGet(commentCountKeys);
         List<String> likeCounts = redisTemplate.opsForValue().multiGet(likeCountKeys);
@@ -150,7 +152,7 @@ public class PostQueryService implements PostQueryUseCase{
     @Transactional
     public Post loadPost(Long postId) {
         return repository.findByIdAndDeletedIsFalse(postId)
-                .orElseThrow(() -> new NoSuchElementException("해당 아이디가 존재하는 게시글이 없습니다."));
+                .orElseThrow(() -> new CustomException(PostErrorCode.NOT_FOUND_POST));
     }
 
     // =================

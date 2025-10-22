@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/comment")
+@RequestMapping("/v1/comments")
 public class CommentApi implements CommentApiSpec {
 
     private final CommentUseCase service;
@@ -55,13 +55,14 @@ public class CommentApi implements CommentApiSpec {
     }
 
     /// 댓글 수정
-    @PatchMapping()
+    @PatchMapping("/{commentId}")
     public ApiResponse<Void> updateComment(
+            @PathVariable Long commentId,
             @RequestBody @Valid CommentUpdateRequest request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         /// 서비스 실행
-        service.updateComment(request, customUserDetails.getId());
+        service.updateComment(commentId, request, customUserDetails.getId());
 
         /// 리턴
         return ApiResponse.updated();
@@ -69,9 +70,9 @@ public class CommentApi implements CommentApiSpec {
 
 
     /// 댓글 삭제
-    @PutMapping()
+    @PutMapping("/{commentId}")
     public ApiResponse<Void> deleteComment(
-            @RequestParam Long commentId,
+            @PathVariable Long commentId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
 

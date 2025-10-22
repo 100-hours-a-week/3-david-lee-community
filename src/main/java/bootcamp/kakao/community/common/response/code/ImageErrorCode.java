@@ -27,6 +27,7 @@ public enum ImageErrorCode implements ErrorCode {
     // ========================
     // 404 Not Found
     // ========================
+    NOT_FOUND_IMAGE(404_100, HttpStatus.NOT_FOUND, "해당 이미지가 존재하지 않습니다."),
 
     // ========================
     // 409 Conflict
@@ -35,8 +36,8 @@ public enum ImageErrorCode implements ErrorCode {
     // ========================
     // 500 Internal Server Error
     // ========================
-    INTERNAL_S3_ERROR(500_001, HttpStatus.INTERNAL_SERVER_ERROR, "AWS S3 설정이 잘못되었습니다. 속성을 확인하세요."),
-    INTERNAL_S3_URL_ERROR(500_001, HttpStatus.INTERNAL_SERVER_ERROR, "AWS S3 PreSignedURL 설정이 잘못되었습니다. 속성을 확인하세요.");
+    INTERNAL_S3_ERROR(500_101, HttpStatus.INTERNAL_SERVER_ERROR, "AWS S3 설정이 잘못되었습니다. 속성을 확인하세요."),
+    INTERNAL_S3_URL_ERROR(500_101, HttpStatus.INTERNAL_SERVER_ERROR, "AWS S3 PreSignedURL 설정이 잘못되었습니다. 속성을 확인하세요.");
 
 
 
