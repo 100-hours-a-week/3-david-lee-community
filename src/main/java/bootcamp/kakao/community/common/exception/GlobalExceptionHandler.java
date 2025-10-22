@@ -5,10 +5,13 @@ import bootcamp.kakao.community.common.response.CustomException;
 import bootcamp.kakao.community.common.response.ErrorCode;
 import bootcamp.kakao.community.common.response.FieldErrorResponse;
 import bootcamp.kakao.community.common.response.code.CommonErrorCode;
+import bootcamp.kakao.community.security.jwt.filter.JwtAuthenticationException;
+import jakarta.validation.UnexpectedTypeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -35,10 +38,33 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.fail(e));
     }
 
+    /// JWT 관련 커스템 에러 처리
+    @ExceptionHandler(JwtAuthenticationException.class)
+    public ResponseEntity<ApiResponse<?>> handleAuthenticationException(JwtAuthenticationException e) {
+
+        /// 에러 이유 로그 찍기
+        log.error(e.getMessage());
+
+        /// 에러 코드
+        ErrorCode errorCode = e.getErrorCode();
+
+        /// 기본 에러 코드로 응답 생성
+        CustomException exception = new CustomException(errorCode);
+        var response = ApiResponse.fail(exception);
+
+        /// 응답
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(response);
+    }
+
     /// @Valid 파라미터 에러 처리
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ApiResponse<CustomException> handleValidationExceptions(MethodArgumentNotValidException e) {
+
+        /// 에러 이유 로그 찍기
+        log.error(e.getMessage());
 
         /// 파라미터용 예외 코드
         ErrorCode errorCode = CommonErrorCode.BAD_PARAMETER;
@@ -48,6 +74,8 @@ public class GlobalExceptionHandler {
                 .stream()
                 .map(error -> FieldErrorResponse.of(error.getField(), error.getDefaultMessage()))
                 .toList();
+
+        log.error("저기");
 
         CustomException exception = new CustomException(errorCode, errors);
 
@@ -61,7 +89,7 @@ public class GlobalExceptionHandler {
     public ApiResponse<?> handleRedisConnectionFailureException(RedisConnectionFailureException e) {
 
         /// 에러 이유 로그 찍기
-        log.error(e.getMessage(), e);
+        log.error(e.getMessage());
 
         /// 기본 에러 코드로 응답 생성
         ErrorCode errorCode = CommonErrorCode.INTERNAL_REDIS_SERVER_ERROR;
@@ -93,15 +121,51 @@ public class GlobalExceptionHandler {
     public ApiResponse<?> handleIllegalException(Exception e) {
 
         /// 에러 이유 로그 찍기
-        log.error(e.getMessage());
+        log.error(e.getMessage(), e);
 
         /// 기본 에러 코드로 응답 생성
         ErrorCode errorCode = CommonErrorCode.BAD_REQUEST;
         CustomException exception = new CustomException(errorCode);
 
+        log.error("여기");
+
+
         /// 응답
         return ApiResponse.fail(exception);
     }
+
+    /// JSON 값 에러 처리
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ApiResponse<?> handleJSONException(HttpMessageNotReadableException e) {
+
+        /// 에러 이유 로그 찍기
+        log.error(e.getMessage());
+
+        /// 기본 에러 코드로 응답 생성
+        ErrorCode errorCode = CommonErrorCode.BAD_REQUEST_JSON;
+        CustomException exception = new CustomException(errorCode);
+
+        /// 응답
+        return ApiResponse.fail(exception);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(UnexpectedTypeException.class)
+    public ApiResponse<?> handleJUnexpectedTypeException(UnexpectedTypeException e) {
+
+        /// 에러 이유 로그 찍기
+        log.error(e.getMessage());
+
+        /// 기본 에러 코드로 응답 생성
+        ErrorCode errorCode = CommonErrorCode.BAD_REQUEST_INVALID_INPUT;
+        CustomException exception = new CustomException(errorCode);
+
+        /// 응답
+        return ApiResponse.fail(exception);
+    }
+
+
 
     /// 최하위 에러 처리 (여기까지는 안오길 ...)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -109,7 +173,7 @@ public class GlobalExceptionHandler {
     public ApiResponse<?> handleException(Exception e) {
 
         /// 에러 이유 로그 찍기
-        log.error(e.getMessage());
+        log.error(e.getMessage(), e);
 
         /// 기본 에러 코드로 응답 생성
         ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;

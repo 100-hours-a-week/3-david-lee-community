@@ -1,5 +1,7 @@
 package bootcamp.kakao.community.security.jwt.filter;
 
+import bootcamp.kakao.community.common.logging.HttpLogUtil;
+import bootcamp.kakao.community.common.logging.LogType;
 import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.common.response.CustomException;
 import bootcamp.kakao.community.common.response.code.CommonErrorCode;
@@ -19,6 +21,7 @@ import java.io.IOException;
 public class JwtDeniedHandler implements AccessDeniedHandler {
 
     private final ObjectMapper objectMapper;
+    private final HttpLogUtil logUtil;
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
@@ -32,6 +35,9 @@ public class JwtDeniedHandler implements AccessDeniedHandler {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+
+        /// 로그 찍기
+        logUtil.logHttpRequest(request, LogType.ERROR_403.getLabel());
 
         // JSON 응답
         objectMapper.writeValue(response.getWriter(), apiResponse);

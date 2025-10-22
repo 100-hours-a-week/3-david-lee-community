@@ -1,25 +1,30 @@
 package bootcamp.kakao.community.security.jwt.filter;
 
+import bootcamp.kakao.community.common.logging.HttpLogUtil;
+import bootcamp.kakao.community.common.logging.LogType;
 import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.common.response.CustomException;
 import bootcamp.kakao.community.common.response.code.CommonErrorCode;
 import bootcamp.kakao.community.common.response.code.SecurityErrorCode;
+import bootcamp.kakao.community.common.util.HttpUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtFailureHandler implements AuthenticationEntryPoint {
 
-
     private final ObjectMapper objectMapper;
+    private final HttpLogUtil logUtil;
 
     @Override
     public void commence(HttpServletRequest request,
@@ -40,6 +45,9 @@ public class JwtFailureHandler implements AuthenticationEntryPoint {
         response.setStatus(apiResponse.httpStatus().value());
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+
+        // 로그 찍기
+        logUtil.logHttpRequest(request, LogType.ERROR_401.getLabel());
 
         // JSON 응답
         objectMapper.writeValue(response.getWriter(), apiResponse);

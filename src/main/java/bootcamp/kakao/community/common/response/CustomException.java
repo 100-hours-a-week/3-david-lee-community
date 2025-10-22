@@ -1,9 +1,11 @@
 package bootcamp.kakao.community.common.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * 응답을 하는 커스텀 예외 클래스입니다.
@@ -11,16 +13,17 @@ import java.util.List;
  */
 
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CustomException extends RuntimeException{
 
     private final ErrorCode errorCode;
-
-    private List<FieldErrorResponse> fieldErrorResponses;
+    private final List<FieldErrorResponse> fieldErrorResponses;
 
 
     /// 에러코드만 있는 경우
     public CustomException(ErrorCode errorCode) {
         this.errorCode = errorCode;
+        this.fieldErrorResponses = null;
     }
 
     /// 에러코드와 필드에러가 같이 있는 경우
