@@ -1,5 +1,7 @@
 package bootcamp.kakao.community.platform.posts.post.application;
 
+import bootcamp.kakao.community.common.response.CustomException;
+import bootcamp.kakao.community.common.response.code.PostErrorCode;
 import bootcamp.kakao.community.platform.images.post_images.application.PostImageUseCase;
 import bootcamp.kakao.community.platform.posts.category.application.CategoryUseCase;
 import bootcamp.kakao.community.platform.posts.category.domain.entity.Category;
@@ -10,11 +12,8 @@ import bootcamp.kakao.community.platform.posts.post.domain.repository.PostReposi
 import bootcamp.kakao.community.platform.user.application.UserUseCase;
 import bootcamp.kakao.community.platform.user.domain.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +45,7 @@ public class PostCommandService implements PostCommandUseCase{
         /// 존재한다면
         if (!req.imageUrls().isEmpty()) {
             /// 썸네일 추출
-            thumbnailUrl = req.imageUrls().get(0);
+            thumbnailUrl = req.imageUrls().getFirst();
         }
 
         /// 게시글 객체 생성 및 저장 (영속성 컨테이너)
@@ -74,7 +73,7 @@ public class PostCommandService implements PostCommandUseCase{
 
         /// 동일 유저인지 체크
         if (!post.getUser().getId().equals(user.getId())){
-            throw new AccessDeniedException("수정할 권한이 없습니다.");
+            throw new CustomException(PostErrorCode.FORBIDDEN_POST_EDIT);
         }
 
         /// 게시글 이미지 조회하기 (영속성 컨텍스트)
@@ -99,7 +98,7 @@ public class PostCommandService implements PostCommandUseCase{
 
         /// 동일 유저인지 체크
         if (!post.getUser().getId().equals(user.getId())) {
-            throw new AccessDeniedException("삭제할 권한이 없습니다.");
+            throw new CustomException(PostErrorCode.FORBIDDEN_POST_EDIT);
         }
 
         /// 게시글 수정
@@ -114,7 +113,7 @@ public class PostCommandService implements PostCommandUseCase{
     @Transactional
     protected Post loadPost(Long postId) {
         return repository.findByIdAndDeletedIsFalse(postId)
-                .orElseThrow(() -> new NoSuchElementException("해당 아이디가 존재하는 게시글이 없습니다."));
+                .orElseThrow(() -> new CustomException(PostErrorCode.NOT_FOUND_POST));
     }
 
 

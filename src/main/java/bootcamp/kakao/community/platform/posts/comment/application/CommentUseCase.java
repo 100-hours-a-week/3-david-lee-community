@@ -19,7 +19,7 @@ public interface CommentUseCase {
     SliceResponse<CommentListResponse> getFavoriteComments(SliceRequest request, Long postId);
 
     /// 댓글 수정
-    void updateComment(CommentUpdateRequest request, Long userId);
+    void updateComment(Long commentId, CommentUpdateRequest request, Long userId);
 
     /// 댓글 삭제
     void deleteComment(Long commentId, Long userId);

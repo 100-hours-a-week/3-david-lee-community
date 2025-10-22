@@ -1,5 +1,8 @@
 package bootcamp.kakao.community.platform.posts.comment.application;
 
+import bootcamp.kakao.community.common.response.CustomException;
+import bootcamp.kakao.community.common.response.ErrorCode;
+import bootcamp.kakao.community.common.response.code.PostErrorCode;
 import bootcamp.kakao.community.common.response.paging.SliceRequest;
 import bootcamp.kakao.community.common.response.paging.SliceResponse;
 import bootcamp.kakao.community.common.util.KeyUtil;
@@ -96,15 +99,15 @@ public class CommentService implements CommentUseCase{
 
     @Override
     @Transactional
-    public void updateComment(CommentUpdateRequest request, Long userId) {
+    public void updateComment(Long id, CommentUpdateRequest request, Long userId) {
 
         /// 유저 예외처리
         User user = userService.loadUser(userId);
 
         /// 나의 댓글인 지 조회
         /// ID 존재 및 작성 여부를 한번에 파악
-        Comment comment = repository.findByUserAndId(user, request.id())
-                .orElseThrow(() -> new NoSuchElementException("해당 유저가 수정할 댓글이 없습니다."));
+        Comment comment = repository.findByUserAndId(user, id)
+                .orElseThrow(() -> new CustomException(PostErrorCode.FORBIDDEN_COMMENT_EDIT));
 
         /// 더티체킹 수정
         comment.update(request.content());
@@ -122,7 +125,7 @@ public class CommentService implements CommentUseCase{
 
         /// ID 존재 및 작성 여부를 한번에 파악 (영속성 컨테이너)
         Comment comment = repository.findByUserAndId(user, commentId)
-                .orElseThrow(() -> new NoSuchElementException("해당 유저가 삭제할 댓글이 없습니다."));
+                .orElseThrow(() -> new CustomException(PostErrorCode.FORBIDDEN_COMMENT_EDIT));
 
         /// 삭제
         comment.delete();
@@ -141,7 +144,8 @@ public class CommentService implements CommentUseCase{
     @Transactional
     public Comment loadComment(Long commentId) {
         return repository.findById(commentId)
-                .orElseThrow(() -> new NoSuchElementException("해당 아이디를 가진 댓글은 존재하지않습니다."));
+                .orElseThrow(() -> new CustomException(PostErrorCode.NOT_FOUND_COMMENT));
     }
+
 }
 
