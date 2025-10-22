@@ -1,7 +1,9 @@
 package bootcamp.kakao.community.platform.posts.post.application.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;
@@ -17,13 +19,14 @@ import java.util.List;
 public record PostRequest(
 
         @NotNull(message = "카테고리없이 게시글을 작성할 수 없습니다.")
+        @Positive(message = "카테고리 Id는 1이상만 가능합니다.")
         Long categoryId,
 
         @Size(max = 26, message = "제목의 길이가 26자를 넘습니다.")
-        @NotNull(message = "제목없이 게시글을 작성할 수 없습니다.")
+        @NotBlank(message = "제목없이 게시글을 작성할 수 없습니다.")
         String title,
 
-        @NotNull(message = "내용없이 게시글을 작성할 수 없습니다.")
+        @NotBlank(message = "내용없이 게시글을 작성할 수 없습니다.")
         String content,
 
         List<String> imageUrls
