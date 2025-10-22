@@ -1,5 +1,8 @@
 package bootcamp.kakao.community.platform.posts.post_likes.application;
 
+import bootcamp.kakao.community.common.response.CustomException;
+import bootcamp.kakao.community.common.response.ErrorCode;
+import bootcamp.kakao.community.common.response.code.PostErrorCode;
 import bootcamp.kakao.community.common.util.KeyUtil;
 import bootcamp.kakao.community.platform.posts.post.domain.entity.Post;
 import bootcamp.kakao.community.platform.posts.post.domain.repository.PostRepository;
@@ -65,8 +68,8 @@ public class PostLikeService implements PostLikeUseCase {
 
         Optional<PostLike> optionalPostLike = repository.findByUserAndPost(user, post);
         if (optionalPostLike.isEmpty()) {
-            /// 없다면 예외처리
-            throw new IllegalStateException("좋아요를 누르지 않았기에 취소가 불가능합니다.");
+            /// 누른 적이 없다면 취소할 수 없다.
+            throw new CustomException(PostErrorCode.BAD_REQUEST_POST_LIKES);
         }
 
         /// 삭제 처리 (바로 삭제)
@@ -126,7 +129,7 @@ public class PostLikeService implements PostLikeUseCase {
 
     private Post loadPost(Long postId) {
         return postRepository.findById(postId)
-                .orElseThrow(() -> new NoSuchElementException("해당 아이디가 존재하는 게시글이 없습니다."));
+                .orElseThrow(() -> new CustomException(PostErrorCode.NOT_FOUND_POST));
     }
 
     private User loadUser(Long userId) {

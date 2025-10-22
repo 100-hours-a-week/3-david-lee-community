@@ -1,5 +1,7 @@
 package bootcamp.kakao.community.platform.user.application;
 
+import bootcamp.kakao.community.common.response.CustomException;
+import bootcamp.kakao.community.common.response.code.UserErrorCode;
 import bootcamp.kakao.community.platform.user.application.dto.*;
 import bootcamp.kakao.community.platform.user.domain.entity.User;
 import bootcamp.kakao.community.platform.user.domain.repository.UserRepository;
@@ -10,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -48,18 +48,18 @@ public class UserService implements UserUseCase{
         /// 이메일 중복체크 및 예외처리
         boolean duplicateEmail = checkDuplicateEmail(request.email());
         if (duplicateEmail) {
-            throw new IllegalArgumentException("이메일이 중복되는 문제입니다.");
+            throw new CustomException(UserErrorCode.CONFLICT_DUPLICATE_EMAIL);
         }
 
         /// 닉네임 중복체크 및 예외처리
         boolean duplicateNickName = checkDuplicateNickName(request.nickname());
         if (duplicateNickName) {
-            throw new IllegalArgumentException("닉네임이 중복되는 문제입니다.");
+            throw new CustomException(UserErrorCode.CONFLICT_DUPLICATE_NICKNAME);
         }
 
         /// 요청한 비밀번호 값이 같은지
         if (!request.confirmPassword().equals(request.password())) {
-            throw new IllegalArgumentException("패스워드가 일치하지 않는 문제입니다.");
+            throw new CustomException(UserErrorCode.BAD_REQUEST_EQUAL_PASSWORD);
         }
 
         /// 유저 저장
@@ -141,14 +141,15 @@ public class UserService implements UserUseCase{
 
         /// 기존 값과 비교해서 변경하기
         if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
-            throw new IllegalStateException("기존 비밀번호와 일치하지 않습니다.");
+            throw new CustomException(UserErrorCode.BAD_REQUEST_OLD_PASSWORD);
         }
 
         /// 변경할 값이 동일한 지 체크
         /// 요청한 비밀번호 값이 같은지
         if (!request.newPassword().equals(request.confirmPassword())) {
-            throw new IllegalArgumentException("패스워드가 일치하지 않는 문제입니다.");
+            throw new CustomException(UserErrorCode.BAD_REQUEST_EQUAL_PASSWORD);
         }
+
         /// 새로운 비밀번호로 업데이트 (더티체킹)
         user.updatePassword(passwordEncoder.encode(request.newPassword()));
 
@@ -160,7 +161,7 @@ public class UserService implements UserUseCase{
     @Override
     public User loadUser(Long userId) {
         return repository.findByIdAndDeletedIsFalse(userId)
-                .orElseThrow(() -> new NoSuchElementException("해당 아이디가 존재하는 유저가 없습니다."));
+                .orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND_USER));
     }
 
 }

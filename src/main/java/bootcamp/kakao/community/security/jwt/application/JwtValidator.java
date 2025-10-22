@@ -1,6 +1,7 @@
 package bootcamp.kakao.community.security.jwt.application;
 
-import bootcamp.kakao.community.common.response.ErrorCode;
+import bootcamp.kakao.community.common.response.code.CommonErrorCode;
+import bootcamp.kakao.community.common.response.code.SecurityErrorCode;
 import bootcamp.kakao.community.platform.user.domain.entity.User;
 import bootcamp.kakao.community.platform.user.domain.repository.UserRepository;
 import bootcamp.kakao.community.security.auth.domain.CustomUserDetails;
@@ -54,27 +55,27 @@ public class JwtValidator {
 
         } catch (ExpiredJwtException e) {
             /// 만료된 토큰
-            throw new JwtAuthenticationException(ErrorCode.ACCESS_TOKEN_EXPIRED);
+            throw new JwtAuthenticationException(SecurityErrorCode.ACCESS_TOKEN_EXPIRED);
 
         } catch (SignatureException e) {
             /// 잘못된 서명
-            throw new JwtAuthenticationException(ErrorCode.ACCESS_TOKEN_INVALID);
+            throw new JwtAuthenticationException(SecurityErrorCode.ACCESS_TOKEN_INVALID);
 
         } catch (MalformedJwtException e) {
             //// 구조가 깨진 토큰
-            throw new JwtAuthenticationException(ErrorCode.ACCESS_TOKEN_MALFORMED);
+            throw new JwtAuthenticationException(SecurityErrorCode.ACCESS_TOKEN_MALFORMED);
 
         } catch (UnsupportedJwtException e) {
             /// 지원되지 않는 JWT 형식 (예: 압축/암호화된 JWT)
-            throw new JwtAuthenticationException(ErrorCode.ACCESS_TOKEN_UNSUPPORTED);
+            throw new JwtAuthenticationException(SecurityErrorCode.ACCESS_TOKEN_UNSUPPORTED);
 
         } catch (IllegalArgumentException e) {
             /// 토큰이 비어있거나 null
-            throw new JwtAuthenticationException(ErrorCode.ACCESS_TOKEN_NOT_FOUND);
+            throw new JwtAuthenticationException(SecurityErrorCode.ACCESS_TOKEN_NOT_FOUND);
 
         } catch (JwtException e) {
             /// JWT 관련 기타 예외 (상위 클래스)
-            throw new JwtAuthenticationException(ErrorCode.ACCESS_TOKEN_INVALID);
+            throw new JwtAuthenticationException(SecurityErrorCode.ACCESS_TOKEN_INVALID);
 
         } catch (JwtAuthenticationException e) {
             /// 커스텀 JWT 예외 (예: USER_NOT_FOUND 등)
@@ -82,7 +83,7 @@ public class JwtValidator {
 
         } catch (Exception e) {
             /// 예상치 못한 모든 예외
-            throw new JwtAuthenticationException(ErrorCode.INTERNAL_SERVER_ERROR);
+            throw new JwtAuthenticationException(CommonErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -98,21 +99,21 @@ public class JwtValidator {
 
             /// 리턴
             return repository.findByRefreshTokenAndDeviceTypeAndUserId(refreshToken, deviceType, userId)
-                    .orElseThrow(() -> new JwtAuthenticationException(ErrorCode.REFRESH_INVALID_LOGIN));
+                    .orElseThrow(() -> new JwtAuthenticationException(SecurityErrorCode.REFRESH_INVALID_LOGIN));
 
 
         } catch (ExpiredJwtException e) {
             // 토큰이 '만료'된 경우의 처리
-            throw new JwtAuthenticationException(ErrorCode.REFRESH_TOKEN_EXPIRED);
+            throw new JwtAuthenticationException(SecurityErrorCode.REFRESH_TOKEN_EXPIRED);
         } catch (SignatureException e) {
             // 서명이 잘못된 경우의 처리
-            throw new JwtAuthenticationException(ErrorCode.REFRESH_TOKEN_INVALID);
+            throw new JwtAuthenticationException(SecurityErrorCode.REFRESH_TOKEN_INVALID);
         } catch (MalformedJwtException e) {
             // 토큰 구조가 잘못된 경우의 처리
-            throw new JwtAuthenticationException(ErrorCode.REFRESH_TOKEN_UNSUPPORTED);
+            throw new JwtAuthenticationException(SecurityErrorCode.REFRESH_TOKEN_UNSUPPORTED);
         } catch (Exception e) {
             // 기타 예외 처리
-            throw new JwtAuthenticationException(ErrorCode.INTERNAL_SERVER_ERROR);
+            throw new JwtAuthenticationException(CommonErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -127,7 +128,7 @@ public class JwtValidator {
 
         /// 유저가 다르다면, 예외 발생
         if (!userIdFromAccessToken.equals(userId)) {
-            throw new JwtAuthenticationException(ErrorCode.REFRESH_TOKEN_INVALID);
+            throw new JwtAuthenticationException(SecurityErrorCode.REFRESH_TOKEN_INVALID);
         }
 
         /// 레디스에서 토큰 삭제

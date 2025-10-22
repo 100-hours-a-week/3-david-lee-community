@@ -1,6 +1,9 @@
 package bootcamp.kakao.community.security.auth.application;
 
-import bootcamp.kakao.community.common.response.ErrorCode;
+import bootcamp.kakao.community.common.response.CustomException;
+import bootcamp.kakao.community.common.response.code.CommonErrorCode;
+import bootcamp.kakao.community.common.response.code.SecurityErrorCode;
+import bootcamp.kakao.community.common.response.code.UserErrorCode;
 import bootcamp.kakao.community.platform.user.domain.entity.User;
 import bootcamp.kakao.community.platform.user.domain.repository.UserRepository;
 import bootcamp.kakao.community.security.auth.application.dto.LoginRequest;
@@ -41,11 +44,11 @@ public class AuthService implements AuthUseCase {
 
         /// DB 검증
         User user = repository.findByEmail(request.email())
-                .orElseThrow(() -> new NoSuchElementException("해당 이메일을 가진 유저가 없습니다"));
+                .orElseThrow(() -> new CustomException(SecurityErrorCode.NOT_FOUND_EMAIL));
 
         /// 패스워드 비교
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            throw new IllegalArgumentException("로그인할 수 없습니다.");
+            throw new CustomException(SecurityErrorCode.BAD_REQUEST_LOGIN);
         }
 
         /// 로그인했다면, JWT 발급하기
@@ -64,25 +67,25 @@ public class AuthService implements AuthUseCase {
 
         /// DB 검증
         User user = repository.findByIdAndDeletedIsFalse(userId)
-                .orElseThrow(() -> new NoSuchElementException("해당 고유번호를 가진 유저가 없습니다"));
+                .orElseThrow(() -> new NoSuchElementException(UserErrorCode.NOT_FOUND_USER.getMessage()));
 
         /// 없다면 예외처리
         if (refreshToken.isEmpty()) {
-            throw new JwtAuthenticationException(ErrorCode.REFRESH_INVALID_LOGIN);
+            throw new JwtAuthenticationException(SecurityErrorCode.REFRESH_INVALID_LOGIN);
         }
 
         /// 레디스에서 삭제하도록 로직 수행
-        jwtValidator.removeRefreshToken(userId, deviceType, refreshToken.get());
+        jwtValidator.removeRefreshToken(user.getId(), deviceType, refreshToken.get());
     }
 
     /// 토큰 재발급
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public JwtTokenResponse reissue(String deviceType, Optional<String> refreshToken) {
 
         /// 없다면 예외처리
         if (refreshToken.isEmpty()) {
-            throw new JwtAuthenticationException(ErrorCode.REFRESH_INVALID_LOGIN);
+            throw new JwtAuthenticationException(SecurityErrorCode.REFRESH_INVALID_LOGIN);
         }
 
         /// 존재하는 리프레쉬 토큰 검증
@@ -90,14 +93,22 @@ public class AuthService implements AuthUseCase {
 
         /// 리프레쉬 토큰 바탕으로 조회
         User user = repository.findById(token.getUserId())
-                .orElseThrow(() -> new NoSuchElementException("해당 아이디를 가진 유저가 없습니다"));
+                .orElseThrow(() -> new CustomException(SecurityErrorCode.NOT_FOUND_ID));
+
 
         /// 인증된 유저에게 JWT 발급하기
         var jwtRequest = JwtTokenRequest.from(user);
 
-        String newAccessToken = jwtProvider.createAccessToken(jwtRequest);
+        /// 기존 리프레쉬 토큰 무효화하기 (RDB)
+        jwtValidator.removeRefreshToken(user.getId(), deviceType, token.getRefreshToken());
 
-        return JwtTokenResponse.of(newAccessToken, null);
+        /// 새로운 액세스토큰/리프레쉬 토큰 발급
+        String newAccessToken = jwtProvider.createAccessToken(jwtRequest);
+        String newRefreshToken = jwtProvider.createRefreshToken(deviceType, jwtRequest);
+
+
+
+        return JwtTokenResponse.of(newAccessToken, newRefreshToken);
     }
 }
 

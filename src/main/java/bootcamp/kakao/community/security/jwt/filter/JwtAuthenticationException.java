@@ -1,6 +1,8 @@
 package bootcamp.kakao.community.security.jwt.filter;
 
 import bootcamp.kakao.community.common.response.ErrorCode;
+import bootcamp.kakao.community.common.response.code.CommonErrorCode;
+import bootcamp.kakao.community.common.response.code.SecurityErrorCode;
 import lombok.Getter;
 import org.springframework.security.core.AuthenticationException;
 

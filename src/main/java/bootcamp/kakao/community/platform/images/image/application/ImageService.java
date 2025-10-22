@@ -1,5 +1,8 @@
 package bootcamp.kakao.community.platform.images.image.application;
 
+import bootcamp.kakao.community.common.response.CustomException;
+import bootcamp.kakao.community.common.response.code.ImageErrorCode;
+import bootcamp.kakao.community.common.response.code.UserErrorCode;
 import bootcamp.kakao.community.platform.images.image.application.dto.ImageRequest;
 import bootcamp.kakao.community.platform.images.image.application.dto.ImageResponse;
 import bootcamp.kakao.community.platform.images.image.domain.entity.Image;
@@ -78,7 +81,7 @@ public class ImageService implements ImageUseCase {
     public Image getImage(String url) {
 
         return repository.findByUrl(url)
-                .orElseThrow(() -> new NoSuchElementException("해당 이미지가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ImageErrorCode.NOT_FOUND_IMAGE));
     }
 
     /// URL 목록 바탕으로 이미지 배열 객체 조회하기
@@ -106,7 +109,7 @@ public class ImageService implements ImageUseCase {
     @Transactional
     protected User loadUser(Long userId) {
         return userRepository.findByIdAndDeletedIsFalse(userId)
-                .orElseThrow(()-> new NoSuchElementException("해당 아이디를 가진 유저가 없습니다."));
+                .orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND_USER));
     }
 
 }
