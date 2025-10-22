@@ -96,14 +96,14 @@ public class CommentService implements CommentUseCase{
 
     @Override
     @Transactional
-    public void updateComment(CommentUpdateRequest request, Long userId) {
+    public void updateComment(Long id, CommentUpdateRequest request, Long userId) {
 
         /// 유저 예외처리
         User user = userService.loadUser(userId);
 
         /// 나의 댓글인 지 조회
         /// ID 존재 및 작성 여부를 한번에 파악
-        Comment comment = repository.findByUserAndId(user, request.id())
+        Comment comment = repository.findByUserAndId(user, id)
                 .orElseThrow(() -> new NoSuchElementException("해당 유저가 수정할 댓글이 없습니다."));
 
         /// 더티체킹 수정
