@@ -5,7 +5,6 @@ import bootcamp.kakao.community.common.response.CustomException;
 import bootcamp.kakao.community.common.response.ErrorCode;
 import bootcamp.kakao.community.common.response.FieldErrorResponse;
 import bootcamp.kakao.community.common.response.code.CommonErrorCode;
-import bootcamp.kakao.community.security.jwt.filter.JwtAuthenticationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
@@ -34,23 +33,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(errorCode.getHttpStatus())
                 .body(ApiResponse.fail(e));
-    }
-
-    /// JWT 관련 커스템 에러 처리
-    @ExceptionHandler(JwtAuthenticationException.class)
-    public ResponseEntity<ApiResponse<?>> handleAuthenticationException(JwtAuthenticationException e) {
-
-        /// 에러 코드
-        ErrorCode errorCode = e.getErrorCode();
-
-        /// 기본 에러 코드로 응답 생성
-        CustomException exception = new CustomException(errorCode);
-        var response = ApiResponse.fail(exception);
-
-        /// 응답
-        return ResponseEntity
-                .status(errorCode.getHttpStatus())
-                .body(response);
     }
 
     /// @Valid 파라미터 에러 처리
