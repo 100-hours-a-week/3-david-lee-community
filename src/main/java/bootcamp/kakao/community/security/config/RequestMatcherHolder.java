@@ -1,4 +1,4 @@
-package bootcamp.kakao.community.security.jwt.filter;
+package bootcamp.kakao.community.security.config;
 
 import bootcamp.kakao.community.platform.user.domain.entity.UserRole;
 import io.micrometer.common.lang.Nullable;

@@ -3,7 +3,6 @@ package bootcamp.kakao.community.security.config;
 import bootcamp.kakao.community.security.jwt.filter.JwtDeniedHandler;
 import bootcamp.kakao.community.security.jwt.filter.JwtFailureHandler;
 import bootcamp.kakao.community.security.jwt.filter.JwtFilter;
-import bootcamp.kakao.community.security.jwt.filter.RequestMatcherHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
