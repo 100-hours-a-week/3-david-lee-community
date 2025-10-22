@@ -116,6 +116,22 @@ public class GlobalExceptionHandler {
     }
 
     /// 값이 없는 내용 에러 처리
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NullPointerException.class)
+    public ApiResponse<?> handleNullPointerException(NullPointerException e) {
+
+        /// 에러 이유 로그 찍기
+        log.error(e.getMessage());
+
+        /// 기본 에러 코드로 응답 생성
+        ErrorCode errorCode = CommonErrorCode.NULL_VALUE;
+        CustomException exception = new CustomException(errorCode);
+
+        /// 응답
+        return ApiResponse.fail(exception);
+    }
+
+    /// 값이 없는 내용 에러 처리
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({IllegalStateException.class, IllegalArgumentException.class})
     public ApiResponse<?> handleIllegalException(Exception e) {

@@ -1,5 +1,6 @@
 package bootcamp.kakao.community.platform.user.presentation;
 
+import bootcamp.kakao.community.common.aop.NonNullUser;
 import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.platform.user.application.UserUseCase;
 import bootcamp.kakao.community.platform.user.application.dto.*;
@@ -88,8 +89,10 @@ public class UserApi implements UserApiSpec {
     }
 
     /// 나의 정보 조회하기
+    @NonNullUser
     @GetMapping("/mypage")
-    public ApiResponse<MyPageResponse> getUser(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ApiResponse<MyPageResponse> getUser(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         /// 서비스 로직
         MyPageResponse user = service.getUser(customUserDetails.getId());
