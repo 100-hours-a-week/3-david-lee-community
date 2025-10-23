@@ -1,15 +1,12 @@
 package bootcamp.kakao.community.platform.posts.post.application.dto;
 
 import bootcamp.kakao.community.common.util.DateUtil;
+import bootcamp.kakao.community.common.util.ImageUtil;
 import bootcamp.kakao.community.platform.posts.post.domain.entity.Post;
 import bootcamp.kakao.community.platform.user.application.dto.UserResponse;
 import lombok.Builder;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
-
-import java.util.List;
 
 @Schema(
         name = "[응답][게시글] 게시글 목록 조회 Response",
@@ -48,33 +45,13 @@ public record PostListResponse(
 
 ) {
     /// 정적 팩토리 메서드
-    public static PostListResponse from(Post post) {
-
-        /// 게시글 정보 조회
-        var stat = post.getPostStat();
-
-        return PostListResponse.builder()
-                .id(post.getId())
-                .user(UserResponse.from(post.getUser()))
-                .category(post.getCategory().getName())
-                .thumbnailUrl(post.getThumbnailUrl())
-                .title(post.getTitle())
-                .content(post.getContent())
-                .viewCount(stat.getViewCount())
-                .commentCount(stat.getCommentCount())
-                .likeCount(stat.getLikeCount())
-                .createdAt(post.getCreatedDate().toString())
-                .build();
-    }
-
-    /// 정적 팩토리 메서드
     public static PostListResponse from(Post post, Long viewCount, Long commentCount, Long likeCount) {
 
         return PostListResponse.builder()
                 .id(post.getId())
                 .user(UserResponse.from(post.getUser()))
                 .category(post.getCategory().getName())
-                .thumbnailUrl(post.getThumbnailUrl())
+                .thumbnailUrl(ImageUtil.getUrlByKey(post.getThumbnailKey()))
                 .title(post.getTitle())
                 .content(post.getContent())
                 .viewCount(viewCount)
@@ -82,17 +59,5 @@ public record PostListResponse(
                 .likeCount(likeCount)
                 .createdAt(DateUtil.formatPostDate(post.getCreatedDate()))
                 .build();
-    }
-
-    /// 정적 팩토리 메서드
-    public static Slice<PostListResponse> from(Slice<Post> posts) {
-
-        /// 게시글 정보 조회
-        List<PostListResponse> responses = posts.stream()
-                .map(PostListResponse::from)
-                .toList();
-
-        /// Slice 리턴
-        return new SliceImpl<>(responses, posts.getPageable(), posts.hasNext());
     }
 }

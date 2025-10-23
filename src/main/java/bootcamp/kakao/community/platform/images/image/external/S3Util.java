@@ -77,15 +77,6 @@ public class S3Util implements ImageCloudUseCase {
                 .toList();
     }
 
-    /// key 바탕으로 퍼블릭 URL 접근하기
-    @Override
-    public String getUrl(String key) {
-
-        /// 응답
-        return "https://" + bucketName + ".s3." + region + ".amazonaws.com/" + key;
-    }
-
-
     /**
      * 이미지 삭제하기
      * @param fileName  S3에서 삭제할 이미지 이름

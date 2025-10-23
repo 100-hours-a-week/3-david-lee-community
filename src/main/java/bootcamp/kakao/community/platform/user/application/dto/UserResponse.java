@@ -1,5 +1,6 @@
 package bootcamp.kakao.community.platform.user.application.dto;
 
+import bootcamp.kakao.community.common.util.ImageUtil;
 import bootcamp.kakao.community.platform.user.domain.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -22,9 +23,8 @@ public record UserResponse(
     public static UserResponse from(User user) {
         return UserResponse.builder()
                 .userId(user.getId())
-                .imageUrl(user.getImageKey())
+                .imageUrl(ImageUtil.getUrlByKey(user.getImageKey()))
                 .nickname(user.getNickname())
                 .build();
     }
-
 }
