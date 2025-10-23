@@ -1,4 +1,4 @@
-package bootcamp.kakao.community.platform.images.image.application.dto;
+package bootcamp.kakao.community.platform.images.image.application.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

@@ -1,10 +1,10 @@
-package bootcamp.kakao.community.platform.images.image.application.dto;
+package bootcamp.kakao.community.platform.images.image.application.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 @Schema(
-        name = "[응답][이미지] 이미지 응답 Response",
+        name = "[응답][이미지] 임시 이미지 응답 Response",
         description = "PreSignedURL 응답하기 위한 DTO입니다."
 )
 @Builder

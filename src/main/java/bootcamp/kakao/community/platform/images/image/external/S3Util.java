@@ -2,7 +2,7 @@ package bootcamp.kakao.community.platform.images.image.external;
 
 import bootcamp.kakao.community.common.response.code.ImageErrorCode;
 import bootcamp.kakao.community.common.util.ImageUtil;
-import bootcamp.kakao.community.platform.images.image.application.dto.PreSignedImageResponse;
+import bootcamp.kakao.community.platform.images.image.application.dto.response.PreSignedImageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

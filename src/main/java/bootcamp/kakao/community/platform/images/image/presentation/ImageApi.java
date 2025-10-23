@@ -2,9 +2,11 @@ package bootcamp.kakao.community.platform.images.image.presentation;
 
 import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.platform.images.image.application.ImageUseCase;
-import bootcamp.kakao.community.platform.images.image.application.dto.ImageResponse;
-import bootcamp.kakao.community.platform.images.image.application.dto.PreSignedImageRequest;
-import bootcamp.kakao.community.platform.images.image.application.dto.PreSignedImageResponse;
+import bootcamp.kakao.community.platform.images.image.application.dto.request.ConfirmImageRequest;
+import bootcamp.kakao.community.platform.images.image.application.dto.request.PreSignedImageRequest;
+import bootcamp.kakao.community.platform.images.image.application.dto.request.temp.ConfirmTempImageRequest;
+import bootcamp.kakao.community.platform.images.image.application.dto.request.temp.PreSignedTempImageRequest;
+import bootcamp.kakao.community.platform.images.image.application.dto.response.PreSignedImageResponse;
 import bootcamp.kakao.community.platform.images.image.presentation.swagger.ImageApiSpec;
 import bootcamp.kakao.community.security.auth.domain.CustomUserDetails;
 import jakarta.validation.Valid;
@@ -27,7 +29,7 @@ public class ImageApi implements ImageApiSpec {
      */
     @PostMapping("/temp")
     public ApiResponse<PreSignedImageResponse> tempUpload(
-            @RequestBody @Valid PreSignedImageRequest request) throws IOException {
+            @RequestBody @Valid PreSignedTempImageRequest request) throws IOException {
 
         /// 서비스
         PreSignedImageResponse response = service.uploadTemporaryImage(request);
@@ -42,7 +44,7 @@ public class ImageApi implements ImageApiSpec {
      */
     @PostMapping
     public ApiResponse<List<PreSignedImageResponse>> upload(
-            @RequestBody @Valid List<PreSignedImageRequest> request,
+            @RequestBody @Valid PreSignedImageRequest request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) throws IOException {
 
         /// 서비스
@@ -57,10 +59,11 @@ public class ImageApi implements ImageApiSpec {
      * 회원가입에서 사용하는 임시 이미지 발급한 것을 S3에 저장함
      */
     @PatchMapping("/temp")
-    public ApiResponse<Void> confirm(@RequestParam String key) throws IOException {
+    public ApiResponse<Void> confirm(
+            @RequestBody @Valid ConfirmTempImageRequest request) throws IOException {
 
         /// 서비스
-        service.confirmTempImage(key);
+        service.confirmTempImage(request);
 
         /// 응답 리턴
         return ApiResponse.updated();
@@ -73,11 +76,11 @@ public class ImageApi implements ImageApiSpec {
      */
     @PatchMapping
     public ApiResponse<Void> confirm(
-            @RequestParam List<String> keys,
+            @RequestBody @Valid ConfirmImageRequest request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) throws IOException {
 
         /// 서비스
-        service.confirmImages(keys, customUserDetails.getId());
+        service.confirmImages(request, customUserDetails.getId());
 
         /// 응답 리턴
         return ApiResponse.updated();

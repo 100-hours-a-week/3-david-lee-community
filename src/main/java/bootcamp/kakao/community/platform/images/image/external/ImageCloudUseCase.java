@@ -1,6 +1,6 @@
 package bootcamp.kakao.community.platform.images.image.external;
 
-import bootcamp.kakao.community.platform.images.image.application.dto.PreSignedImageResponse;
+import bootcamp.kakao.community.platform.images.image.application.dto.response.PreSignedImageResponse;
 
 import java.io.IOException;
 import java.util.List;

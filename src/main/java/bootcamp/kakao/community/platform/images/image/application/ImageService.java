@@ -3,9 +3,11 @@ package bootcamp.kakao.community.platform.images.image.application;
 import bootcamp.kakao.community.common.response.CustomException;
 import bootcamp.kakao.community.common.response.code.ImageErrorCode;
 import bootcamp.kakao.community.common.response.code.UserErrorCode;
-import bootcamp.kakao.community.platform.images.image.application.dto.ImageResponse;
-import bootcamp.kakao.community.platform.images.image.application.dto.PreSignedImageRequest;
-import bootcamp.kakao.community.platform.images.image.application.dto.PreSignedImageResponse;
+import bootcamp.kakao.community.platform.images.image.application.dto.request.ConfirmImageRequest;
+import bootcamp.kakao.community.platform.images.image.application.dto.request.PreSignedImageRequest;
+import bootcamp.kakao.community.platform.images.image.application.dto.response.PreSignedImageResponse;
+import bootcamp.kakao.community.platform.images.image.application.dto.request.temp.ConfirmTempImageRequest;
+import bootcamp.kakao.community.platform.images.image.application.dto.request.temp.PreSignedTempImageRequest;
 import bootcamp.kakao.community.platform.images.image.domain.entity.Image;
 import bootcamp.kakao.community.platform.images.image.domain.repository.ImageRepository;
 import bootcamp.kakao.community.platform.images.image.external.ImageCloudUseCase;
@@ -39,12 +41,10 @@ public class ImageService implements ImageUseCase {
     /// 여러 장의 임시저장 URL 발급 (확정 X)
     @Override
     @Transactional
-    public List<PreSignedImageResponse> uploadImages(List<PreSignedImageRequest> req) throws IOException {
+    public List<PreSignedImageResponse> uploadImages(PreSignedImageRequest req) throws IOException {
 
-        /// 요청한 이미지 목록 추출
-        List<String> reqImages = req.stream()
-                .map(PreSignedImageRequest::fileName)
-                .toList();
+        /// 요청한 이미지 목록
+        List<String> reqImages = req.fileNames();
 
         /// 클라우드 요청
         return cloudService.getUploadPresignedURL(reqImages);
@@ -53,7 +53,7 @@ public class ImageService implements ImageUseCase {
     /// 회원가입을 위한 한 장의 임시저장 URL 발급 (확정 X)
     @Override
     @Transactional
-    public PreSignedImageResponse uploadTemporaryImage(PreSignedImageRequest req) throws IOException {
+    public PreSignedImageResponse uploadTemporaryImage(PreSignedTempImageRequest req) throws IOException {
 
         /// 클라우드 PreSignedURL 요청 후 전달
         return cloudService.getUploadPresignedURL(req.fileName());
@@ -63,43 +63,32 @@ public class ImageService implements ImageUseCase {
     /// 일단은 S3에 올라가는 것이 된다.
     @Override
     @Transactional
-    public ImageResponse confirmTempImage(String key) throws IOException {
+    public void confirmTempImage(ConfirmTempImageRequest request) throws IOException {
 
         /// key값으로 임시 이미지 저장하기
-        Image reqImage = Image.temporaryOf(key);
+        Image reqImage = Image.temporaryOf(request.key());
 
         /// 이미지 저장하기
-        Image image = repository.save(reqImage);
+        repository.save(reqImage);
 
-        /// 이미지를 URL 변환하기
-        String url = cloudService.getUrl(image.getKey());
-
-        /// 출력하기
-        return ImageResponse.from(url);
     }
 
     /// 여러 개의 이미지를 DB에 저장하는 로직
     /// 일단은 S3에 올라가는 것이 된다.
     @Override
     @Transactional
-    public List<ImageResponse> confirmImages(List<String> keys, Long userId) throws IOException {
+    public void confirmImages(ConfirmImageRequest request, Long userId) throws IOException {
 
         /// 요청한 유저
         User user = loadUser(userId);
 
         /// key값으로 임시 이미지 객체들 저장하기
-        List<Image> reqImages = keys.stream()
+        List<Image> reqImages = request.keys().stream()
                 .map(key -> Image.of(user, key))
                 .toList();
 
         /// DB에 저장하기
-        List<Image> images = repository.saveAll(reqImages);
-
-        /// URL로 변환해서 출력하기
-        return images.stream()
-                .map(i -> cloudService.getUrl(i.getKey()))
-                .map(ImageResponse::from)
-                .toList();
+        repository.saveAll(reqImages);
     }
 
     // =================
