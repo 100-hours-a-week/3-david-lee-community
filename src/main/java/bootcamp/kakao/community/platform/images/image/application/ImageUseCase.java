@@ -2,6 +2,7 @@ package bootcamp.kakao.community.platform.images.image.application;
 
 import bootcamp.kakao.community.platform.images.image.application.dto.request.ConfirmImageRequest;
 import bootcamp.kakao.community.platform.images.image.application.dto.request.PreSignedImageRequest;
+import bootcamp.kakao.community.platform.images.image.application.dto.response.ImageResponse;
 import bootcamp.kakao.community.platform.images.image.application.dto.response.PreSignedImageResponse;
 import bootcamp.kakao.community.platform.images.image.application.dto.request.temp.ConfirmTempImageRequest;
 import bootcamp.kakao.community.platform.images.image.application.dto.request.temp.PreSignedTempImageRequest;
@@ -23,7 +24,7 @@ public interface ImageUseCase {
     PreSignedImageResponse uploadTemporaryImage(PreSignedTempImageRequest req) throws IOException;
 
     /// 임시 이미지를 확정하는 메서드
-    void confirmTempImage(ConfirmTempImageRequest request) throws IOException;
+    ImageResponse confirmTempImage(ConfirmTempImageRequest request) throws IOException;
 
     /// 여러 이미지를 확정하는 메서드
     void confirmImages(ConfirmImageRequest request, Long userId) throws IOException;

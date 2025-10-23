@@ -6,9 +6,6 @@ import java.util.List;
 
 @Schema(name = "[요청][게시글] 게시글 수정 Request", description = "게시글 수정을 위한 요청 DTO입니다.")
 public record PostUpdateRequest(
-        @Schema(description = "게시글 ID", example = "1")
-        Long id,
-
         @Schema(description = "카테고리 ID", example = "1001")
         Long categoryId,
 

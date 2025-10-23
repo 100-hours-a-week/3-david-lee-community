@@ -5,6 +5,7 @@ import bootcamp.kakao.community.platform.images.image.application.dto.request.Co
 import bootcamp.kakao.community.platform.images.image.application.dto.request.PreSignedImageRequest;
 import bootcamp.kakao.community.platform.images.image.application.dto.request.temp.ConfirmTempImageRequest;
 import bootcamp.kakao.community.platform.images.image.application.dto.request.temp.PreSignedTempImageRequest;
+import bootcamp.kakao.community.platform.images.image.application.dto.response.ImageResponse;
 import bootcamp.kakao.community.platform.images.image.application.dto.response.PreSignedImageResponse;
 import bootcamp.kakao.community.security.auth.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,7 +40,7 @@ public interface ImageApiSpec {
             summary = "회원가입용 임시 파일 업로드용 저장 API",
             description = "S3에 올린 것을 확정합니다."
     )
-    ApiResponse<Void> confirm(@RequestBody @Valid ConfirmTempImageRequest request) throws IOException;
+    ApiResponse<ImageResponse> confirm(@RequestBody @Valid ConfirmTempImageRequest request) throws IOException;
 
 
     @Operation(
