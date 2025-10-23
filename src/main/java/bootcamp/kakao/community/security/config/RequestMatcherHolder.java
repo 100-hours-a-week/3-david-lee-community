@@ -41,7 +41,9 @@ public class RequestMatcherHolder {
 
             /// 이미지
             new RequestInfo(POST, "/v1/images", UserRole.MEMBER),     /// 이미지 주소
+            new RequestInfo(PATCH, "/v1/images", UserRole.MEMBER),     /// 이미지 주소
             new RequestInfo(POST, "/v1/images/temp", null),     /// 회원가입용
+            new RequestInfo(PATCH, "/v1/images/temp", null),     /// 회원가입용
 
             /// 유저
             new RequestInfo(PUT, "/v1/users", UserRole.MEMBER),              /// 회원탈퇴
