@@ -8,6 +8,10 @@ import bootcamp.kakao.community.common.response.code.CommonErrorCode;
 import bootcamp.kakao.community.security.jwt.filter.JwtAuthenticationException;
 import jakarta.validation.UnexpectedTypeException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.dao.TransientDataAccessException;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -161,6 +165,7 @@ public class GlobalExceptionHandler {
         return ApiResponse.fail(exception);
     }
 
+    /// 타입 오류
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(UnexpectedTypeException.class)
     public ApiResponse<?> handleJUnexpectedTypeException(UnexpectedTypeException e) {
@@ -177,6 +182,53 @@ public class GlobalExceptionHandler {
     }
 
 
+    /// DB 문법 등 관련 문제 발생
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(InvalidDataAccessResourceUsageException.class)
+    public ApiResponse<?> handleInvalidDataAccessResourceUsageException(InvalidDataAccessResourceUsageException e) {
+
+        /// 에러 이유 로그 찍기
+        log.error(e.getMessage());
+
+        /// 기본 에러 코드로 응답 생성
+        ErrorCode errorCode = CommonErrorCode.INTERNAL_DB_SERVER_ERROR;
+        CustomException exception = new CustomException(errorCode);
+
+        /// 응답
+        return ApiResponse.fail(exception);
+    }
+
+    /// DB 스키마 관련 문제 발생
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler({DataIntegrityViolationException.class, DuplicateKeyException.class})
+    public ApiResponse<?> handleDataIntegrityViolationException(Exception e) {
+
+        /// 에러 이유 로그 찍기
+        log.error(e.getMessage());
+
+        /// 기본 에러 코드로 응답 생성
+        ErrorCode errorCode = CommonErrorCode.INTERNAL_DB_SCHEMA_SERVER_ERROR;
+        CustomException exception = new CustomException(errorCode);
+
+        /// 응답
+        return ApiResponse.fail(exception);
+    }
+
+    /// DB 스키마 관련 문제 발생
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(TransientDataAccessException.class)
+    public ApiResponse<?> handleTransientDataAccessException(TransientDataAccessException e) {
+
+        /// 에러 이유 로그 찍기
+        log.error(e.getMessage());
+
+        /// 기본 에러 코드로 응답 생성
+        ErrorCode errorCode = CommonErrorCode.INTERNAL_DB_SERVER_ERROR;
+        CustomException exception = new CustomException(errorCode);
+
+        /// 응답
+        return ApiResponse.fail(exception);
+    }
 
     /// 최하위 에러 처리 (여기까지는 안오길 ...)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
