@@ -1,5 +1,6 @@
 package bootcamp.kakao.community.platform.posts.comment.application.dto;
 
+import bootcamp.kakao.community.common.util.DateUtil;
 import bootcamp.kakao.community.platform.posts.comment.domain.entity.Comment;
 import bootcamp.kakao.community.platform.user.application.dto.UserResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,8 +28,13 @@ public record CommentResponse(
         @Schema(description = "댓글 본문", example = "정말 좋은 게시글이네요!")
         String content,
 
+        @Schema(description = "작성 일자", example = "")
+        String createdAt,
+
+
         @Schema(description = "댓글 수정 가능 여부", example = "true")
         boolean editable
+
 ) {
 
     /// 정적 팩토리 메서드
@@ -57,6 +63,7 @@ public record CommentResponse(
                 .id(comment.getId())
                 .parentId(comment.getParent() != null ? comment.getParent().getId() : null)
                 .content(content)
+                .createdAt(DateUtil.formatPostDate(comment.getCreatedDate()))
                 .editable(editable)
                 .build();
     }

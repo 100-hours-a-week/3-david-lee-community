@@ -75,8 +75,6 @@ public class GlobalExceptionHandler {
                 .map(error -> FieldErrorResponse.of(error.getField(), error.getDefaultMessage()))
                 .toList();
 
-        log.error("저기");
-
         CustomException exception = new CustomException(errorCode, errors);
 
         /// 응답
@@ -142,9 +140,6 @@ public class GlobalExceptionHandler {
         /// 기본 에러 코드로 응답 생성
         ErrorCode errorCode = CommonErrorCode.BAD_REQUEST;
         CustomException exception = new CustomException(errorCode);
-
-        log.error("여기");
-
 
         /// 응답
         return ApiResponse.fail(exception);
