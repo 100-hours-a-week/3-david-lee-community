@@ -36,6 +36,9 @@ public class GlobalExceptionHandler {
         /// 에러 코드
         ErrorCode errorCode = e.getErrorCode();
 
+        /// 로그찍기
+        log.error(errorCode.getMessage());
+
         /// 응답
         return ResponseEntity
                 .status(errorCode.getHttpStatus())
