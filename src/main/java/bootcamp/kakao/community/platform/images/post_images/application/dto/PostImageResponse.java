@@ -1,5 +1,6 @@
 package bootcamp.kakao.community.platform.images.post_images.application.dto;
 
+import bootcamp.kakao.community.common.util.ImageUtil;
 import bootcamp.kakao.community.platform.images.post_images.domain.entity.PostImage;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -22,7 +23,7 @@ public record PostImageResponse(
     public static PostImageResponse from(PostImage postImage) {
 
         return PostImageResponse.builder()
-                .imageUrl(postImage.getImage().getUrl())
+                .imageUrl(ImageUtil.getUrlByKey(postImage.getImage().getKey()))
                 .order(postImage.getOrd())
                 .build();
     }

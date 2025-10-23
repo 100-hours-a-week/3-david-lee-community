@@ -1,5 +1,7 @@
 package bootcamp.kakao.community.platform.images.image.domain.entity;
 
+import bootcamp.kakao.community.common.response.CustomException;
+import bootcamp.kakao.community.common.response.code.ImageErrorCode;
 import bootcamp.kakao.community.platform.BaseTimeEntity;
 import bootcamp.kakao.community.platform.user.domain.entity.User;
 import jakarta.persistence.*;
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "images", indexes = @Index(name = "idx_image_url", columnList = "url"))
+@Table(name = "images", indexes = @Index(name = "idx_image_key", columnList = "key"))
 public class Image extends BaseTimeEntity {
 
     @Id
@@ -22,42 +24,35 @@ public class Image extends BaseTimeEntity {
     @JoinColumn(name = "user_id", nullable = true)
     private User user;
 
-    @Column(nullable = false)
-    private String fileName;
-
-    @Column(nullable = false, length = 1000)
-    private String url;
+    @Column(name = "image_key", nullable = false, length = 1000)
+    private String key;
 
     @Column(nullable = false)
     private boolean confirmed = false;
 
     /// 생성자
     @Builder
-    protected Image(User user, String fileName, String url) {
+    protected Image(User user, String key) {
         this.user = user;
-        this.fileName = fileName;
-        this.url = url;
-        this.confirmed = false;
+        this.key = key;
+        confirmed = false;
     }
 
     /// 정적 팩토리 메서드
-    public static Image of(User user, String fileName, String url) {
+    public static Image of(User user, String key) {
         return Image.builder()
                 .user(user)
-                .fileName(fileName)
-                .url(url)
+                .key(key)
                 .build();
     }
 
     /// 임시 생성 정적 팩토리 메서드
-    public static Image temporaryOf(String fileName, String url) {
+    public static Image temporaryOf(String key) {
         return Image.builder()
                 .user(null)
-                .fileName(fileName)
-                .url(url)
+                .key(key)
                 .build();
     }
-
 
     /// 비즈니스 로직
     // 사용한다고 확정하는 메서드
@@ -71,7 +66,7 @@ public class Image extends BaseTimeEntity {
 
         /// 예외처리
         if (this.user == null) {
-            throw new IllegalStateException("사용자 정보가 없는 이미지는 확정할 수 없습니다.");
+            throw new CustomException(ImageErrorCode.BAD_REQUEST_CONFIRM);
         }
 
         this.confirmed = true;
@@ -82,7 +77,7 @@ public class Image extends BaseTimeEntity {
 
         /// 예외처리
         if (this.user == null) {
-            throw new IllegalStateException("사용자 정보가 없는 이미지는 취소할 수 없습니다.");
+            throw new CustomException(ImageErrorCode.BAD_REQUEST_UN_CONFIRM);
         }
 
         /// 사용중이던 것만 취소 가능

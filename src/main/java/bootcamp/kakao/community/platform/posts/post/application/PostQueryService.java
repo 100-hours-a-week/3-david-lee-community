@@ -4,6 +4,7 @@ import bootcamp.kakao.community.common.response.CustomException;
 import bootcamp.kakao.community.common.response.code.PostErrorCode;
 import bootcamp.kakao.community.common.response.paging.SliceRequest;
 import bootcamp.kakao.community.common.response.paging.SliceResponse;
+import bootcamp.kakao.community.common.util.ImageUtil;
 import bootcamp.kakao.community.common.util.KeyUtil;
 import bootcamp.kakao.community.platform.images.post_images.application.PostImageUseCase;
 import bootcamp.kakao.community.platform.images.post_images.domain.entity.PostImage;
@@ -42,6 +43,9 @@ public class PostQueryService implements PostQueryUseCase{
     private final CategoryUseCase categoryService;
     private final PostImageUseCase postImageService;
     private final PostLikeUseCase likeUseCase;
+
+    /// 이름 정의 유틸
+    private final ImageUtil imageUtil;
 
     /// 게시글 목록 조회
     @Override

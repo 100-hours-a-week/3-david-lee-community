@@ -1,5 +1,6 @@
 package bootcamp.kakao.community.platform.user.application.dto;
 
+import bootcamp.kakao.community.common.util.ImageUtil;
 import bootcamp.kakao.community.platform.user.domain.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -29,7 +30,7 @@ public record MyPageResponse(
         return MyPageResponse.builder()
                 .userId(user.getId())
                 .name(user.getName())
-                .imageUrl(user.getImageUrl())
+                .imageUrl(ImageUtil.getUrlByKey(user.getImageKey()))
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .role(user.getRole().getLabel())

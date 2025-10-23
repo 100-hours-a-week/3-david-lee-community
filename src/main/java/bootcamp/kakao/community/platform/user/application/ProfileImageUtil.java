@@ -42,14 +42,14 @@ public class ProfileImageUtil {
         String profileImageUrl = null;
 
         /// 기존 이미지 삭제 처리
-        if (user.getImageUrl() != null) {
-            Image oldImage = imageService.getImage(user.getImageUrl());
+        if (user.getImageKey() != null) {
+            Image oldImage = imageService.getImage(user.getImageKey());
             oldImage.unConfirm();   /// 더티체킹으로 삭제처리
         }
 
         if (imageUrl != null) {
             /// 새로 넣을 이미지가 존재하는지 체크
-            profileImageUrl = imageService.getImage(imageUrl).getUrl();
+            profileImageUrl = imageService.getImage(imageUrl).getKey();
         }
 
         /// 존재한다면, 새롭게 수정 더티체킹

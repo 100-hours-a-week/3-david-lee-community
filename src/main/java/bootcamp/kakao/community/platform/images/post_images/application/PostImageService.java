@@ -21,27 +21,14 @@ public class PostImageService implements PostImageUseCase {
     private final PostImageRepository repository;
     private final ImageUseCase imageService;
 
-
-    /// 게시글에 이미지 저장
-    @Override
-    @Transactional
-    public PostImage savePostImage(Post post, Image image) {
-
-        /// 게시글 이미지 저장하기
-        PostImage postImage = PostImage.of(post, image, 0);
-
-        /// 저장하기
-        return repository.save(postImage);
-    }
-
     /// 게시글에 여러개 이미지 저장
     /// PostImage의 of를 통해 이미지 사용이 확정된다.
     @Override
     @Transactional
-    public List<PostImage> savePostImage(Post post, List<String> imageUrls) {
+    public List<PostImage> savePostImage(Post post, List<String> imageKeys) {
 
         /// 요청한 실제 이미지가 있는지, 불러오기 (영속성 컨테이너)
-        List<Image> images = imageService.getImage(imageUrls);
+        List<Image> images = imageService.getImage(imageKeys);
 
         /// List 형식 극복하기
         List<PostImage> postImages = IntStream.range(0, images.size())
@@ -63,13 +50,13 @@ public class PostImageService implements PostImageUseCase {
     /// 게시글 이미지 수정하기 (삭제 후, 다시 추가)
     @Override
     @Transactional
-    public String updatePostImages(Post post, List<String> imageUrls) {
+    public String updatePostImages(Post post, List<String> imageKeys) {
 
         /// 기존에 있던 값 조회
         List<PostImage> oldPostImages = repository.findByPost(post);
 
         /// 새롭게 요청한 실제 이미지가 있는지, 불러오기 (영속성 컨테이너)
-        List<Image> newImages = imageService.getImage(imageUrls);
+        List<Image> newImages = imageService.getImage(imageKeys);
 
         /// 새로 추가한 값에서, 기존에 사용하지 않는 사진은 삭제
         // 요청 이미지들의 Id 변환
@@ -99,7 +86,7 @@ public class PostImageService implements PostImageUseCase {
         if (!postImages.isEmpty()) {
             /// 존재한다면 저장 후,첫 이미지 URL 반환
             repository.saveAll(postImages);
-            return postImages.get(0).getImage().getUrl();
+            return postImages.get(0).getImage().getKey();
         }
 
         /// 없으면

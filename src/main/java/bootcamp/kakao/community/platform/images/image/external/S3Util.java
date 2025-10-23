@@ -1,9 +1,8 @@
 package bootcamp.kakao.community.platform.images.image.external;
 
-import bootcamp.kakao.community.common.response.code.CommonErrorCode;
 import bootcamp.kakao.community.common.response.code.ImageErrorCode;
 import bootcamp.kakao.community.common.util.ImageUtil;
-import bootcamp.kakao.community.platform.images.image.application.dto.ImageResponse;
+import bootcamp.kakao.community.platform.images.image.application.dto.response.PreSignedImageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -23,6 +22,9 @@ public class S3Util implements ImageCloudUseCase {
     @Value("${cloud.aws.S3.bucket}")
     private String bucketName;
 
+    @Value("${cloud.aws.region.static}")
+    private String region;
+
     /// PreSignedURL을 위한 s3Presigner
     private final S3Presigner s3Presigner;
 
@@ -37,7 +39,7 @@ public class S3Util implements ImageCloudUseCase {
      * @param file  저장할 이미지 파일 이름
      */
     @Override
-    public ImageResponse getUploadPresignedURL(String file) throws IOException {
+    public PreSignedImageResponse getUploadPresignedURL(String file) throws IOException {
 
         /// 파일명 수정
         String key = imageUtil.generateKey(file);
@@ -53,7 +55,9 @@ public class S3Util implements ImageCloudUseCase {
                         )
         );
         String presignedUrl = presignedRequest.url().toString();
-        return ImageResponse.from(file, presignedUrl);
+
+        /// 리턴
+        return PreSignedImageResponse.from(file, presignedUrl, key);
     }
 
     /**
@@ -61,7 +65,7 @@ public class S3Util implements ImageCloudUseCase {
      * @param files  저장할 이미지 파일들 이름
      */
     @Override
-    public List<ImageResponse> getUploadPresignedURL(List<String> files) {
+    public List<PreSignedImageResponse> getUploadPresignedURL(List<String> files) {
         return files.stream()
                 .map(file -> {
                     try {
@@ -72,7 +76,6 @@ public class S3Util implements ImageCloudUseCase {
                 })
                 .toList();
     }
-
 
     /**
      * 이미지 삭제하기

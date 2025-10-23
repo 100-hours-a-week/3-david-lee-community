@@ -18,7 +18,7 @@ public record PostUpdateRequest(
         @Schema(description = "내용", example = "수정된 게시글 내용")
         String content,
 
-        @Schema(description = "첨부 이미지 URL 리스트", example = "[\"https://example.com/image1.png\", \"https://example.com/image2.png\"]")
-        List<String> imageUrls
+        @Schema(description = "첨부 이미지 URL 리스트", example = "[\"image1.png\", \"image2.png\"]")
+        List<String> imageKeys
 ) {
 }

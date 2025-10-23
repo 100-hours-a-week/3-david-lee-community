@@ -29,7 +29,7 @@ public class Post extends BaseTimeEntity {
     private Category category;
 
     @Column(length = 1000)
-    private String thumbnailUrl;
+    private String thumbnailKey;
 
     @Column(nullable = false)
     private String title;
@@ -46,7 +46,7 @@ public class Post extends BaseTimeEntity {
 
     /// 빌더 생성자
     @Builder
-    protected Post(User user, Category category, String title, String content, String thumbnailUrl) {
+    protected Post(User user, Category category, String title, String content, String thumbnailKey) {
 
         /// 예외 처리
         if (user == null) {
@@ -66,19 +66,19 @@ public class Post extends BaseTimeEntity {
         this.category = category;
         this.title = title;
         this.content = content;
-        this.thumbnailUrl = thumbnailUrl;
+        this.thumbnailKey = thumbnailKey;
         this.deleted = false;
         this.postStat = new PostStat();
     }
 
     /// 정적 팩토리 메서드
-    public static Post of(User user, Category category, String title, String content, String thumbnailUrl) {
+    public static Post of(User user, Category category, String title, String content, String thumbnailKey) {
         return Post.builder()
                 .user(user)
                 .category(category)
                 .title(title)
                 .content(content)
-                .thumbnailUrl(thumbnailUrl)
+                .thumbnailKey(thumbnailKey)
                 .build();
     }
 
@@ -88,7 +88,7 @@ public class Post extends BaseTimeEntity {
     }
 
     /// 수정
-    public void update(String title, String content, String thumbnailUrl) {
+    public void update(String title, String content, String thumbnailKey) {
 
         if (title != null) {
             /// 제목을 수정할 내용이 존재한다면,
@@ -99,9 +99,9 @@ public class Post extends BaseTimeEntity {
             this.content = content;
         }
 
-        if (thumbnailUrl != null) {
+        if (thumbnailKey != null) {
             /// 바꿀 썸네일이 존재한다면,
-            this.thumbnailUrl = thumbnailUrl;
+            this.thumbnailKey = thumbnailKey;
         }
     }
 

@@ -13,7 +13,7 @@ import java.util.List;
  * @param categoryId    카테고리 ID
  * @param title         제목
  * @param content       내용
- * @param imageUrls     이미지 URLs
+ * @param imageKeys     이미지 Keys
  */
 @Schema(name = "[요청][게시글] 게시글 생성 Request", description = "게시글 생성을 위한 요청 DTO입니다.")
 public record PostRequest(
@@ -29,6 +29,6 @@ public record PostRequest(
         @NotBlank(message = "내용없이 게시글을 작성할 수 없습니다.")
         String content,
 
-        List<String> imageUrls
+        List<String> imageKeys
 ) {
 }
