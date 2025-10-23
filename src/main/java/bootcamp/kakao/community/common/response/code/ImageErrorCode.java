@@ -15,6 +15,8 @@ public enum ImageErrorCode implements ErrorCode {
     // ========================
     // 400 Bad Request
     // ========================
+    BAD_REQUEST_CONFIRM(400_100, HttpStatus.BAD_REQUEST, "사용자 정보가 없는 이미지는 확정할 수 없습니다."),
+    BAD_REQUEST_UN_CONFIRM(400_100, HttpStatus.BAD_REQUEST, "사용자 정보가 없는 이미지는 취소할 수 없습니다."),
 
     // ========================
     // 401 Unauthorized

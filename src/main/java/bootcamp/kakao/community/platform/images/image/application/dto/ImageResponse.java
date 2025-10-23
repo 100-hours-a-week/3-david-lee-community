@@ -9,17 +9,15 @@ import lombok.Builder;
 )
 @Builder
 public record ImageResponse(
-        @Schema(description = "원본 파일 이름", example = "example-image.png")
-        String fileName,
 
-        @Schema(description = "S3 저장 주소 (Pre-Signed URL)", example = "https://s3.amazonaws.com/bucket/example-image.png?X-Amz-Signature=...")
-        String preSignedUrl) {
+        @Schema(description = "S3 저장 주소 (URL)", example = "https://example.s3.ap-northeast-2.amazonaws.com/6cab0f56-4644-4ebf-b076-0eb76fe2a7ec.jpeg")
+        String imageUrl
+) {
+        /// 정적 팩토리 메서드
+        public static ImageResponse from(String imageUrl) {
+            return ImageResponse.builder()
+                    .imageUrl(imageUrl)
+                    .build();
+        }
 
-    /// 정적 팩토리 메서드
-    public static ImageResponse from(String fileName, String preSignedUrl) {
-        return ImageResponse.builder()
-                .fileName(fileName)
-                .preSignedUrl(preSignedUrl)
-                .build();
-    }
 }

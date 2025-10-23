@@ -32,7 +32,7 @@ public class ImageBatchService {
 
         /// 이미지 목록 추출하여 삭제
         List<String> imageUrls = confirmedFalse.stream()
-                .map(Image::getUrl)
+                .map(Image::getKey)
                 .toList();
 
         /// 한번에 삭제 처리

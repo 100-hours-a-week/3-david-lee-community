@@ -49,7 +49,7 @@ public class ProfileImageUtil {
 
         if (imageUrl != null) {
             /// 새로 넣을 이미지가 존재하는지 체크
-            profileImageUrl = imageService.getImage(imageUrl).getUrl();
+            profileImageUrl = imageService.getImage(imageUrl).getKey();
         }
 
         /// 존재한다면, 새롭게 수정 더티체킹

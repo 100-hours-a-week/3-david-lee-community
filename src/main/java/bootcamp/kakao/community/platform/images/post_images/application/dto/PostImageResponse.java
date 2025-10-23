@@ -22,7 +22,7 @@ public record PostImageResponse(
     public static PostImageResponse from(PostImage postImage) {
 
         return PostImageResponse.builder()
-                .imageUrl(postImage.getImage().getUrl())
+                .imageUrl(postImage.getImage().getKey())
                 .order(postImage.getOrd())
                 .build();
     }

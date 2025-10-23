@@ -99,7 +99,7 @@ public class PostImageService implements PostImageUseCase {
         if (!postImages.isEmpty()) {
             /// 존재한다면 저장 후,첫 이미지 URL 반환
             repository.saveAll(postImages);
-            return postImages.get(0).getImage().getUrl();
+            return postImages.get(0).getImage().getKey();
         }
 
         /// 없으면
