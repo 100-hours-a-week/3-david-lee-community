@@ -7,7 +7,8 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    Optional<User> findByEmail(String email);
+    /// 삭제되지않은 유저를 가져오고자 할 때,
+    Optional<User> findByEmailAndDeletedFalse(String email);
 
     boolean existsByEmail(String email);
 
