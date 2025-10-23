@@ -38,14 +38,14 @@ public interface ImageApiSpec {
             summary = "회원가입용 임시 파일 업로드용 저장 API",
             description = "S3에 올린 것을 확정합니다."
     )
-    ApiResponse<ImageResponse> confirm(@RequestParam String key) throws IOException;
+    ApiResponse<Void> confirm(@RequestParam String key) throws IOException;
 
 
     @Operation(
             summary = "파일 업로드용 이미지 저장 API",
             description = "S3에 올린 것을 여러개의 파일을 확정합니다."
     )
-    ApiResponse<List<ImageResponse>> confirm(
+    ApiResponse<Void> confirm(
             @RequestParam List<String> keys,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) throws IOException;
 

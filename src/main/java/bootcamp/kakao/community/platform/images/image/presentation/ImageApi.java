@@ -57,13 +57,13 @@ public class ImageApi implements ImageApiSpec {
      * 회원가입에서 사용하는 임시 이미지 발급한 것을 S3에 저장함
      */
     @PatchMapping("/temp")
-    public ApiResponse<ImageResponse> confirm(@RequestParam String key) throws IOException {
+    public ApiResponse<Void> confirm(@RequestParam String key) throws IOException {
 
         /// 서비스
-        var response = service.confirmTempImage(key);
+        service.confirmTempImage(key);
 
         /// 응답 리턴
-        return ApiResponse.ok(response);
+        return ApiResponse.updated();
 
     }
 
@@ -72,15 +72,15 @@ public class ImageApi implements ImageApiSpec {
      * 여러 개의 파일을 S3에 저장
      */
     @PatchMapping
-    public ApiResponse<List<ImageResponse>> confirm(
+    public ApiResponse<Void> confirm(
             @RequestParam List<String> keys,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) throws IOException {
 
         /// 서비스
-        var responses = service.confirmImages(keys, customUserDetails.getId());
+        service.confirmImages(keys, customUserDetails.getId());
 
         /// 응답 리턴
-        return ApiResponse.ok(responses);
+        return ApiResponse.updated();
 
     }
 

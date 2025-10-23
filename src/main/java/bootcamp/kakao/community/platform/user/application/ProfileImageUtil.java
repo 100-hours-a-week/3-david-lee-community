@@ -42,8 +42,8 @@ public class ProfileImageUtil {
         String profileImageUrl = null;
 
         /// 기존 이미지 삭제 처리
-        if (user.getImageUrl() != null) {
-            Image oldImage = imageService.getImage(user.getImageUrl());
+        if (user.getImageKey() != null) {
+            Image oldImage = imageService.getImage(user.getImageKey());
             oldImage.unConfirm();   /// 더티체킹으로 삭제처리
         }
 

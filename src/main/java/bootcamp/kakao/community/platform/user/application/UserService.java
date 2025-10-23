@@ -67,7 +67,7 @@ public class UserService implements UserUseCase{
         User user = repository.save(requestUser);
 
         /// 이미지가 있다면 더티체킹 수정 (관심사 분리)
-        imageService.assignAndConfirmProfileImage(user, request.imageUrl());
+        imageService.assignAndConfirmProfileImage(user, request.imageKey());
 
         /// 로그인했다면, JWT 발급하기
         var jwtRequest = JwtTokenRequest.from(user);
@@ -124,7 +124,7 @@ public class UserService implements UserUseCase{
         User user = loadUser(userId);
 
         /// 이미지 수정
-        imageService.updateImage(user, request.imageUrl());
+        imageService.updateImage(user, request.imageKey());
 
         /// 닉네임 수정
         user.updateNickname(request.nickname());

@@ -29,7 +29,7 @@ public record MyPageResponse(
         return MyPageResponse.builder()
                 .userId(user.getId())
                 .name(user.getName())
-                .imageUrl(user.getImageUrl())
+                .imageUrl(user.getImageKey())
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .role(user.getRole().getLabel())

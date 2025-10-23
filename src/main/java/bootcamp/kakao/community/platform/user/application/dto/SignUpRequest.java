@@ -9,7 +9,7 @@ public record SignUpRequest(
         String name,
 
         @Schema(example = "null")
-        String imageUrl,
+        String imageKey,
 
         @NotBlank(message = "닉네임을 입력해주세요. (띄어쓰기 불가)")
         @Size(max = 10, message = "닉네임은 10글자 이내입니다.")

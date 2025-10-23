@@ -21,8 +21,8 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(length = 1000)
-    private String imageUrl;
+    @Column(name = "image_key", length = 1000)
+    private String imageKey;
 
     @Column(nullable = false)
     private String nickname;
@@ -42,9 +42,9 @@ public class User extends BaseTimeEntity {
 
     /// 빌더 생성자
     @Builder
-    protected User(String name, String imageUrl, String nickname, String email, String password, UserRole role) {
+    protected User(String name, String imageKey, String nickname, String email, String password, UserRole role) {
         this.name = name;
-        this.imageUrl = imageUrl;
+        this.imageKey = imageKey;
         this.nickname = nickname;
         this.email = email;
         this.password = password;
@@ -53,10 +53,10 @@ public class User extends BaseTimeEntity {
     }
 
     /// 정적 팩토리 메서드 (기본 유저)
-    public static User of(String name, String imageUrl, String nickname, String email, String password) {
+    public static User of(String name, String imageKey, String nickname, String email, String password) {
         return User.builder()
                 .name(name)
-                .imageUrl(imageUrl)
+                .imageKey(imageKey)
                 .nickname(nickname)
                 .email(email)
                 .password(password)
@@ -70,11 +70,11 @@ public class User extends BaseTimeEntity {
     }
 
     /// 이미지 업데이트
-    public void updateImage(String imageUrl) {
+    public void updateImage(String imageKey) {
 
-        if (imageUrl != null) {
+        if (imageKey != null) {
             /// 프로필이미지를 수정할 내용이 존재한다면,
-            this.imageUrl = imageUrl;
+            this.imageKey = imageKey;
         }
     }
 

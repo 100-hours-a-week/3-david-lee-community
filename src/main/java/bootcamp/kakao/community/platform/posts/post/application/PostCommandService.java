@@ -43,9 +43,9 @@ public class PostCommandService implements PostCommandUseCase{
         String thumbnailUrl = null;
 
         /// 존재한다면
-        if (!req.imageUrls().isEmpty()) {
+        if (!req.imageKeys().isEmpty()) {
             /// 썸네일 추출
-            thumbnailUrl = req.imageUrls().getFirst();
+            thumbnailUrl = req.imageKeys().getFirst();
         }
 
         /// 게시글 객체 생성 및 저장 (영속성 컨테이너)
@@ -54,7 +54,7 @@ public class PostCommandService implements PostCommandUseCase{
 
         /// 이미지 저장 (영속성 컨테이너에 저장하기), 생성과 함께 Image의 사용이 확정된다.
         /// 하나라도 에러나면, 롤백 처리
-        postImageService.savePostImage(post, req.imageUrls());
+        postImageService.savePostImage(post, req.imageKeys());
 
     }
 
@@ -77,7 +77,7 @@ public class PostCommandService implements PostCommandUseCase{
         }
 
         /// 게시글 이미지 조회하기 (영속성 컨텍스트)
-        String thumbnail = postImageService.updatePostImages(post, req.imageUrls());
+        String thumbnail = postImageService.updatePostImages(post, req.imageKeys());
 
         /// 게시글 수정
         post.update(req.title(), req.content(), thumbnail);

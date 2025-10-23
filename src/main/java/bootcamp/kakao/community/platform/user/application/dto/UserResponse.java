@@ -22,7 +22,7 @@ public record UserResponse(
     public static UserResponse from(User user) {
         return UserResponse.builder()
                 .userId(user.getId())
-                .imageUrl(user.getImageUrl())
+                .imageUrl(user.getImageKey())
                 .nickname(user.getNickname())
                 .build();
     }
