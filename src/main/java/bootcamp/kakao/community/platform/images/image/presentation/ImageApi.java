@@ -76,16 +76,15 @@ public class ImageApi implements ImageApiSpec {
      * 여러 개의 파일을 S3에 저장
      */
     @PatchMapping
-    public ApiResponse<Void> confirm(
+    public ApiResponse<List<ImageResponse>> confirm(
             @RequestBody @Valid ConfirmImageRequest request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) throws IOException {
 
         /// 서비스
-        service.confirmImages(request, customUserDetails.getId());
+        var response = service.confirmImages(request, customUserDetails.getId());
 
         /// 응답 리턴
-        return ApiResponse.updated();
-
+        return ApiResponse.ok(response);
     }
 
 }

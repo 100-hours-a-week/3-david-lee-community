@@ -27,7 +27,7 @@ public interface ImageUseCase {
     ImageResponse confirmTempImage(ConfirmTempImageRequest request) throws IOException;
 
     /// 여러 이미지를 확정하는 메서드
-    void confirmImages(ConfirmImageRequest request, Long userId) throws IOException;
+    List<ImageResponse> confirmImages(ConfirmImageRequest request, Long userId) throws IOException;
 
     // =================
     //  외부 로직

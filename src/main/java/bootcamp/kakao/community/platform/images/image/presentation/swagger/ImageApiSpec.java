@@ -47,7 +47,7 @@ public interface ImageApiSpec {
             summary = "파일 업로드용 이미지 저장 API",
             description = "S3에 올린 것을 여러개의 파일을 확정합니다."
     )
-    ApiResponse<Void> confirm(
+    ApiResponse<List<ImageResponse>> confirm(
             @RequestBody @Valid ConfirmImageRequest request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) throws IOException;
 
