@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:fragment="head">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="stylesheet" th:href="@{/css/style.css}">
+    </th:block>
+</head>
+<body>
+
+<header th:fragment="header" class="header-area">
+    <div class="container d-flex justify-content-between align-items-center">
+        <h1>아무말 대 잔치</h1>
+    </div>
+</header>
+
+<footer th:fragment="footer" class="footer-area mt-5">
+    <div class="container">
+        <nav>
+            <ul class="nav">
+                <li class="nav-item"><a class="nav-link" href="#" th:href="@{/v1/policy/terms}">이용약관</a></li>
+                <li class="nav-item"><a class="nav-link" href="#" th:href="@{/v1/policy/privacy}">개인정보처리방침</a></li>
+            </ul>
+        </nav>
+        <p>© 2025 아무 말 대잔치. All rights reserved.</p>
+    </div>
+</footer>
+
+</body>
+</html>

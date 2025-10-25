@@ -1,0 +1,129 @@
+:root{
+    --bg:#f4f5f7;
+    --card:#ffffff;
+    --text:#111827;
+    --muted:#6b7280;
+    --border:#e5e7eb;
+    --primary:#9b5cff;     /* 보라 버튼 */
+    --primary-pressed:#8648ff;
+    --ring:#d6bbff;
+    --radius:16px;
+    --radius-sm:12px;
+    --shadow:0 10px 20px rgba(0,0,0,.06), 0 2px 6px rgba(0,0,0,.05);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font:14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple SD Gothic Neo","Noto Sans KR", "Malgun Gothic", sans-serif;
+}
+
+/* 컨테이너 */
+.container{
+    width:min(980px, 100%);
+    margin:24px auto 48px;
+    padding:0 20px;
+}
+
+/* 헤더 영역 - 공통 레이아웃 용 */
+.header-area {
+    align-items:center; justify-content:center;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+
+}
+.header-area .nav {
+    display: flex;
+    gap: 15px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.header-area .nav-link {
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 500;
+    transition: color 0.2s;
+}
+.header-area .nav-link:hover {
+    color: var(--primary);
+}
+/* 유틸리티 클래스 */
+.d-flex { display: flex; }
+.justify-content-between { justify-content: space-between; }
+.align-items-center { align-items: center; }
+.m-0 { margin: 0; }
+.p-3 { padding: 1rem; }
+.mt-5 { margin-top: 3rem !important; }
+
+
+/* 푸터 영역 - 공통 레이아웃 용 */
+.footer-area{
+    padding: 20px 0;
+    border-top: 1px solid var(--border);
+    background: var(--card);
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+}
+
+.footer-area .nav {
+    display: flex;
+    justify-content: center; /* 가운데 정렬 (원하면 left/right 가능) */
+    gap: 16px; /* 항목 간 간격 */
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.footer-area .nav-link {
+    text-decoration: none;
+    color: #555;
+}
+
+.footer-area .nav-link:hover {
+    color: #000;
+}
+
+
+/* 약관/정책 페이지 콘텐츠 스타일 */
+.policy-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 30px;
+}
+.policy-card h1 {
+    margin: 0 0 10px;
+    font-size: 24px;
+    font-weight: 700;
+}
+.policy-card h2 {
+    margin-top: 25px;
+    margin-bottom: 8px;
+    font-size: 18px;
+    color: var(--primary);
+}
+.policy-card p, .policy-card li {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+}
+.policy-card ul {
+    list-style: disc;
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
+.revision-date {
+    text-align: right;
+    margin-top: 30px;
+    font-style: italic;
+    color: var(--muted);
+    font-size: 13px;
+}

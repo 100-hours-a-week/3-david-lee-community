@@ -31,6 +31,11 @@ public record CommentResponse(
         @Schema(description = "작성 일자", example = "")
         String createdAt,
 
+        @Schema(description = "삭제 여부", example = "false")
+        boolean deleted,
+
+        @Schema(description = "게시글 작성자 여부", example = "false")
+        boolean writer,
 
         @Schema(description = "댓글 수정 가능 여부", example = "true")
         boolean editable
@@ -50,12 +55,16 @@ public record CommentResponse(
 
         /// 수정 가능 여부, 기본 값 설정
         boolean editable = false;
+        boolean writer = false;
 
-        /// 로그인된 상태 + 유저 일치
-        if (userId != null
-                && comment.getUser() != null
-                && userId.equals(comment.getUser().getId())) {
+        /// 로그인된 상태 바탕으로 댓글 작성자와 유저가 같은지 여부 체크
+        if (userId != null && userId.equals(comment.getUser().getId())) {
             editable = true;
+        }
+
+        /// 게시글 작성자와 유저가 같은지 여부 체크
+        if (comment.getPost().getUser().getId().equals(comment.getUser().getId())) {
+            writer = true;
         }
 
         return CommentResponse.builder()
@@ -64,7 +73,9 @@ public record CommentResponse(
                 .parentId(comment.getParent() != null ? comment.getParent().getId() : null)
                 .content(content)
                 .createdAt(DateUtil.formatPostDate(comment.getCreatedDate()))
+                .deleted(comment.isDeleted())
                 .editable(editable)
+                .writer(writer)
                 .build();
     }
 

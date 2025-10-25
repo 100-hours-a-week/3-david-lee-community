@@ -24,16 +24,16 @@ public class CommentApi implements CommentApiSpec {
 
     /// 댓글 생성
     @PostMapping
-    public ApiResponse<Void> createComment(
+    public ApiResponse<CommentResponse> createComment(
             @RequestBody @Valid CommentRequest request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
 
         /// 서비스 실행
-        service.createComment(request, customUserDetails.getId());
+        var response = service.createComment(request, customUserDetails.getId());
 
         /// 리턴
-        return ApiResponse.created();
+        return ApiResponse.created(response);
     }
 
     /// 게시글에 따른 댓글 조회

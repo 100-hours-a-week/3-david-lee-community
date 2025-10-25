@@ -8,6 +8,7 @@ import bootcamp.kakao.community.common.response.paging.SliceResponse;
 import bootcamp.kakao.community.common.util.KeyUtil;
 import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentListResponse;
 import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentRequest;
+import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentResponse;
 import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentUpdateRequest;
 import bootcamp.kakao.community.platform.posts.comment.domain.entity.Comment;
 import bootcamp.kakao.community.platform.posts.comment.domain.repository.CommentRepository;
@@ -38,7 +39,7 @@ public class CommentService implements CommentUseCase{
     /// 댓글 생성
     @Override
     @Transactional
-    public void createComment(CommentRequest request, Long userId) {
+    public CommentResponse createComment(CommentRequest request, Long userId) {
 
         /// 유저 예외처리
         User user = userService.loadUser(userId);
@@ -54,11 +55,14 @@ public class CommentService implements CommentUseCase{
 
         /// 객체 생성 및 저장
         var reqComment = Comment.of(post, user, parent, request.content());
-        repository.save(reqComment);
+        Comment comment = repository.save(reqComment);
 
         /// 레디스에 값 1개 추가
         String postViewKey = KeyUtil.getPostComment(post.getId());
         redisTemplate.opsForValue().increment(postViewKey, 1L);
+
+        /// 응답
+        return CommentResponse.from(comment, userId);
     }
 
     /**

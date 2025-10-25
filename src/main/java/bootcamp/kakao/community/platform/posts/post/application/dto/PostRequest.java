@@ -27,6 +27,7 @@ public record PostRequest(
         String title,
 
         @NotBlank(message = "내용없이 게시글을 작성할 수 없습니다.")
+        @Size(max = 1000, message = "게시글의 길이가 1000자를 넘을 수 없습니다.")
         String content,
 
         List<String> imageKeys
