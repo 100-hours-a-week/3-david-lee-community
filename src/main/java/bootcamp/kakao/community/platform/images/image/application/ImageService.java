@@ -3,8 +3,10 @@ package bootcamp.kakao.community.platform.images.image.application;
 import bootcamp.kakao.community.common.response.CustomException;
 import bootcamp.kakao.community.common.response.code.ImageErrorCode;
 import bootcamp.kakao.community.common.response.code.UserErrorCode;
+import bootcamp.kakao.community.common.util.ImageUtil;
 import bootcamp.kakao.community.platform.images.image.application.dto.request.ConfirmImageRequest;
 import bootcamp.kakao.community.platform.images.image.application.dto.request.PreSignedImageRequest;
+import bootcamp.kakao.community.platform.images.image.application.dto.response.ImageResponse;
 import bootcamp.kakao.community.platform.images.image.application.dto.response.PreSignedImageResponse;
 import bootcamp.kakao.community.platform.images.image.application.dto.request.temp.ConfirmTempImageRequest;
 import bootcamp.kakao.community.platform.images.image.application.dto.request.temp.PreSignedTempImageRequest;
@@ -63,21 +65,23 @@ public class ImageService implements ImageUseCase {
     /// 일단은 S3에 올라가는 것이 된다.
     @Override
     @Transactional
-    public void confirmTempImage(ConfirmTempImageRequest request) throws IOException {
+    public ImageResponse confirmTempImage(ConfirmTempImageRequest request) throws IOException {
 
         /// key값으로 임시 이미지 저장하기
         Image reqImage = Image.temporaryOf(request.key());
 
         /// 이미지 저장하기
-        repository.save(reqImage);
+        Image image = repository.save(reqImage);
 
+        /// 리턴
+        return ImageResponse.from(image);
     }
-
+    
     /// 여러 개의 이미지를 DB에 저장하는 로직
     /// 일단은 S3에 올라가는 것이 된다.
     @Override
     @Transactional
-    public void confirmImages(ConfirmImageRequest request, Long userId) throws IOException {
+    public List<ImageResponse> confirmImages(ConfirmImageRequest request, Long userId) throws IOException {
 
         /// 요청한 유저
         User user = loadUser(userId);
@@ -88,7 +92,10 @@ public class ImageService implements ImageUseCase {
                 .toList();
 
         /// DB에 저장하기
-        repository.saveAll(reqImages);
+        List<Image> images = repository.saveAll(reqImages);
+
+        /// DTO 리턴
+        return ImageResponse.from(images);
     }
 
     // =================

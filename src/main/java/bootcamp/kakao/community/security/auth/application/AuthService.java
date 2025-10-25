@@ -43,7 +43,7 @@ public class AuthService implements AuthUseCase {
     public JwtTokenResponse login(LoginRequest request, String deviceType) {
 
         /// DB 검증
-        User user = repository.findByEmail(request.email())
+        User user = repository.findByEmailAndDeletedFalse(request.email())
                 .orElseThrow(() -> new CustomException(SecurityErrorCode.NOT_FOUND_EMAIL));
 
         /// 패스워드 비교

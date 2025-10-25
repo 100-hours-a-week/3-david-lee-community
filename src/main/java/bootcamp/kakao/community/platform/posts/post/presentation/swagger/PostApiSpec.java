@@ -3,10 +3,7 @@ package bootcamp.kakao.community.platform.posts.post.presentation.swagger;
 import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.common.response.paging.SliceRequest;
 import bootcamp.kakao.community.common.response.paging.SliceResponse;
-import bootcamp.kakao.community.platform.posts.post.application.dto.PostDetailResponse;
-import bootcamp.kakao.community.platform.posts.post.application.dto.PostListResponse;
-import bootcamp.kakao.community.platform.posts.post.application.dto.PostRequest;
-import bootcamp.kakao.community.platform.posts.post.application.dto.PostUpdateRequest;
+import bootcamp.kakao.community.platform.posts.post.application.dto.*;
 import bootcamp.kakao.community.security.auth.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,7 +21,7 @@ public interface PostApiSpec {
             summary = "게시글 작성 API",
             description = "게시글을 작성하는 API 입니다."
     )
-    ApiResponse<Void> createPost(
+    ApiResponse<PostSaveResponse> createPost(
             @RequestBody @Valid PostRequest request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails);
 
@@ -54,6 +51,7 @@ public interface PostApiSpec {
             description = "게시글을 수정하는 API 입니다."
     )
     ApiResponse<Void> updatePost(
+            @PathVariable Long postId,
             @RequestBody @Valid PostUpdateRequest request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails);
 

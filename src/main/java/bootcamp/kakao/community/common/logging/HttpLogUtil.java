@@ -16,11 +16,14 @@ public class HttpLogUtil {
     /// HTTP 대한 로그를 찍는 것
     public void logHttpRequest(HttpServletRequest httpServletRequest, String type) {
 
+        /// 바디
+        var body = httpServletRequest.getContentType();
+
         /// 헤더에서 요청 정보 가져오기
         var clientInfo = httpUtil.getClientInfo(httpServletRequest);
 
         /// 로그
-        log.info("{} : {}, [{}], {}, {}", type, clientInfo.ip(), clientInfo.httpMethod(), clientInfo.uri(), clientInfo.userName());
+        log.info("{} : {}, [{}], {}, {} ,{}", type, clientInfo.ip(), clientInfo.httpMethod(), clientInfo.uri(), clientInfo.userName(), body);
 
     }
 

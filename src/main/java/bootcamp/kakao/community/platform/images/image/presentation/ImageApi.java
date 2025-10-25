@@ -6,6 +6,7 @@ import bootcamp.kakao.community.platform.images.image.application.dto.request.Co
 import bootcamp.kakao.community.platform.images.image.application.dto.request.PreSignedImageRequest;
 import bootcamp.kakao.community.platform.images.image.application.dto.request.temp.ConfirmTempImageRequest;
 import bootcamp.kakao.community.platform.images.image.application.dto.request.temp.PreSignedTempImageRequest;
+import bootcamp.kakao.community.platform.images.image.application.dto.response.ImageResponse;
 import bootcamp.kakao.community.platform.images.image.application.dto.response.PreSignedImageResponse;
 import bootcamp.kakao.community.platform.images.image.presentation.swagger.ImageApiSpec;
 import bootcamp.kakao.community.security.auth.domain.CustomUserDetails;
@@ -59,14 +60,14 @@ public class ImageApi implements ImageApiSpec {
      * 회원가입에서 사용하는 임시 이미지 발급한 것을 S3에 저장함
      */
     @PatchMapping("/temp")
-    public ApiResponse<Void> confirm(
+    public ApiResponse<ImageResponse> confirm(
             @RequestBody @Valid ConfirmTempImageRequest request) throws IOException {
 
         /// 서비스
-        service.confirmTempImage(request);
+        var response = service.confirmTempImage(request);
 
         /// 응답 리턴
-        return ApiResponse.updated();
+        return ApiResponse.ok(response);
 
     }
 
@@ -75,16 +76,15 @@ public class ImageApi implements ImageApiSpec {
      * 여러 개의 파일을 S3에 저장
      */
     @PatchMapping
-    public ApiResponse<Void> confirm(
+    public ApiResponse<List<ImageResponse>> confirm(
             @RequestBody @Valid ConfirmImageRequest request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) throws IOException {
 
         /// 서비스
-        service.confirmImages(request, customUserDetails.getId());
+        var response = service.confirmImages(request, customUserDetails.getId());
 
         /// 응답 리턴
-        return ApiResponse.updated();
-
+        return ApiResponse.ok(response);
     }
 
 }
