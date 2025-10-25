@@ -68,11 +68,15 @@ public class RequestMatcherHolder {
             new RequestInfo(POST, "/v1/posts/likes", UserRole.MEMBER),              /// 좋아요
             new RequestInfo(DELETE, "/v1/posts/likes", UserRole.MEMBER),            /// 좋아요 취소
 
+            /// 약관 정보
+            new RequestInfo(GET, "/v1/policy/**", null),                 /// 약관 조회
+
 
             // static resources
             new RequestInfo(GET, "/docs/**", null),
             new RequestInfo(GET, "/*.ico", null),
             new RequestInfo(GET, "/resources/**", null),
+            new RequestInfo(GET, "/css/**", null),
             new RequestInfo(GET, "/style.css", null),
             new RequestInfo(GET, "/index.html", null),
             new RequestInfo(GET, "/error", null),
@@ -89,6 +93,7 @@ public class RequestMatcherHolder {
             new RequestInfo(GET, "/apple-touch-icon.png", null)
 
     );
+
 
 
 

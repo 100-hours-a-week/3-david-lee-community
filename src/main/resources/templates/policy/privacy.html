@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>개인정보처리방침</title>
+    <th:block th:replace="fragments/common :: head"></th:block>
+</head>
+<body>
+<header th:replace="fragments/common :: header"></header>
+
+<main class="container">
+
+    <div class="policy-card">
+        <h1>개인정보처리방침</h1>
+
+        <p>(<span th:text="${companyName}">회사명 자리</span> 이하 '회사' 또는 '커뮤니티')은(는) 「개인정보보호법」 제30조에 따라 정보주체의 개인정보를 보호하고 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 다음과 같이 개인정보 처리방침을 수립·공개합니다.</p>
+
+        <h2>1. 개인정보의 수집 및 이용 목적</h2>
+        <p>회사는 다음의 목적을 위하여 개인정보를 처리하고 있으며, 다음 목적 이외의 용도로는 이용하지 않습니다.</p>
+        <ul>
+            <li>회원 가입 의사 확인, 서비스 제공에 따른 본인 식별/인증, 회원 자격 유지/관리, 서비스 부정 이용 방지</li>
+            <li>서비스 제공에 관한 계약 이행 및 서비스 제공에 따른 요금 정산, 콘텐츠 제공</li>
+            <li>새로운 서비스(제품) 개발 및 특화, 이벤트 정보 및 참여 기회 제공</li>
+        </ul>
+
+        <p class="revision-date">본 방침은 2025년 10월 25일부터 시행됩니다.</p>
+    </div>
+</main>
+
+<footer th:replace="fragments/common :: footer"></footer>
+</body>
+</html>
