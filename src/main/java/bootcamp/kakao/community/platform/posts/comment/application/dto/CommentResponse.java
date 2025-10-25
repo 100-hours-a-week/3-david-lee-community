@@ -31,6 +31,9 @@ public record CommentResponse(
         @Schema(description = "작성 일자", example = "")
         String createdAt,
 
+        @Schema(description = "삭제 여부", example = "false")
+        boolean deleted,
+
         @Schema(description = "게시글 작성자 여부", example = "false")
         boolean writer,
 
@@ -70,6 +73,7 @@ public record CommentResponse(
                 .parentId(comment.getParent() != null ? comment.getParent().getId() : null)
                 .content(content)
                 .createdAt(DateUtil.formatPostDate(comment.getCreatedDate()))
+                .deleted(comment.isDeleted())
                 .editable(editable)
                 .writer(writer)
                 .build();
