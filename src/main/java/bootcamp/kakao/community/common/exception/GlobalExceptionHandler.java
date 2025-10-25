@@ -20,6 +20,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
@@ -170,8 +171,8 @@ public class GlobalExceptionHandler {
 
     /// 타입 오류
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(UnexpectedTypeException.class)
-    public ApiResponse<?> handleJUnexpectedTypeException(UnexpectedTypeException e) {
+    @ExceptionHandler({UnexpectedTypeException.class, MethodArgumentTypeMismatchException.class})
+    public ApiResponse<?> handleJUnexpectedTypeException(Exception e) {
 
         /// 에러 이유 로그 찍기
         log.error(e.getMessage());
