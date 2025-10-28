@@ -5,6 +5,7 @@ import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.platform.posts.category.application.dto.CategoryRequest;
 import bootcamp.kakao.community.platform.posts.category.application.dto.CategoryResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +22,7 @@ public interface CategoryApiSpec {
             description = "카테고리를 생성하는 API 입니다."
     )
     ApiResponse<Void> create(@RequestBody @Valid CategoryRequest request,
-                             @HttpSessionId Long userId);
+                             @Parameter(hidden = true) @HttpSessionId Long userId);
 
     /// 카테고리 목록 조회
     @Operation(
@@ -38,6 +39,6 @@ public interface CategoryApiSpec {
     )
     ApiResponse<Void> delete(
             @RequestParam Long categoryId,
-            @HttpSessionId Long userId);
+            @Parameter(hidden = true) @HttpSessionId Long userId);
 
 }

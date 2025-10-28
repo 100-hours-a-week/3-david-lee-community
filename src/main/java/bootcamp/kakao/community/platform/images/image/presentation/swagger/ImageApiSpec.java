@@ -9,6 +9,7 @@ import bootcamp.kakao.community.platform.images.image.application.dto.request.te
 import bootcamp.kakao.community.platform.images.image.application.dto.response.ImageResponse;
 import bootcamp.kakao.community.platform.images.image.application.dto.response.PreSignedImageResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,7 +26,7 @@ public interface ImageApiSpec {
     )
     ApiResponse<List<PreSignedImageResponse>> upload(
             @RequestBody @Valid PreSignedImageRequest request,
-            @HttpSessionId Long userId) throws IOException;
+            @Parameter(hidden = true) @HttpSessionId Long userId) throws IOException;
 
 
     @Operation(
@@ -48,6 +49,6 @@ public interface ImageApiSpec {
     )
     ApiResponse<List<ImageResponse>> confirm(
             @RequestBody @Valid ConfirmImageRequest request,
-            @HttpSessionId Long userId) throws IOException;
+            @Parameter(hidden = true) @HttpSessionId Long userId) throws IOException;
 
 }

@@ -7,6 +7,7 @@ import bootcamp.kakao.community.common.response.paging.SliceResponse;
 import bootcamp.kakao.community.platform.posts.post.application.PostCommandUseCase;
 import bootcamp.kakao.community.platform.posts.post.application.PostQueryUseCase;
 import bootcamp.kakao.community.platform.posts.post.application.dto.*;
+import bootcamp.kakao.community.platform.posts.post.presentation.swagger.PostApiSpec;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/v1/posts")
 @RequiredArgsConstructor
-public class PostApi {
+public class PostApi implements PostApiSpec {
 
     private final PostCommandUseCase commandService;
     private final PostQueryUseCase queryService;
@@ -22,8 +23,8 @@ public class PostApi {
     /// 글 작성
     @PostMapping
     public ApiResponse<PostSaveResponse> createPost(
-            @HttpSessionId Long userId,
-            @RequestBody @Valid PostRequest request) {
+            @RequestBody @Valid PostRequest request,
+            @HttpSessionId Long userId) {
 
         /// 서비스 작성
         var response = commandService.create(request, userId);

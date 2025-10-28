@@ -20,7 +20,7 @@ public interface PostLikeApiSpec {
     )
     ApiResponse<Void> like(
             @RequestBody @Valid PostLikeRequest request,
-            @HttpSessionId Long userId);
+            @Parameter(hidden = true) @HttpSessionId Long userId);
 
     /// 좋아요 취소
     @Operation(
@@ -30,7 +30,7 @@ public interface PostLikeApiSpec {
     ApiResponse<Void> unlike(
             @Parameter(example = "1")
             @RequestParam Long postId,
-            @HttpSessionId Long userId);
+            @Parameter(hidden = true) @HttpSessionId Long userId);
 
 
 }

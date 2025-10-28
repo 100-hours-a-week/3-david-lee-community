@@ -4,6 +4,7 @@ import bootcamp.kakao.community.common.aop.HttpSessionId;
 import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.platform.user.application.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,7 +34,7 @@ public interface UserApiSpec {
     )
     ApiResponse<Void> delete(
             HttpServletResponse httpServletResponse,
-            @HttpSessionId Long userId);
+            @Parameter(hidden = true) @HttpSessionId Long userId);
 
 
     /// 이메일 중복 API
@@ -56,7 +57,7 @@ public interface UserApiSpec {
             summary = "개인정보 조회 API",
             description = "나의 정보를 조회합니다."
     )
-    ApiResponse<MyPageResponse> getUser(@HttpSessionId Long userId);
+    ApiResponse<MyPageResponse> getUser(@Parameter(hidden = true) @HttpSessionId Long userId);
 
     /// 다른 유저 정보 조회
     @Operation(
@@ -71,7 +72,7 @@ public interface UserApiSpec {
             description = "나의 정보를 수정합니다."
     )
     ApiResponse<Void> updateUser(@RequestBody @Valid UserUpdateRequest request,
-                                 @HttpSessionId Long userId);
+                                 @Parameter(hidden = true) @HttpSessionId Long userId);
 
     /// 비밀번호 변경
     @Operation(
@@ -79,7 +80,7 @@ public interface UserApiSpec {
             description = "기존 비밀번호를 바탕으로 비밀번호 수정합니다."
     )
     ApiResponse<Void> updatePassword(@RequestBody @Valid PwUpdateRequest pwReq,
-                                     @HttpSessionId Long userId);
+                                     @Parameter(hidden = true) @HttpSessionId Long userId);
 
 
 }

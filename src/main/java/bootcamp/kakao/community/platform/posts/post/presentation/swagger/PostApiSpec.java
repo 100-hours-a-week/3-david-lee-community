@@ -6,6 +6,7 @@ import bootcamp.kakao.community.common.response.paging.SliceRequest;
 import bootcamp.kakao.community.common.response.paging.SliceResponse;
 import bootcamp.kakao.community.platform.posts.post.application.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +23,7 @@ public interface PostApiSpec {
     )
     ApiResponse<PostSaveResponse> createPost(
             @RequestBody @Valid PostRequest request,
-            @HttpSessionId Long customUserDetails);
+            @Parameter(hidden = true) @HttpSessionId Long userId);
 
 
     /// 글 상세 조회
@@ -31,7 +32,7 @@ public interface PostApiSpec {
             description = "게시글을 조회하는 API 입니다."
     )
     ApiResponse<PostDetailResponse> readPost(@PathVariable Long postId,
-                                             @HttpSessionId Long userId);
+                                             @Parameter(hidden = true) @HttpSessionId Long userId);
 
 
     /// 글 목록 조회
@@ -52,7 +53,7 @@ public interface PostApiSpec {
     ApiResponse<Void> updatePost(
             @PathVariable Long postId,
             @RequestBody @Valid PostUpdateRequest request,
-            @HttpSessionId Long userId);
+            @Parameter(hidden = true) @HttpSessionId Long userId);
 
 
     /// 글 삭제 (소프트 삭제)
@@ -62,6 +63,6 @@ public interface PostApiSpec {
     )
     ApiResponse<Void> delete(
             @PathVariable Long postId,
-            @HttpSessionId Long userId);
+            @Parameter(hidden = true) @HttpSessionId Long userId);
 
 }
