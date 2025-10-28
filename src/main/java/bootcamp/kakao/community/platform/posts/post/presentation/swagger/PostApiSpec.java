@@ -1,14 +1,13 @@
 package bootcamp.kakao.community.platform.posts.post.presentation.swagger;
 
+import bootcamp.kakao.community.common.aop.HttpSessionId;
 import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.common.response.paging.SliceRequest;
 import bootcamp.kakao.community.common.response.paging.SliceResponse;
 import bootcamp.kakao.community.platform.posts.post.application.dto.*;
-import bootcamp.kakao.community.security.auth.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,7 +22,7 @@ public interface PostApiSpec {
     )
     ApiResponse<PostSaveResponse> createPost(
             @RequestBody @Valid PostRequest request,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails);
+            @HttpSessionId Long customUserDetails);
 
 
     /// 글 상세 조회
@@ -32,7 +31,7 @@ public interface PostApiSpec {
             description = "게시글을 조회하는 API 입니다."
     )
     ApiResponse<PostDetailResponse> readPost(@PathVariable Long postId,
-                                             @AuthenticationPrincipal CustomUserDetails customUserDetails);
+                                             @HttpSessionId Long userId);
 
 
     /// 글 목록 조회
@@ -53,7 +52,7 @@ public interface PostApiSpec {
     ApiResponse<Void> updatePost(
             @PathVariable Long postId,
             @RequestBody @Valid PostUpdateRequest request,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails);
+            @HttpSessionId Long userId);
 
 
     /// 글 삭제 (소프트 삭제)
@@ -63,6 +62,6 @@ public interface PostApiSpec {
     )
     ApiResponse<Void> delete(
             @PathVariable Long postId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails);
+            @HttpSessionId Long userId);
 
 }

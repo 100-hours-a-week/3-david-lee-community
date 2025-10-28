@@ -1,5 +1,6 @@
 package bootcamp.kakao.community.platform.posts.comment.presentation.swagger;
 
+import bootcamp.kakao.community.common.aop.HttpSessionId;
 import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.common.response.paging.SliceRequest;
 import bootcamp.kakao.community.common.response.paging.SliceResponse;
@@ -7,11 +8,9 @@ import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentLi
 import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentRequest;
 import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentResponse;
 import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentUpdateRequest;
-import bootcamp.kakao.community.security.auth.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,7 +25,7 @@ public interface CommentApiSpec {
     )
     ApiResponse<CommentResponse> createComment(
             @RequestBody @Valid CommentRequest request,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails);
+            @HttpSessionId Long userId);
 
     /// 댓글 조회
     @Operation(
@@ -36,7 +35,7 @@ public interface CommentApiSpec {
     ApiResponse<SliceResponse<CommentListResponse>> listComments(
             SliceRequest sliceRequest,
             @RequestParam Long postId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
+            @HttpSessionId Long userId
     );
 
 
@@ -48,7 +47,7 @@ public interface CommentApiSpec {
     ApiResponse<Void> updateComment(
             @PathVariable Long commentId,
             @RequestBody @Valid CommentUpdateRequest request,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails);
+            @HttpSessionId Long userId);
 
 
     /// 댓글 삭제
@@ -58,5 +57,5 @@ public interface CommentApiSpec {
     )
     ApiResponse<Void> deleteComment(
             @PathVariable Long commentId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails);
+            @HttpSessionId Long userId);
 }

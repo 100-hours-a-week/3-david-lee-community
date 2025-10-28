@@ -2,7 +2,6 @@ package bootcamp.kakao.community.platform.user.application;
 
 import bootcamp.kakao.community.platform.user.application.dto.*;
 import bootcamp.kakao.community.platform.user.domain.entity.User;
-import bootcamp.kakao.community.security.jwt.application.dto.JwtTokenResponse;
 
 public interface UserUseCase {
 
@@ -13,7 +12,7 @@ public interface UserUseCase {
     boolean checkDuplicateNickName(String nickName);
 
     /// 회원가입
-    JwtTokenResponse signUp(SignUpRequest authRequest, String deviceType);
+    String signUp(SignUpRequest authRequest);
 
     /// 회원 탈퇴
     void withdraw(Long userId);

@@ -1,5 +1,6 @@
 package bootcamp.kakao.community.platform.images.image.presentation.swagger;
 
+import bootcamp.kakao.community.common.aop.HttpSessionId;
 import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.platform.images.image.application.dto.request.ConfirmImageRequest;
 import bootcamp.kakao.community.platform.images.image.application.dto.request.PreSignedImageRequest;
@@ -7,11 +8,9 @@ import bootcamp.kakao.community.platform.images.image.application.dto.request.te
 import bootcamp.kakao.community.platform.images.image.application.dto.request.temp.PreSignedTempImageRequest;
 import bootcamp.kakao.community.platform.images.image.application.dto.response.ImageResponse;
 import bootcamp.kakao.community.platform.images.image.application.dto.response.PreSignedImageResponse;
-import bootcamp.kakao.community.security.auth.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
@@ -26,7 +25,7 @@ public interface ImageApiSpec {
     )
     ApiResponse<List<PreSignedImageResponse>> upload(
             @RequestBody @Valid PreSignedImageRequest request,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) throws IOException;
+            @HttpSessionId Long userId) throws IOException;
 
 
     @Operation(
@@ -49,6 +48,6 @@ public interface ImageApiSpec {
     )
     ApiResponse<List<ImageResponse>> confirm(
             @RequestBody @Valid ConfirmImageRequest request,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) throws IOException;
+            @HttpSessionId Long userId) throws IOException;
 
 }

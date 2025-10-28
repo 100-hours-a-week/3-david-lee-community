@@ -5,9 +5,7 @@ import bootcamp.kakao.community.common.response.code.UserErrorCode;
 import bootcamp.kakao.community.platform.user.application.dto.*;
 import bootcamp.kakao.community.platform.user.domain.entity.User;
 import bootcamp.kakao.community.platform.user.domain.repository.UserRepository;
-import bootcamp.kakao.community.security.jwt.application.JwtProvider;
-import bootcamp.kakao.community.security.jwt.application.dto.JwtTokenResponse;
-import bootcamp.kakao.community.security.jwt.application.dto.JwtTokenRequest;
+import bootcamp.kakao.community.security.session.application.SessionProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,7 +18,7 @@ public class UserService implements UserUseCase{
     private final UserRepository repository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    private final JwtProvider jwtProvider;
+    private final SessionProvider sessionProvider;
 
     /// 유저 이미지
     private final ProfileImageUtil imageService;
@@ -43,7 +41,7 @@ public class UserService implements UserUseCase{
     /// 회원가입, 회원가입 후 바로 이용가능하도록 토큰 발급
     @Override
     @Transactional
-    public JwtTokenResponse signUp(SignUpRequest request, String deviceType) {
+    public String signUp(SignUpRequest request) {
 
         /// 이메일 중복체크 및 예외처리
         boolean duplicateEmail = checkDuplicateEmail(request.email());
@@ -69,13 +67,8 @@ public class UserService implements UserUseCase{
         /// 이미지가 있다면 더티체킹 수정 (관심사 분리)
         imageService.assignAndConfirmProfileImage(user, request.imageKey());
 
-        /// 로그인했다면, JWT 발급하기
-        var jwtRequest = JwtTokenRequest.from(user);
-
-        String accessToken = jwtProvider.createAccessToken(jwtRequest);
-        String refreshToken = jwtProvider.createRefreshToken(deviceType, jwtRequest);
-
-        return JwtTokenResponse.of(accessToken, refreshToken);
+        /// 로그인했다면, 세션 키 발급하기
+        return sessionProvider.createSessionId(user);
 
     }
 

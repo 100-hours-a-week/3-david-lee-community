@@ -1,13 +1,12 @@
 package bootcamp.kakao.community.platform.posts.category.presentation.swaager;
 
+import bootcamp.kakao.community.common.aop.HttpSessionId;
 import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.platform.posts.category.application.dto.CategoryRequest;
 import bootcamp.kakao.community.platform.posts.category.application.dto.CategoryResponse;
-import bootcamp.kakao.community.security.auth.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -22,7 +21,7 @@ public interface CategoryApiSpec {
             description = "카테고리를 생성하는 API 입니다."
     )
     ApiResponse<Void> create(@RequestBody @Valid CategoryRequest request,
-                             @AuthenticationPrincipal CustomUserDetails customUserDetails);
+                             @HttpSessionId Long userId);
 
     /// 카테고리 목록 조회
     @Operation(
@@ -39,6 +38,6 @@ public interface CategoryApiSpec {
     )
     ApiResponse<Void> delete(
             @RequestParam Long categoryId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails);
+            @HttpSessionId Long userId);
 
 }

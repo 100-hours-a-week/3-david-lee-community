@@ -1,5 +1,6 @@
 package bootcamp.kakao.community.platform.images.image.presentation;
 
+import bootcamp.kakao.community.common.aop.HttpSessionId;
 import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.platform.images.image.application.ImageUseCase;
 import bootcamp.kakao.community.platform.images.image.application.dto.request.ConfirmImageRequest;
@@ -9,10 +10,8 @@ import bootcamp.kakao.community.platform.images.image.application.dto.request.te
 import bootcamp.kakao.community.platform.images.image.application.dto.response.ImageResponse;
 import bootcamp.kakao.community.platform.images.image.application.dto.response.PreSignedImageResponse;
 import bootcamp.kakao.community.platform.images.image.presentation.swagger.ImageApiSpec;
-import bootcamp.kakao.community.security.auth.domain.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -46,7 +45,7 @@ public class ImageApi implements ImageApiSpec {
     @PostMapping
     public ApiResponse<List<PreSignedImageResponse>> upload(
             @RequestBody @Valid PreSignedImageRequest request,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) throws IOException {
+            @HttpSessionId Long userId) throws IOException {
 
         /// 서비스
         List<PreSignedImageResponse> response = service.uploadImages(request);
@@ -78,10 +77,10 @@ public class ImageApi implements ImageApiSpec {
     @PatchMapping
     public ApiResponse<List<ImageResponse>> confirm(
             @RequestBody @Valid ConfirmImageRequest request,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) throws IOException {
+            @HttpSessionId Long userId) throws IOException {
 
         /// 서비스
-        var response = service.confirmImages(request, customUserDetails.getId());
+        var response = service.confirmImages(request, userId);
 
         /// 응답 리턴
         return ApiResponse.ok(response);

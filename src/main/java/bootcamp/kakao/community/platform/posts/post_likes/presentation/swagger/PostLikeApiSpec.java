@@ -1,13 +1,12 @@
 package bootcamp.kakao.community.platform.posts.post_likes.presentation.swagger;
 
+import bootcamp.kakao.community.common.aop.HttpSessionId;
 import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.platform.posts.post_likes.application.dto.PostLikeRequest;
-import bootcamp.kakao.community.security.auth.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -21,7 +20,7 @@ public interface PostLikeApiSpec {
     )
     ApiResponse<Void> like(
             @RequestBody @Valid PostLikeRequest request,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails);
+            @HttpSessionId Long userId);
 
     /// 좋아요 취소
     @Operation(
@@ -31,7 +30,7 @@ public interface PostLikeApiSpec {
     ApiResponse<Void> unlike(
             @Parameter(example = "1")
             @RequestParam Long postId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails);
+            @HttpSessionId Long userId);
 
 
 }
