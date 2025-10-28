@@ -43,12 +43,8 @@ spring:
 
 # jwt
 auth:
-  jwt:
-    secret: 434c9b82d45b066aa3d793bbde37c6fe2bc2ac1a538c5fb2736519f96f205d86
-    access:
-      expiration: 900 # 15분
-    refresh:
-      expiration: 604800 # 7일
+  session:
+    expiration: 604800
 
 #### AWS
 cloud:

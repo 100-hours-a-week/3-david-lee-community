@@ -16,6 +16,8 @@ public enum SecurityErrorCode implements ErrorCode {
     // 400 Bad Request
     // ========================
     BAD_REQUEST_LOGIN(400_000, HttpStatus.BAD_REQUEST, "로그인할 수 없습니다."),
+    BAD_REQUEST_SESSION(400_001, HttpStatus.BAD_REQUEST, "전달할 세션 키가 없습니다."),
+
 
     // ========================
     // 401 Unauthorized

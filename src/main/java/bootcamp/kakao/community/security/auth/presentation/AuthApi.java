@@ -1,17 +1,14 @@
 package bootcamp.kakao.community.security.auth.presentation;
 
 import bootcamp.kakao.community.common.response.ApiResponse;
+import bootcamp.kakao.community.security.auth.application.SessionUseCase;
 import bootcamp.kakao.community.security.auth.presentation.swagger.AuthApiSpec;
 import bootcamp.kakao.community.common.util.HttpUtil;
-import bootcamp.kakao.community.security.auth.application.AuthUseCase;
 import bootcamp.kakao.community.security.auth.application.dto.LoginRequest;
-import bootcamp.kakao.community.security.auth.domain.CustomUserDetails;
-import bootcamp.kakao.community.security.jwt.application.dto.JwtTokenResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -21,7 +18,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthApi implements AuthApiSpec {
 
-    private final AuthUseCase service;
+    private final SessionUseCase service;
 
     /// HTTP 서비스
     private final HttpUtil httpUtil;
@@ -39,15 +36,11 @@ public class AuthApi implements AuthApiSpec {
             HttpServletResponse httpServletResponse,
             @RequestBody @Valid LoginRequest request) {
 
-        /// 디바이스 조회
-        String deviceType = httpUtil.getDeviceType(httpServletRequest);
-
         /// 서비스 로직 실행
-        JwtTokenResponse response = service.login(request, deviceType);
+        String sessionId = service.login(request);
 
-        /// 쿠키로 전송하기
-        httpUtil.addAccessTokenHeader(httpServletResponse, response.accessToken());
-        httpUtil.addRefreshTokenCookie(httpServletResponse, response.refreshToken());
+        /// 쿠키로 세션 키 전송하기
+        httpUtil.addSessionId(httpServletResponse, sessionId);
 
         /// 리턴
         return ApiResponse.created();
@@ -59,48 +52,18 @@ public class AuthApi implements AuthApiSpec {
     @DeleteMapping
     public ApiResponse<Void> logout(
             HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+            HttpServletResponse httpServletResponse) {
 
-        /// 디바이스 조회
-        String deviceType = httpUtil.getDeviceType(httpServletRequest);
-
-        /// 리프레쉬 토큰 까보기
-        Optional<String> refreshToken = httpUtil.getRefreshToken(httpServletRequest);
+        /// 기존 세션이 존재하는지 체크
+        Optional<String> sessionId = httpUtil.getSessionId(httpServletRequest);
 
         /// 서비스 로직 실행
-        service.logout(customUserDetails.getId(), deviceType, refreshToken);
+        service.logout(sessionId);
 
-        /// 쿠키 삭제하기
-        httpUtil.removeRefreshTokenCookie(httpServletResponse);
+        /// 세션키 쿠키 삭제하기
+        httpUtil.removeSessionId(httpServletResponse);
 
         /// 리턴
         return ApiResponse.deleted();
     }
-
-    /**
-     * 토큰 재발급
-     */
-    @PutMapping
-    public ApiResponse<Void> reissue(
-            HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse
-    ) {
-        /// 디바이스 조회
-        String deviceType = httpUtil.getDeviceType(httpServletRequest);
-
-        /// 리프레쉬 토큰 까보기
-        Optional<String> refreshToken = httpUtil.getRefreshToken(httpServletRequest);
-
-        /// 서비스 로직 실행
-        JwtTokenResponse response = service.reissue(deviceType, refreshToken);
-
-        /// 액세스 쿠키로 전송하기
-        httpUtil.addAccessTokenHeader(httpServletResponse, response.accessToken());
-        httpUtil.addRefreshTokenCookie(httpServletResponse, response.refreshToken());
-
-        /// 리턴
-        return ApiResponse.updated();
-    }
-
 }

@@ -16,55 +16,24 @@ import static bootcamp.kakao.community.common.util.KeyUtil.*;
 @Component
 public class HttpUtil {
 
-    @Value("${auth.jwt.refresh.expiration}")
-    private long refreshExpiration;
+    @Value("${auth.session.expiration}")
+    private long sessionExpiration;
 
-    /// 액세스 토큰 헤더 가져오기
-    public Optional<String> getAccessToken(HttpServletRequest request) {
+    /// 세션 ID 가져오기
+    public Optional<String> getSessionId(HttpServletRequest request) {
 
-        /// 헤더에서 가져오기
-        Optional<String> accessTokenOptional = extractHeader(request, AUTHORIZATION);
-
-        if (accessTokenOptional.isPresent()) {
-            /// 있다면 Bearer 빼고 가져오기
-            return Optional.of(getBearerToken(accessTokenOptional.get()));
-        }
-        return Optional.empty();
-
+        /// 쿠키에서 세션 ID 가져오기
+        return extractCookie(request, SESSION);
     }
 
-    /// 리프레쉬 토큰 쿠키 가져오기
-    public Optional<String> getRefreshToken(HttpServletRequest request) {
-        return extractCookie(request, REFRESH_TOKEN);
+    /// 세션 ID 쿠키에 저장하기
+    public void addSessionId(HttpServletResponse response, String sessionId) {
+        createCookie(response, SESSION, sessionId, sessionExpiration);
     }
 
-    /// 액세스 토큰을 쿠키에 저장하기
-    public void addAccessTokenHeader(HttpServletResponse httpServletResponse, String accessToken) {
-
-        /// Bearer 추가하기
-        String bearerAccessToken = setBearerToken(accessToken);
-
-        /// 헤더 저장
-        createHeader(httpServletResponse, AUTHORIZATION, bearerAccessToken);
-    }
-
-    /// 리프레쉬 토큰을 쿠키에 저장하기
-    public void addRefreshTokenCookie(HttpServletResponse httpServletResponse, String refreshToken) {
-
-        /// 쿠키 생성
-        createCookie(httpServletResponse, REFRESH_TOKEN, refreshToken, refreshExpiration);
-    }
-
-    /// 리프레쉬 토큰을 삭제하기
-    public void removeRefreshTokenCookie(HttpServletResponse httpServletResponse) {
-
-        /// 쿠키 생성
-        createCookie(httpServletResponse, REFRESH_TOKEN, null, 0);
-    }
-
-    /// Header에서 어떤 디바이스인지 체크
-    public String getDeviceType(HttpServletRequest httpServletRequest) {
-        return httpServletRequest.getHeader("User-Agent");
+    /// 세션 ID 쿠키에서 삭제하기
+    public void removeSessionId(HttpServletResponse response) {
+        createCookie(response, SESSION, null, 0);
     }
 
     /// 요청자의 정보를 헤더에서 조회하기 위한 함수
@@ -94,29 +63,14 @@ public class HttpUtil {
     //  내부 공통 함수
     // =================
 
-    /// 헤더로 발급하기
-    private void createHeader(HttpServletResponse httpServletResponse, String headerName, String headerValue) {
-
-        /// 헤더 설정하기
-        httpServletResponse.setHeader(headerName, headerValue);
-    }
-
-    /// 헤더에서 값 가져오기
-    private Optional<String> extractHeader(HttpServletRequest httpServletRequest, String headerName) {
-
-        /// 헤더 가져오기
-        return Optional.ofNullable(httpServletRequest.getHeader(headerName));
-    }
-
-
     /// 쿠키 생성하기
     private void createCookie(HttpServletResponse response, String cookieName, String cookieValue, long maxAge) {
 
         ResponseCookie cookie = ResponseCookie.from(cookieName, cookieValue)
                 .maxAge(maxAge)
                 .path("/")
-                .httpOnly(true)
-                .secure(false)  // Dev/Prod 환경에 따라 설정됨
+                .httpOnly(true)     // JS에서 꺼내지 못하게끔
+                .secure(false)      // 개발환경이기에 false
                 .sameSite("Lax")
                 .build();
 
@@ -141,20 +95,6 @@ public class HttpUtil {
             }
         }
         return Optional.empty();
-    }
-
-    /// 토큰에서 Bearer 추가하기
-    private String setBearerToken(String accessToken) {
-
-        /// 토큰에서 Bearer 추가하기
-        return BEARER + " " + accessToken;
-    }
-
-    /// 헤더에서 Bearer 빼고 가져오기
-    private String getBearerToken(String headerToken) {
-
-        /// Bearer (띄어쓰기 포함 7글자) 빼고 가져오기
-        return headerToken.substring(7);
     }
 
     /// 요청자의 실제 IP를 조회하기 위한 함수

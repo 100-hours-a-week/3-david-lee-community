@@ -19,6 +19,8 @@ public class KeyUtil {
     /// 좋아요
     private static final String LIKES = "likes";
 
+    /// 세션 ID
+    public static final String SESSION = "JSESSIONID";
 
     // =====================
     //  합쳐서 사용하는 키 목록
