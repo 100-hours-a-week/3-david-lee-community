@@ -19,22 +19,10 @@ public class KeyUtil {
     /// 좋아요
     private static final String LIKES = "likes";
 
-    /// JWT
-    public static final String REFRESH_TOKEN = "refresh_token";
-    public static final String ID_CLAIM = "user_id";
-    public static final String ROLE_CLAIM = "role";
-    public static final String BEARER = "Bearer";
-    public static final String AUTHORIZATION = "Authorization";
-    public static final String JWT = "JWT";
 
     // =====================
     //  합쳐서 사용하는 키 목록
     // =====================
-
-    /// 키 생성 함수
-    public static String getRefreshTokenKey(Long userId, String deviceType) {
-        return REFRESH_TOKEN + SEPARATOR + userId + SEPARATOR + deviceType;
-    }
 
     /// 게시글 조회수 키 생성 함수
     public static String getPostView(Long postId) {
