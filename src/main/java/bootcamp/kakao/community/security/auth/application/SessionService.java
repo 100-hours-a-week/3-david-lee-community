@@ -61,9 +61,11 @@ public class SessionService implements SessionUseCase{
             throw new CustomException(SecurityErrorCode.BAD_REQUEST_SESSION);
         }
 
+        /// 기존 세션을 블랙리스트에 추가하기
+        sessionProvider.addBlacklist(sessionId.get());
+
         /// 로그아웃 하기 & 세션 서비스에서 지우기
         sessionProvider.removeUserBySession(sessionId.get());
-
 
     }
 }
