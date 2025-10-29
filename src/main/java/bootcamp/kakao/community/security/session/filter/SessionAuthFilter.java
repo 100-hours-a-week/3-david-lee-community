@@ -59,17 +59,17 @@ public class SessionAuthFilter extends OncePerRequestFilter {
             /// 세션 쿠키가 있다면
             String sessionId = sessionIdOptional.get();
 
-            /// 만료된 세션 키인지 체크
-            Long userId = sessionProvider.getUserBySession(sessionId);
-            if (userId == null) {
-                writeJsonError(response, CommonErrorCode.UNAUTHORIZED);
-                return;
-            }
-
             /// 블랙리스트에 없는지 체크
             boolean blacklisted = sessionProvider.isBlacklisted(sessionId);
             if (blacklisted) {
                 writeJsonError(response, CommonErrorCode.FORBIDDEN_BLACK_LIST);
+                return;
+            }
+
+            /// 만료된 세션 키인지 체크
+            Long userId = sessionProvider.getUserBySession(sessionId);
+            if (userId == null) {
+                writeJsonError(response, CommonErrorCode.UNAUTHORIZED);
                 return;
             }
 
@@ -80,14 +80,18 @@ public class SessionAuthFilter extends OncePerRequestFilter {
             /// 필터 넘어가기
             filterChain.doFilter(request, response);
 
-        } catch (Exception e) {
+        } catch (CustomException e) {
 
             /// 로그 찍기
             log.error(e.getMessage());
 
             /// 예외 처리 하기
-            writeJsonError(response, SecurityErrorCode.INTERNAL_SERVER_ERROR_SECURITY);
+            writeJsonError(response, e.getErrorCode());
+        } catch (Exception e) {
 
+            log.error(e.getMessage(), e);
+
+            writeJsonError(response, SecurityErrorCode.INTERNAL_SERVER_ERROR_SECURITY);
         }
     }
 

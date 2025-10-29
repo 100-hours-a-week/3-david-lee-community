@@ -61,7 +61,7 @@ public class SessionAuthInterceptor implements HandlerInterceptor {
 
             /// 비회원만 false, ADMIN true
             if (role == null) {
-                return false;
+                throw new CustomException(CommonErrorCode.FORBIDDEN);
             }
             return true;
         }
@@ -71,14 +71,14 @@ public class SessionAuthInterceptor implements HandlerInterceptor {
 
             /// 비회원이거나 Member인 경우 false
             if (role == null || user.getRole().equals(UserRole.MEMBER)) {
-                return false;
+                throw new CustomException(CommonErrorCode.FORBIDDEN);
             }
             return true;
         }
 
         else {
             /// 나머지 ?
-            return false;
+            throw new CustomException(CommonErrorCode.FORBIDDEN);
         }
     }
 }

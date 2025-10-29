@@ -47,18 +47,18 @@ public class SessionProvider {
     /// 세션 ID를 바탕으로 유저 정보 얻기
     public Long getUserBySession(String sessionId) {
 
-        /// 만료 여부 체크
-        boolean expired = isExpired(sessionId);
-        if (expired) {
-            throw new CustomException(SecurityErrorCode.SESSION_EXPIRED);
-        }
-
         /// 세션 저장소에서 유저 가져오기
         UserRedisSessionData sessionData = (UserRedisSessionData) redisTemplate.opsForValue().get(sessionId);
 
         /// 없다면 예외 던지기
         if (sessionData == null) {
             throw new CustomException(UserErrorCode.NOT_FOUND_USER);
+        }
+
+        /// 만료 여부 체크
+        boolean expired = isExpired(sessionId);
+        if (expired) {
+            throw new CustomException(SecurityErrorCode.SESSION_EXPIRED);
         }
 
         /// 리턴
@@ -80,14 +80,15 @@ public class SessionProvider {
 
     }
 
-    /// 블랙 리스트 추가하기
+    /// 해당 세션 키를 블랙 리스트에 추가하기
     public void addBlacklist(String sessionId) {
 
         /// 블랙 리스트 키
         String blacklistKey = getBlacklistKey(sessionId);
 
         /// 블랙 리스트에 추가하기
-        redisTemplate.opsForValue().set(blacklistKey, "true", sessionExpiration, TimeUnit.SECONDS);
+        redisTemplate.opsForValue()
+                .set(blacklistKey, "true", Duration.ofSeconds(sessionExpiration));
 
     }
 
