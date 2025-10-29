@@ -10,6 +10,8 @@ import bootcamp.kakao.community.platform.images.image.application.dto.request.te
 import bootcamp.kakao.community.platform.images.image.application.dto.response.ImageResponse;
 import bootcamp.kakao.community.platform.images.image.application.dto.response.PreSignedImageResponse;
 import bootcamp.kakao.community.platform.images.image.presentation.swagger.ImageApiSpec;
+import bootcamp.kakao.community.platform.user.domain.entity.UserRole;
+import bootcamp.kakao.community.security.auth.annotation.Auth;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +45,7 @@ public class ImageApi implements ImageApiSpec {
      * 여러 개의 파일 저장 임시 업로드 URL 발급
      */
     @PostMapping
+    @Auth(role = UserRole.MEMBER)
     public ApiResponse<List<PreSignedImageResponse>> upload(
             @RequestBody @Valid PreSignedImageRequest request,
             @HttpSessionId Long userId) throws IOException {
@@ -75,6 +78,7 @@ public class ImageApi implements ImageApiSpec {
      * 여러 개의 파일을 S3에 저장
      */
     @PatchMapping
+    @Auth(role = UserRole.MEMBER)
     public ApiResponse<List<ImageResponse>> confirm(
             @RequestBody @Valid ConfirmImageRequest request,
             @HttpSessionId Long userId) throws IOException {

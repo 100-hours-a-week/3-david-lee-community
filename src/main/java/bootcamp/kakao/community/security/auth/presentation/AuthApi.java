@@ -1,6 +1,8 @@
 package bootcamp.kakao.community.security.auth.presentation;
 
 import bootcamp.kakao.community.common.response.ApiResponse;
+import bootcamp.kakao.community.platform.user.domain.entity.UserRole;
+import bootcamp.kakao.community.security.auth.annotation.Auth;
 import bootcamp.kakao.community.security.auth.application.SessionUseCase;
 import bootcamp.kakao.community.security.auth.presentation.swagger.AuthApiSpec;
 import bootcamp.kakao.community.common.util.HttpUtil;
@@ -49,6 +51,7 @@ public class AuthApi implements AuthApiSpec {
     /**
      * 로그아웃
      */
+    @Auth(role = UserRole.MEMBER)
     @DeleteMapping
     public ApiResponse<Void> logout(
             HttpServletRequest httpServletRequest,

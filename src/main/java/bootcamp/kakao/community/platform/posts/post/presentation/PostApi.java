@@ -8,6 +8,8 @@ import bootcamp.kakao.community.platform.posts.post.application.PostCommandUseCa
 import bootcamp.kakao.community.platform.posts.post.application.PostQueryUseCase;
 import bootcamp.kakao.community.platform.posts.post.application.dto.*;
 import bootcamp.kakao.community.platform.posts.post.presentation.swagger.PostApiSpec;
+import bootcamp.kakao.community.platform.user.domain.entity.UserRole;
+import bootcamp.kakao.community.security.auth.annotation.Auth;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +23,7 @@ public class PostApi implements PostApiSpec {
     private final PostQueryUseCase queryService;
 
     /// 글 작성
+    @Auth(role = UserRole.MEMBER)
     @PostMapping
     public ApiResponse<PostSaveResponse> createPost(
             @RequestBody @Valid PostRequest request,
@@ -34,6 +37,7 @@ public class PostApi implements PostApiSpec {
     }
 
     /// 글 상세 조회
+    @Auth(role = UserRole.MEMBER)
     @GetMapping("/{postId}")
     public ApiResponse<PostDetailResponse> readPost(
             @PathVariable Long postId,
@@ -48,6 +52,7 @@ public class PostApi implements PostApiSpec {
 
 
     /// 글 목록 조회
+    @Auth(role = UserRole.MEMBER)
     @GetMapping()
     public ApiResponse<SliceResponse<PostListResponse>> readPosts(
             SliceRequest sliceRequest,
@@ -62,6 +67,7 @@ public class PostApi implements PostApiSpec {
 
 
     /// 글 수정
+    @Auth(role = UserRole.MEMBER)
     @PatchMapping("/{postId}")
     public ApiResponse<Void> updatePost(
             @PathVariable Long postId,
@@ -76,6 +82,7 @@ public class PostApi implements PostApiSpec {
     }
 
     /// 글 삭제 (소프트 삭제)
+    @Auth(role = UserRole.MEMBER)
     @PutMapping("/{postId}")
     public ApiResponse<Void> delete(
             @PathVariable Long postId,

@@ -6,6 +6,8 @@ import bootcamp.kakao.community.platform.posts.category.application.CategoryUseC
 import bootcamp.kakao.community.platform.posts.category.application.dto.CategoryRequest;
 import bootcamp.kakao.community.platform.posts.category.application.dto.CategoryResponse;
 import bootcamp.kakao.community.platform.posts.category.presentation.swaager.CategoryApiSpec;
+import bootcamp.kakao.community.platform.user.domain.entity.UserRole;
+import bootcamp.kakao.community.security.auth.annotation.Auth;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,7 @@ public class CategoryApi implements CategoryApiSpec {
     private final CategoryUseCase service;
 
     /// 카테고리 생성
+    @Auth(role = UserRole.ADMIN)
     @PostMapping()
     public ApiResponse<Void> create(@RequestBody @Valid CategoryRequest request,
                                     @HttpSessionId Long userId) {
@@ -44,6 +47,7 @@ public class CategoryApi implements CategoryApiSpec {
 
 
     /// 카테고리 삭제
+    @Auth(role = UserRole.ADMIN)
     @DeleteMapping()
     public ApiResponse<Void> delete(
             @RequestParam Long categoryId,
