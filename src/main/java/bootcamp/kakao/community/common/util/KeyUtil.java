@@ -21,10 +21,14 @@ public class KeyUtil {
 
     /// 세션 ID
     public static final String SESSION = "JSESSIONID";
+    public static final String BLACKLIST = "blacklist";
 
     // =====================
     //  합쳐서 사용하는 키 목록
     // =====================
+
+    /// 블랙 리스트 키 생성 함수
+    public static String getBlacklistKey(String sessionId) {return BLACKLIST + SEPARATOR + sessionId;}
 
     /// 게시글 조회수 키 생성 함수
     public static String getPostView(Long postId) {

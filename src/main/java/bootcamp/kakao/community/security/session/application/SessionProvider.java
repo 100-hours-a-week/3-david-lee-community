@@ -13,6 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+import static bootcamp.kakao.community.common.util.KeyUtil.BLACKLIST;
+import static bootcamp.kakao.community.common.util.KeyUtil.getBlacklistKey;
 
 @Service
 @Transactional
@@ -43,14 +47,16 @@ public class SessionProvider {
     }
 
     /// 세션 ID를 바탕으로 유저 정보 얻기
-    public Long getUserBySession(Optional<String> sessionId){
+    public Long getUserBySession(String sessionId) {
 
-        if(sessionId.isEmpty()){
-            throw new CustomException(SecurityErrorCode.BAD_REQUEST_SESSION);
+        /// 만료 여부 체크
+        boolean expired = isExpired(sessionId);
+        if (expired) {
+            throw new CustomException(SecurityErrorCode.SESSION_EXPIRED);
         }
 
         /// 세션 저장소에서 유저 가져오기
-        UserRedisSessionData sessionData = (UserRedisSessionData) redisTemplate.opsForValue().get(sessionId.get());
+        UserRedisSessionData sessionData = (UserRedisSessionData) redisTemplate.opsForValue().get(sessionId);
 
         /// 없다면 예외 던지기
         if (sessionData == null) {
@@ -75,6 +81,49 @@ public class SessionProvider {
         redisTemplate.delete(sessionId);
 
     }
+
+    /// 블랙 리스트 추가하기
+    public void addBlacklist(String sessionId) {
+
+        /// 블랙 리스트 키
+        String blacklistKey = getBlacklistKey(sessionId);
+
+        /// 블랙 리스트에 추가하기
+        redisTemplate.opsForValue().set(blacklistKey, "true", sessionExpiration, TimeUnit.SECONDS);
+
+    }
+
+    /// 블랙 리스트 인지
+    public boolean isBlacklisted(String sessionId) {
+
+        /// 블랙 리스트 키를 가지고 있는지 체크
+        String blacklistKey = getBlacklistKey(sessionId);
+
+        /// 가지고 있는지 체크
+        return redisTemplate.hasKey(blacklistKey);
+    }
+
+
+    // ==============
+    //  내부 함수
+    // ==============
+
+    /// 레디스에 존재하는지 체크
+    private boolean isExpired(String sessionId) {
+        Long ttl = redisTemplate.getExpire(sessionId, TimeUnit.SECONDS);
+
+        if (ttl >= 0) {
+            /// 0보다 큰 것이면 TTL 남은 것
+            return false;
+        }
+        else {
+            /// 존재하지 않다면 만료인 것
+            return true;
+        }
+
+    }
+
+
 
     /// 레디스에 저장할 객체 구조화
     protected record UserRedisSessionData(

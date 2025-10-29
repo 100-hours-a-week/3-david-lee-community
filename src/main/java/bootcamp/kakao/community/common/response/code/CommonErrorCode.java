@@ -31,6 +31,7 @@ public enum CommonErrorCode implements ErrorCode {
     // 403 Forbidden
     // ========================
     FORBIDDEN(403_000, HttpStatus.FORBIDDEN, "접속 권한이 없습니다."),
+    FORBIDDEN_BLACK_LIST(403_000, HttpStatus.FORBIDDEN, "블랙리스트에 들어간 세션 ID 입니다."),
 
     // ========================
     // 404 Not Found
