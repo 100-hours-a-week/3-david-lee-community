@@ -20,6 +20,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Optional;
 
+/**
+ * 세션 인증용 필터입니다.
+ * 요청이 들어온 것에서 먼저 만료/블랙리스트를 거르는 역할을 수행합니다.
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -44,8 +48,6 @@ public class SessionAuthFilter extends OncePerRequestFilter {
         Optional<String> sessionIdOptional = httpUtil.getSessionId(request);
         /// 세션 쿠키가 없으면 인증 패스
         if (sessionIdOptional.isEmpty()) {
-
-            log.info("필터가 필요합니다.");
 
             filterChain.doFilter(request, response);
             return;
