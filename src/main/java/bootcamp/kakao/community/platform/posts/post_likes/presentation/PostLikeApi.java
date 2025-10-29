@@ -4,10 +4,9 @@ import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.platform.posts.post_likes.application.PostLikeUseCase;
 import bootcamp.kakao.community.platform.posts.post_likes.application.dto.PostLikeRequest;
 import bootcamp.kakao.community.platform.posts.post_likes.presentation.swagger.PostLikeApiSpec;
-import bootcamp.kakao.community.security.auth.domain.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import bootcamp.kakao.community.security.auth.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,10 +20,10 @@ public class PostLikeApi implements PostLikeApiSpec {
     @PostMapping
     public ApiResponse<Void> like(
             @RequestBody @Valid PostLikeRequest request,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+            @AuthenticationPrincipal Long userId) {
 
         /// 서비스
-        service.like(request, customUserDetails.getId());
+        service.like(request, userId);
 
         /// 리턴
         return ApiResponse.created();
@@ -34,10 +33,10 @@ public class PostLikeApi implements PostLikeApiSpec {
     @DeleteMapping
     public ApiResponse<Void> unlike(
             @RequestParam Long postId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+            @AuthenticationPrincipal Long userId) {
 
         /// 서비스
-        service.unlike(postId, customUserDetails.getId());
+        service.unlike(postId, userId);
 
         /// 리턴
         return ApiResponse.deleted();

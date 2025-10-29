@@ -7,10 +7,9 @@ import bootcamp.kakao.community.platform.posts.post.application.PostCommandUseCa
 import bootcamp.kakao.community.platform.posts.post.application.PostQueryUseCase;
 import bootcamp.kakao.community.platform.posts.post.application.dto.*;
 import bootcamp.kakao.community.platform.posts.post.presentation.swagger.PostApiSpec;
-import bootcamp.kakao.community.security.auth.domain.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import bootcamp.kakao.community.security.auth.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,10 +24,10 @@ public class PostApi implements PostApiSpec {
     @PostMapping
     public ApiResponse<PostSaveResponse> createPost(
             @RequestBody @Valid PostRequest request,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+            @AuthenticationPrincipal Long userId) {
 
         /// 서비스 작성
-        var response = commandService.create(request, customUserDetails.getId());
+        var response = commandService.create(request, userId);
 
         /// 리턴
         return ApiResponse.created(response);
@@ -38,11 +37,8 @@ public class PostApi implements PostApiSpec {
     @GetMapping("/{postId}")
     public ApiResponse<PostDetailResponse> readPost(
             @PathVariable Long postId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+            @AuthenticationPrincipal Long userId) {
 
-
-        /// 유저가 없다면 null 저장
-        Long userId = customUserDetails != null ? customUserDetails.getId() : null;
 
         /// 서비스 읽기
         PostDetailResponse response = queryService.getPost(postId, userId);
@@ -71,10 +67,10 @@ public class PostApi implements PostApiSpec {
     public ApiResponse<Void> updatePost(
             @PathVariable Long postId,
             @RequestBody @Valid PostUpdateRequest request,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+            @AuthenticationPrincipal Long userId) {
 
         /// 서비스 수정
-        commandService.update(postId, request, customUserDetails.getId());
+        commandService.update(postId, request, userId);
 
         /// 리턴
         return ApiResponse.updated();
@@ -84,10 +80,10 @@ public class PostApi implements PostApiSpec {
     @PutMapping("/{postId}")
     public ApiResponse<Void> delete(
             @PathVariable Long postId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+            @AuthenticationPrincipal Long userId) {
 
         /// 서비스 삭제
-        commandService.delete(postId, customUserDetails.getId());
+        commandService.delete(postId, userId);
 
         /// 리턴
         return ApiResponse.deleted();

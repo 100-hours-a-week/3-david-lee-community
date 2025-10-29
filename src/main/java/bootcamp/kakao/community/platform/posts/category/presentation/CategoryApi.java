@@ -5,10 +5,9 @@ import bootcamp.kakao.community.platform.posts.category.application.CategoryUseC
 import bootcamp.kakao.community.platform.posts.category.application.dto.CategoryRequest;
 import bootcamp.kakao.community.platform.posts.category.application.dto.CategoryResponse;
 import bootcamp.kakao.community.platform.posts.category.presentation.swaager.CategoryApiSpec;
-import bootcamp.kakao.community.security.auth.domain.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import bootcamp.kakao.community.security.auth.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -22,11 +21,11 @@ public class CategoryApi implements CategoryApiSpec {
     /// 카테고리 생성
     @PostMapping()
     public ApiResponse<Void> create(@RequestBody @Valid CategoryRequest request,
-                                    @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+                                    @AuthenticationPrincipal Long userId) {
 
 
         /// 서비스
-        service.createCategory(request, customUserDetails.getId());
+        service.createCategory(request, userId);
 
         /// 리턴
         return ApiResponse.created();
@@ -48,10 +47,10 @@ public class CategoryApi implements CategoryApiSpec {
     @DeleteMapping()
     public ApiResponse<Void> delete(
             @RequestParam Long categoryId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+            @AuthenticationPrincipal Long userId) {
 
         /// 서비스
-        service.deleteCategory(categoryId, customUserDetails.getId());
+        service.deleteCategory(categoryId, userId);
 
         /// 리턴
         return ApiResponse.deleted();

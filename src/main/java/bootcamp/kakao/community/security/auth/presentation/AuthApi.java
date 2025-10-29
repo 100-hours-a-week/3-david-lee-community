@@ -1,17 +1,16 @@
 package bootcamp.kakao.community.security.auth.presentation;
 
 import bootcamp.kakao.community.common.response.ApiResponse;
+import bootcamp.kakao.community.security.auth.annotation.AuthenticationPrincipal;
 import bootcamp.kakao.community.security.auth.presentation.swagger.AuthApiSpec;
 import bootcamp.kakao.community.common.util.HttpUtil;
 import bootcamp.kakao.community.security.auth.application.AuthUseCase;
 import bootcamp.kakao.community.security.auth.application.dto.LoginRequest;
-import bootcamp.kakao.community.security.auth.domain.CustomUserDetails;
 import bootcamp.kakao.community.security.jwt.application.dto.JwtTokenResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -60,7 +59,7 @@ public class AuthApi implements AuthApiSpec {
     public ApiResponse<Void> logout(
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+            @AuthenticationPrincipal Long userId) {
 
         /// 디바이스 조회
         String deviceType = httpUtil.getDeviceType(httpServletRequest);
@@ -69,7 +68,7 @@ public class AuthApi implements AuthApiSpec {
         Optional<String> refreshToken = httpUtil.getRefreshToken(httpServletRequest);
 
         /// 서비스 로직 실행
-        service.logout(customUserDetails.getId(), deviceType, refreshToken);
+        service.logout(userId, deviceType, refreshToken);
 
         /// 쿠키 삭제하기
         httpUtil.removeRefreshTokenCookie(httpServletResponse);

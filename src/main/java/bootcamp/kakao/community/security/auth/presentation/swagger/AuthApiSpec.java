@@ -2,13 +2,12 @@ package bootcamp.kakao.community.security.auth.presentation.swagger;
 
 import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.security.auth.application.dto.LoginRequest;
-import bootcamp.kakao.community.security.auth.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import bootcamp.kakao.community.security.auth.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Tag(name = "인증 API", description = "로그인/로그아웃/재발급를 수행하는 API입니다")
@@ -31,7 +30,7 @@ public interface AuthApiSpec {
     ApiResponse<Void> logout(
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails);
+            @AuthenticationPrincipal Long userId);
 
     @Operation(
             summary = "액세스토큰 재발급 API",

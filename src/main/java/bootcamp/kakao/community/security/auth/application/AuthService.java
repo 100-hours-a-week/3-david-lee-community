@@ -1,7 +1,6 @@
 package bootcamp.kakao.community.security.auth.application;
 
 import bootcamp.kakao.community.common.response.CustomException;
-import bootcamp.kakao.community.common.response.code.CommonErrorCode;
 import bootcamp.kakao.community.common.response.code.SecurityErrorCode;
 import bootcamp.kakao.community.common.response.code.UserErrorCode;
 import bootcamp.kakao.community.platform.user.domain.entity.User;
@@ -12,7 +11,6 @@ import bootcamp.kakao.community.security.jwt.application.JwtValidator;
 import bootcamp.kakao.community.security.jwt.application.dto.JwtTokenResponse;
 import bootcamp.kakao.community.security.jwt.application.dto.JwtTokenRequest;
 import bootcamp.kakao.community.security.jwt.domain.entity.JwtRefreshToken;
-import bootcamp.kakao.community.security.jwt.filter.JwtAuthenticationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -71,7 +69,7 @@ public class AuthService implements AuthUseCase {
 
         /// 없다면 예외처리
         if (refreshToken.isEmpty()) {
-            throw new JwtAuthenticationException(SecurityErrorCode.REFRESH_INVALID_LOGIN);
+            throw new CustomException(SecurityErrorCode.REFRESH_INVALID_LOGIN);
         }
 
         /// 레디스에서 삭제하도록 로직 수행
@@ -85,7 +83,7 @@ public class AuthService implements AuthUseCase {
 
         /// 없다면 예외처리
         if (refreshToken.isEmpty()) {
-            throw new JwtAuthenticationException(SecurityErrorCode.REFRESH_INVALID_LOGIN);
+            throw new CustomException(SecurityErrorCode.REFRESH_INVALID_LOGIN);
         }
 
         /// 존재하는 리프레쉬 토큰 검증

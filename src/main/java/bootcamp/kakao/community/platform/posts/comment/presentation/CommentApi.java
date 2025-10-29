@@ -9,10 +9,9 @@ import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentRe
 import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentResponse;
 import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentUpdateRequest;
 import bootcamp.kakao.community.platform.posts.comment.presentation.swagger.CommentApiSpec;
-import bootcamp.kakao.community.security.auth.domain.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import bootcamp.kakao.community.security.auth.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,11 +25,11 @@ public class CommentApi implements CommentApiSpec {
     @PostMapping
     public ApiResponse<CommentResponse> createComment(
             @RequestBody @Valid CommentRequest request,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
+            @AuthenticationPrincipal Long userId
     ) {
 
         /// 서비스 실행
-        var response = service.createComment(request, customUserDetails.getId());
+        var response = service.createComment(request, userId);
 
         /// 리턴
         return ApiResponse.created(response);
@@ -41,11 +40,8 @@ public class CommentApi implements CommentApiSpec {
     public ApiResponse<SliceResponse<CommentListResponse>> listComments(
             SliceRequest sliceRequest,
             @RequestParam Long postId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
+            @AuthenticationPrincipal Long userId
     ) {
-
-        /// 유저가 없다면 null 저장
-        Long userId = customUserDetails != null ? customUserDetails.getId() : null;
 
         /// 서비스 실행
         SliceResponse<CommentListResponse> response = service.getComments(sliceRequest, postId, userId);
@@ -59,10 +55,10 @@ public class CommentApi implements CommentApiSpec {
     public ApiResponse<Void> updateComment(
             @PathVariable Long commentId,
             @RequestBody @Valid CommentUpdateRequest request,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+            @AuthenticationPrincipal Long userId) {
 
         /// 서비스 실행
-        service.updateComment(commentId, request, customUserDetails.getId());
+        service.updateComment(commentId, request, userId);
 
         /// 리턴
         return ApiResponse.updated();
@@ -73,11 +69,11 @@ public class CommentApi implements CommentApiSpec {
     @PutMapping("/{commentId}")
     public ApiResponse<Void> deleteComment(
             @PathVariable Long commentId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
+            @AuthenticationPrincipal Long userId
     ){
 
         /// 서비스 실행
-        service.deleteComment(commentId, customUserDetails.getId());
+        service.deleteComment(commentId, userId);
 
         /// 리턴
         return ApiResponse.deleted();

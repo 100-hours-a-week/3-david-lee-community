@@ -1,18 +1,16 @@
 package bootcamp.kakao.community.platform.user.presentation;
 
-import bootcamp.kakao.community.common.aop.NonNullUser;
 import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.platform.user.application.UserUseCase;
 import bootcamp.kakao.community.platform.user.application.dto.*;
 import bootcamp.kakao.community.platform.user.presentation.swagger.UserApiSpec;
-import bootcamp.kakao.community.security.auth.domain.CustomUserDetails;
 import bootcamp.kakao.community.common.util.HttpUtil;
 import bootcamp.kakao.community.security.jwt.application.dto.JwtTokenResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import bootcamp.kakao.community.security.auth.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -54,10 +52,10 @@ public class UserApi implements UserApiSpec {
     @PutMapping
     public ApiResponse<Void> delete(
             HttpServletResponse httpServletResponse,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+            @AuthenticationPrincipal Long userId) {
 
         /// 서비스 로직
-        service.withdraw(customUserDetails.getId());
+        service.withdraw(userId);
 
         /// 토큰 삭제
         httpUtil.removeRefreshTokenCookie(httpServletResponse);
@@ -89,13 +87,12 @@ public class UserApi implements UserApiSpec {
     }
 
     /// 나의 정보 조회하기
-    @NonNullUser
     @GetMapping("/mypage")
     public ApiResponse<MyPageResponse> getUser(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+            @AuthenticationPrincipal Long userId) {
 
         /// 서비스 로직
-        MyPageResponse user = service.getUser(customUserDetails.getId());
+        MyPageResponse user = service.getUser(userId);
 
         /// 리턴
         return ApiResponse.ok(user);
@@ -115,10 +112,10 @@ public class UserApi implements UserApiSpec {
     /// 나의 정보 수정하기
     @PutMapping("/mypage")
     public ApiResponse<Void> updateUser(@RequestBody @Valid UserUpdateRequest request,
-                                        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+                                        @AuthenticationPrincipal Long userId) {
 
         /// 서비스 로직
-        service.updateUser(request, customUserDetails.getId());
+        service.updateUser(request, userId);
 
         /// 리턴
         return ApiResponse.updated();
@@ -127,10 +124,10 @@ public class UserApi implements UserApiSpec {
     /// 비밀번호 변경
     @PutMapping("/password")
     public ApiResponse<Void> updatePassword(@RequestBody @Valid PwUpdateRequest pwReq,
-                                            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+                                            @AuthenticationPrincipal Long userId) {
 
         /// 서비스 로직
-        service.updatePassword(customUserDetails.getId(), pwReq);
+        service.updatePassword(userId, pwReq);
 
         /// 리턴
         return ApiResponse.updated();
