@@ -3,6 +3,7 @@ package bootcamp.kakao.community.security.jwt.application;
 import bootcamp.kakao.community.security.jwt.application.dto.JwtTokenRequest;
 import bootcamp.kakao.community.security.jwt.domain.entity.JwtRefreshToken;
 import bootcamp.kakao.community.security.jwt.domain.repository.JwtRefreshTokenRepository;
+import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +17,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static bootcamp.kakao.community.common.util.KeyUtil.ID_CLAIM;
-import static bootcamp.kakao.community.common.util.KeyUtil.ROLE_CLAIM;
+import static bootcamp.kakao.community.common.util.KeyUtil.*;
 
 @Component
 @RequiredArgsConstructor
@@ -77,15 +77,17 @@ public class JwtProvider {
 
         /// JWT 내용 생성
         Map<String, Object> claims = new HashMap<>();
-        claims.put(ID_CLAIM, tokenInfo.userId());
-        claims.put(ROLE_CLAIM, tokenInfo.role());
+        claims.put(ID_CLAIM, tokenInfo.userId());               /// userId 넣기
+        claims.put(ROLE_CLAIM, tokenInfo.role().getRole());     /// Role 정보 넣기
+        claims.put(IP_CLAIM, tokenInfo.ip());                   /// IP 정보 넣기
+        claims.put(DEVICE_CLAIM, tokenInfo.deviceType());       /// 디바이스 정보 넣기
 
         return Jwts.builder()
                 .setIssuer("kakao-bootcamp-community") // 작성자
                 .setClaims(claims)  // 페이로드
                 .setIssuedAt(Date.from(now)) // 발급 시간
                 .setExpiration(expiredAt) // 만료 시간
-                .signWith(secretKey, SignatureAlgorithm.HS256)  // 비밀키 서명
+                .signWith(secretKey, SignatureAlgorithm.HS256)  // 비밀키 서명하기
                 .compact();
     }
 }

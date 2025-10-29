@@ -43,7 +43,7 @@ public class UserService implements UserUseCase{
     /// 회원가입, 회원가입 후 바로 이용가능하도록 토큰 발급
     @Override
     @Transactional
-    public JwtTokenResponse signUp(SignUpRequest request, String deviceType) {
+    public JwtTokenResponse signUp(SignUpRequest request, String ip, String deviceType) {
 
         /// 이메일 중복체크 및 예외처리
         boolean duplicateEmail = checkDuplicateEmail(request.email());
@@ -70,7 +70,7 @@ public class UserService implements UserUseCase{
         imageService.assignAndConfirmProfileImage(user, request.imageKey());
 
         /// 로그인했다면, JWT 발급하기
-        var jwtRequest = JwtTokenRequest.from(user);
+        var jwtRequest = JwtTokenRequest.from(user, ip, deviceType);
 
         String accessToken = jwtProvider.createAccessToken(jwtRequest);
         String refreshToken = jwtProvider.createRefreshToken(deviceType, jwtRequest);

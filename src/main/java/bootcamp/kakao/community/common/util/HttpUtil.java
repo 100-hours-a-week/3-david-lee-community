@@ -63,8 +63,15 @@ public class HttpUtil {
     }
 
     /// Header에서 어떤 디바이스인지 체크
-    public String getDeviceType(HttpServletRequest httpServletRequest) {
-        return httpServletRequest.getHeader("User-Agent");
+    public RequestInfo getRequestInfo(HttpServletRequest httpServletRequest) {
+
+        /// IP 추출하기
+        String ip = getClientIp(httpServletRequest);
+
+        /// 디바이스 타입 보기
+        String deviceType = httpServletRequest.getHeader("User-Agent");
+
+        return new RequestInfo(ip, deviceType);
     }
 
     /// 요청자의 정보를 헤더에서 조회하기 위한 함수
@@ -85,10 +92,11 @@ public class HttpUtil {
         return new HeaderInfo(ip, httpMethod, uri, username);
     }
 
-    /// 헤더의 값을 전달하기 위해서 레코드 클래스 생성
-    public record HeaderInfo(String ip, String httpMethod, String uri, String userName) {
+    /// JWT를 위한 레코드 클래스 생성
+    public record RequestInfo(String ip, String deviceType) {}
 
-    }
+    /// 로깅을 위한 레코드 클래스 생성
+    public record HeaderInfo(String ip, String httpMethod, String uri, String userName) {}
 
     // =================
     //  내부 공통 함수

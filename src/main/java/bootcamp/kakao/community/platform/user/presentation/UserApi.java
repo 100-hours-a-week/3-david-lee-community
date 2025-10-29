@@ -35,10 +35,10 @@ public class UserApi implements UserApiSpec {
             @RequestBody @Valid SignUpRequest request) {
 
         /// 디바이스 조회
-        String deviceType = httpUtil.getDeviceType(httpServletRequest);
+        var requestType = httpUtil.getRequestInfo(httpServletRequest);
 
         /// 회원가입 서비스 로직
-        JwtTokenResponse response = service.signUp(request, deviceType);
+        JwtTokenResponse response = service.signUp(request, requestType.ip(), requestType.deviceType());
 
         /// 성공했다면, 토큰 발급
         httpUtil.addAccessTokenHeader(httpServletResponse, response.accessToken());

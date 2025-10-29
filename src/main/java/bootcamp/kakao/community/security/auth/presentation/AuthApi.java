@@ -39,10 +39,10 @@ public class AuthApi implements AuthApiSpec {
             @RequestBody @Valid LoginRequest request) {
 
         /// 디바이스 조회
-        String deviceType = httpUtil.getDeviceType(httpServletRequest);
+        var requestType = httpUtil.getRequestInfo(httpServletRequest);
 
         /// 서비스 로직 실행
-        JwtTokenResponse response = service.login(request, deviceType);
+        JwtTokenResponse response = service.login(request, requestType.ip(), requestType.deviceType());
 
         /// 쿠키로 전송하기
         httpUtil.addAccessTokenHeader(httpServletResponse, response.accessToken());
@@ -62,13 +62,13 @@ public class AuthApi implements AuthApiSpec {
             @AuthenticationPrincipal Long userId) {
 
         /// 디바이스 조회
-        String deviceType = httpUtil.getDeviceType(httpServletRequest);
+        var requestType = httpUtil.getRequestInfo(httpServletRequest);
 
         /// 리프레쉬 토큰 까보기
         Optional<String> refreshToken = httpUtil.getRefreshToken(httpServletRequest);
 
         /// 서비스 로직 실행
-        service.logout(userId, deviceType, refreshToken);
+        service.logout(userId, requestType.deviceType(), refreshToken);
 
         /// 쿠키 삭제하기
         httpUtil.removeRefreshTokenCookie(httpServletResponse);
@@ -86,13 +86,13 @@ public class AuthApi implements AuthApiSpec {
             HttpServletResponse httpServletResponse
     ) {
         /// 디바이스 조회
-        String deviceType = httpUtil.getDeviceType(httpServletRequest);
+        var requestType = httpUtil.getRequestInfo(httpServletRequest);
 
         /// 리프레쉬 토큰 까보기
         Optional<String> refreshToken = httpUtil.getRefreshToken(httpServletRequest);
 
         /// 서비스 로직 실행
-        JwtTokenResponse response = service.reissue(deviceType, refreshToken);
+        JwtTokenResponse response = service.reissue(refreshToken, requestType.ip(), requestType.deviceType());
 
         /// 액세스 쿠키로 전송하기
         httpUtil.addAccessTokenHeader(httpServletResponse, response.accessToken());

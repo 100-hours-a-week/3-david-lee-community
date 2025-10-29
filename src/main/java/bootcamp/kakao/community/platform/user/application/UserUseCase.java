@@ -13,7 +13,7 @@ public interface UserUseCase {
     boolean checkDuplicateNickName(String nickName);
 
     /// 회원가입
-    JwtTokenResponse signUp(SignUpRequest authRequest, String deviceType);
+    JwtTokenResponse signUp(SignUpRequest authRequest, String ip, String deviceType);
 
     /// 회원 탈퇴
     void withdraw(Long userId);

@@ -8,12 +8,12 @@ import java.util.Optional;
 public interface AuthUseCase {
 
     /// 로그인
-    JwtTokenResponse login(LoginRequest request, String deviceType);
+    JwtTokenResponse login(LoginRequest request, String ip, String deviceType);
 
     /// 로그아웃
     void logout(Long userId, String deviceType, Optional<String> refreshToken);
 
     /// 토큰 재발급
-    JwtTokenResponse reissue(String deviceType, Optional<String> refreshToken);
+    JwtTokenResponse reissue(Optional<String> refreshToken, String ip, String deviceType);
 
 }

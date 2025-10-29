@@ -38,7 +38,7 @@ public class AuthService implements AuthUseCase {
     /// 로그인
     @Override
     @Transactional(readOnly = true)
-    public JwtTokenResponse login(LoginRequest request, String deviceType) {
+    public JwtTokenResponse login(LoginRequest request, String ip, String deviceType) {
 
         /// DB 검증
         User user = repository.findByEmailAndDeletedFalse(request.email())
@@ -50,7 +50,7 @@ public class AuthService implements AuthUseCase {
         }
 
         /// 로그인했다면, JWT 발급하기
-        var jwtRequest = JwtTokenRequest.from(user);
+        var jwtRequest = JwtTokenRequest.from(user, ip, deviceType);
 
         String accessToken = jwtProvider.createAccessToken(jwtRequest);
         String refreshToken = jwtProvider.createRefreshToken(deviceType, jwtRequest);
@@ -79,7 +79,7 @@ public class AuthService implements AuthUseCase {
     /// 토큰 재발급
     @Override
     @Transactional
-    public JwtTokenResponse reissue(String deviceType, Optional<String> refreshToken) {
+    public JwtTokenResponse reissue(Optional<String> refreshToken, String ip, String deviceType) {
 
         /// 없다면 예외처리
         if (refreshToken.isEmpty()) {
@@ -95,7 +95,7 @@ public class AuthService implements AuthUseCase {
 
 
         /// 인증된 유저에게 JWT 발급하기
-        var jwtRequest = JwtTokenRequest.from(user);
+        var jwtRequest = JwtTokenRequest.from(user, ip, deviceType);
 
         /// 기존 리프레쉬 토큰 무효화하기 (RDB)
         jwtValidator.removeRefreshToken(user.getId(), deviceType, token.getRefreshToken());
@@ -103,7 +103,6 @@ public class AuthService implements AuthUseCase {
         /// 새로운 액세스토큰/리프레쉬 토큰 발급
         String newAccessToken = jwtProvider.createAccessToken(jwtRequest);
         String newRefreshToken = jwtProvider.createRefreshToken(deviceType, jwtRequest);
-
 
 
         return JwtTokenResponse.of(newAccessToken, newRefreshToken);

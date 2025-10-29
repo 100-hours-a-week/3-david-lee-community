@@ -25,7 +25,8 @@ public class KeyUtil {
     public static final String ROLE_CLAIM = "role";
     public static final String BEARER = "Bearer";
     public static final String AUTHORIZATION = "Authorization";
-    public static final String JWT = "JWT";
+    public static final String IP_CLAIM = "ip";
+    public static final String DEVICE_CLAIM = "device";
 
     // =====================
     //  합쳐서 사용하는 키 목록
