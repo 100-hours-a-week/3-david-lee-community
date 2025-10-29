@@ -21,30 +21,34 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class HttpSessionIdAspect {
 
-    private final SessionProvider sessionProvider;
     private final HttpServletRequest request;
-    private final HttpUtil httpUtil;
 
     @Around("execution(* *(.., @bootcamp.kakao.community.common.aop.HttpSessionId (*), ..))")
     public Object injectUserId(ProceedingJoinPoint joinPoint) throws Throwable {
+
+        /// 메서드 시그니처 가져오기
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+
+        /// 방법 및 인자 받기
         Method method = signature.getMethod();
         Object[] args = joinPoint.getArgs();
         Annotation[][] paramAnnotations = method.getParameterAnnotations();
 
         for (int i = 0; i < paramAnnotations.length; i++) {
             for (Annotation annotation : paramAnnotations[i]) {
+
+                /// 어노테이션에서만 사용
                 if (annotation instanceof HttpSessionId) {
-                    Optional<String> sessionId = httpUtil.getSessionId(request);
-                    Long userId = sessionProvider.getUserBySession(sessionId);
-                    if (userId == null) {
-                        throw new CustomException(CommonErrorCode.UNAUTHORIZED);
-                    }
-                    args[i] = userId; // 파라미터에 유저 ID 주입
+
+                    /// HTTP 유저 ID 추출
+                    Long userId = (Long) request.getAttribute("userId");
+
+                    args[i] = userId;
                 }
             }
         }
 
+        /// 계속해서 진행
         return joinPoint.proceed(args);
     }
 
