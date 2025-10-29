@@ -4,7 +4,7 @@ import bootcamp.kakao.community.security.auth.application.dto.LoginRequest;
 
 import java.util.Optional;
 
-public interface SessionUseCase {
+public interface AuthUseCase {
 
     /// 로그인
     String login(LoginRequest request);

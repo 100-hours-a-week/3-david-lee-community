@@ -11,11 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static bootcamp.kakao.community.common.util.KeyUtil.BLACKLIST;
 import static bootcamp.kakao.community.common.util.KeyUtil.getBlacklistKey;
 
 @Service

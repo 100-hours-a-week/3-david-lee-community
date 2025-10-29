@@ -3,7 +3,7 @@ package bootcamp.kakao.community.security.auth.presentation;
 import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.platform.user.domain.entity.UserRole;
 import bootcamp.kakao.community.security.auth.annotation.Auth;
-import bootcamp.kakao.community.security.auth.application.SessionUseCase;
+import bootcamp.kakao.community.security.auth.application.AuthUseCase;
 import bootcamp.kakao.community.security.auth.presentation.swagger.AuthApiSpec;
 import bootcamp.kakao.community.common.util.HttpUtil;
 import bootcamp.kakao.community.security.auth.application.dto.LoginRequest;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthApi implements AuthApiSpec {
 
-    private final SessionUseCase service;
+    private final AuthUseCase service;
 
     /// HTTP 서비스
     private final HttpUtil httpUtil;

@@ -2,7 +2,6 @@ package bootcamp.kakao.community.security.auth.application;
 
 import bootcamp.kakao.community.common.response.CustomException;
 import bootcamp.kakao.community.common.response.code.SecurityErrorCode;
-import bootcamp.kakao.community.common.response.code.UserErrorCode;
 import bootcamp.kakao.community.platform.user.domain.entity.User;
 import bootcamp.kakao.community.platform.user.domain.repository.UserRepository;
 import bootcamp.kakao.community.security.auth.application.dto.LoginRequest;
@@ -17,7 +16,7 @@ import java.util.Optional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class SessionService implements SessionUseCase{
+public class AuthService implements AuthUseCase {
 
     /// 패스워드 암호화
     private final UserRepository repository;
