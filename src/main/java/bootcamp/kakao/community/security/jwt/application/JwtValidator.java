@@ -35,7 +35,7 @@ public class JwtValidator {
     // =================
 
     /// 액세스 토큰 검증
-    public Long validateAccessToken(String accessToken) {
+    public User validateAccessToken(String accessToken) {
 
         try {
             /// 토큰 자체의 검증성 파악
@@ -44,12 +44,9 @@ public class JwtValidator {
             /// 검증 완료되었다면 유저 정보 가져오기
             Long userId = getUserIdFromToken(accessToken);
 
-            /// 유저 응답
-            User user = userRepository.findById(userId)
-                    .orElseThrow(NoSuchElementException::new);
-
             /// 인증 객체 생성할 유저 가져오기
-            return user.getId();
+            return userRepository.findById(userId)
+                    .orElseThrow(()-> new CustomException(SecurityErrorCode.USER_NOT_FOUND_IN_ACCESS_TOKEN));
 
         } catch (ExpiredJwtException e) {
             /// 만료된 토큰

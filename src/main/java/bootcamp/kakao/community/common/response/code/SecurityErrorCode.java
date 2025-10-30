@@ -49,6 +49,7 @@ public enum SecurityErrorCode implements ErrorCode {
     NOT_FOUND_EMAIL(404_400, HttpStatus.NOT_FOUND, "해당 이메일을 가진 유저가 없습니다"),
     NOT_FOUND_ID(404_401, HttpStatus.NOT_FOUND, "해당 아이디을 가진 유저가 없습니다"),
     USER_NOT_FOUND_IN_COOKIE(404_402, HttpStatus.NOT_FOUND, "쿠키에서 사용자 정보를 찾을 수 없습니다."),
+    USER_NOT_FOUND_IN_ACCESS_TOKEN(404_402, HttpStatus.NOT_FOUND, "액세스 토큰에서 사용자 정보를 찾을 수 없습니다."),
 
     // ========================
     // 500 Internal Server Error

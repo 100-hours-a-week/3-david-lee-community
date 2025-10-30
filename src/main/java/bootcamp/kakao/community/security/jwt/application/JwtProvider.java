@@ -78,7 +78,6 @@ public class JwtProvider {
         /// JWT 내용 생성
         Map<String, Object> claims = new HashMap<>();
         claims.put(ID_CLAIM, tokenInfo.userId());               /// userId 넣기
-        claims.put(ROLE_CLAIM, tokenInfo.role().getRole());     /// Role 정보 넣기
         claims.put(IP_CLAIM, tokenInfo.ip());                   /// IP 정보 넣기
         claims.put(DEVICE_CLAIM, tokenInfo.deviceType());       /// 디바이스 정보 넣기
 
