@@ -6,6 +6,7 @@ import bootcamp.kakao.community.common.response.code.UserErrorCode;
 import bootcamp.kakao.community.platform.user.domain.entity.User;
 import bootcamp.kakao.community.platform.user.domain.repository.UserRepository;
 import bootcamp.kakao.community.security.auth.application.dto.LoginRequest;
+import bootcamp.kakao.community.security.jwt.application.JwtBlackListValidator;
 import bootcamp.kakao.community.security.jwt.application.JwtProvider;
 import bootcamp.kakao.community.security.jwt.application.JwtValidator;
 import bootcamp.kakao.community.security.jwt.application.dto.JwtTokenResponse;
@@ -30,6 +31,7 @@ public class AuthService implements AuthUseCase {
     /// 토큰 의존성
     private final JwtValidator jwtValidator;
     private final JwtProvider jwtProvider;
+    private final JwtBlackListValidator jwtBlackListValidator;
 
     // =================
     //  퍼블릭 로직
@@ -61,7 +63,7 @@ public class AuthService implements AuthUseCase {
     /// 로그아웃
     @Override
     @Transactional(readOnly = true)
-    public void logout(Long userId, String deviceType, Optional<String> refreshToken) {
+    public void logout(Long userId, String deviceType, Optional<String> refreshToken, Optional<String> accessToken) {
 
         /// DB 검증
         User user = repository.findByIdAndDeletedIsFalse(userId)
@@ -72,7 +74,15 @@ public class AuthService implements AuthUseCase {
             throw new CustomException(SecurityErrorCode.REFRESH_INVALID_LOGIN);
         }
 
-        /// 레디스에서 삭제하도록 로직 수행
+        /// 없다면 예외처리
+        if (accessToken.isEmpty()) {
+            throw new CustomException(SecurityErrorCode.ACCESS_TOKEN_NOT_FOUND);
+        }
+
+        /// 액세스 토큰 블랙리스트에 넣기
+        jwtBlackListValidator.addBlackList(accessToken.get());
+
+        /// 리프레쉬 토큰 레디스에서 삭제하도록 로직 수행
         jwtValidator.removeRefreshToken(user.getId(), deviceType, refreshToken.get());
     }
 

@@ -64,11 +64,12 @@ public class AuthApi implements AuthApiSpec {
         /// 디바이스 조회
         var requestType = httpUtil.getRequestInfo(httpServletRequest);
 
-        /// 리프레쉬 토큰 까보기
+        /// 액세스/리프레쉬 토큰 까보기
         Optional<String> refreshToken = httpUtil.getRefreshToken(httpServletRequest);
+        Optional<String> accessToken = httpUtil.getAccessToken(httpServletRequest);
 
         /// 서비스 로직 실행
-        service.logout(userId, requestType.deviceType(), refreshToken);
+        service.logout(userId, requestType.deviceType(), refreshToken, accessToken);
 
         /// 쿠키 삭제하기
         httpUtil.removeRefreshTokenCookie(httpServletResponse);
