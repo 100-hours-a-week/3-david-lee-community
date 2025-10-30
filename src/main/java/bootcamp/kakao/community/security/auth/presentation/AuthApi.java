@@ -2,6 +2,7 @@ package bootcamp.kakao.community.security.auth.presentation;
 
 import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.security.auth.annotation.AuthenticationPrincipal;
+import bootcamp.kakao.community.security.auth.application.dto.AuthHistoryResponse;
 import bootcamp.kakao.community.security.auth.presentation.swagger.AuthApiSpec;
 import bootcamp.kakao.community.common.util.HttpUtil;
 import bootcamp.kakao.community.security.auth.application.AuthUseCase;
@@ -13,7 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/v1/auth")
@@ -103,4 +104,19 @@ public class AuthApi implements AuthApiSpec {
         return ApiResponse.updated();
     }
 
+    /**
+     * 나의 로그인 기록 보기
+     */
+    @GetMapping()
+    public ApiResponse<List<AuthHistoryResponse>> getAuthHistory(
+            @AuthenticationPrincipal Long userId
+    ) {
+
+        /// 서비스 조회
+        var response = service.getHistory(userId);
+
+        /// 리턴
+        return ApiResponse.ok(response);
+
+    }
 }

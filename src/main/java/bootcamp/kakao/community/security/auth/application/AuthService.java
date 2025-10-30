@@ -5,7 +5,11 @@ import bootcamp.kakao.community.common.response.code.SecurityErrorCode;
 import bootcamp.kakao.community.common.response.code.UserErrorCode;
 import bootcamp.kakao.community.platform.user.domain.entity.User;
 import bootcamp.kakao.community.platform.user.domain.repository.UserRepository;
+import bootcamp.kakao.community.security.auth.application.dto.AuthHistoryResponse;
 import bootcamp.kakao.community.security.auth.application.dto.LoginRequest;
+import bootcamp.kakao.community.security.auth.domain.AuthHistory;
+import bootcamp.kakao.community.security.auth.domain.AuthHistoryJpaRepository;
+import bootcamp.kakao.community.security.auth.domain.AuthHistoryType;
 import bootcamp.kakao.community.security.jwt.application.JwtBlackListValidator;
 import bootcamp.kakao.community.security.jwt.application.JwtProvider;
 import bootcamp.kakao.community.security.jwt.application.JwtValidator;
@@ -17,6 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -25,8 +30,12 @@ import java.util.Optional;
 public class AuthService implements AuthUseCase {
 
     private final UserRepository repository;
+
     /// 패스워드 암호화
     private final BCryptPasswordEncoder passwordEncoder;
+
+    /// 기록 저장
+    private final AuthHistoryJpaRepository historyRepository;
 
     /// 토큰 의존성
     private final JwtValidator jwtValidator;
@@ -39,7 +48,7 @@ public class AuthService implements AuthUseCase {
 
     /// 로그인
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public JwtTokenResponse login(LoginRequest request, String ip, String deviceType) {
 
         /// DB 검증
@@ -48,8 +57,15 @@ public class AuthService implements AuthUseCase {
 
         /// 패스워드 비교
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+
+            /// 실패한 기록 남기기
+            saveHistory(ip, deviceType, user, AuthHistoryType.FAIL);
+
             throw new CustomException(SecurityErrorCode.BAD_REQUEST_LOGIN);
         }
+
+        /// 성공한 기록 남기기
+        saveHistory(ip, deviceType, user, AuthHistoryType.SUCCESS);
 
         /// 로그인했다면, JWT 발급하기
         var jwtRequest = JwtTokenRequest.from(user, ip, deviceType);
@@ -62,7 +78,7 @@ public class AuthService implements AuthUseCase {
 
     /// 로그아웃
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public void logout(Long userId, String deviceType, Optional<String> refreshToken, Optional<String> accessToken) {
 
         /// DB 검증
@@ -117,6 +133,28 @@ public class AuthService implements AuthUseCase {
 
         return JwtTokenResponse.of(newAccessToken, newRefreshToken);
     }
+
+    /// 로그인 기록 보기
+    @Override
+    @Transactional
+    public List<AuthHistoryResponse> getHistory(Long userId) {
+
+        /// DB 조회
+        List<AuthHistory> histories = historyRepository.findByUser_Id(userId);
+
+        /// 변환 후 가져가기
+        return AuthHistoryResponse.from(histories);
+    }
+
+    // =============
+    //  내부 로직
+    // =============
+    @Transactional
+    protected void saveHistory(String ip, String deviceType, User user, AuthHistoryType type) {
+        AuthHistory reqHistory = AuthHistory.of(user, ip, deviceType, type);
+        historyRepository.save(reqHistory);
+    }
+
 }
 
 

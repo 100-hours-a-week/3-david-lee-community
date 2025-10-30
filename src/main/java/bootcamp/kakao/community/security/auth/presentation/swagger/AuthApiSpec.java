@@ -1,6 +1,7 @@
 package bootcamp.kakao.community.security.auth.presentation.swagger;
 
 import bootcamp.kakao.community.common.response.ApiResponse;
+import bootcamp.kakao.community.security.auth.application.dto.AuthHistoryResponse;
 import bootcamp.kakao.community.security.auth.application.dto.LoginRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -9,6 +10,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import bootcamp.kakao.community.security.auth.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 @Tag(name = "인증 API", description = "로그인/로그아웃/재발급를 수행하는 API입니다")
 public interface AuthApiSpec {
@@ -39,5 +42,14 @@ public interface AuthApiSpec {
     ApiResponse<Void> reissue(
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse
+    );
+
+
+    @Operation(
+            summary = "나의 로그인 이력 API",
+            description = "로그인 기록을 조회하는 API"
+    )
+    ApiResponse<List<AuthHistoryResponse>> getAuthHistory(
+            @AuthenticationPrincipal Long userId
     );
 }

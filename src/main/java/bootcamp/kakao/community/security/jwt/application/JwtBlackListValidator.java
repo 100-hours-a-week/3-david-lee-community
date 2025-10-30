@@ -44,7 +44,6 @@ public class JwtBlackListValidator {
 
         /// 레디스에서 존재하는지 체크
         Boolean hasKey = redisTemplate.hasKey(blackList);
-        log.info(hasKey.toString());
 
         /// 있다면 예외 발생
         if (hasKey) {
