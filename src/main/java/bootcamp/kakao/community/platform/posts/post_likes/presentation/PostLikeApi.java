@@ -6,7 +6,7 @@ import bootcamp.kakao.community.platform.posts.post_likes.application.dto.PostLi
 import bootcamp.kakao.community.platform.posts.post_likes.presentation.swagger.PostLikeApiSpec;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import bootcamp.kakao.community.security.auth.annotation.AuthenticationPrincipal;
+import bootcamp.kakao.community.security.auth.annotation.CurrentUserId;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,7 +20,7 @@ public class PostLikeApi implements PostLikeApiSpec {
     @PostMapping
     public ApiResponse<Void> like(
             @RequestBody @Valid PostLikeRequest request,
-            @AuthenticationPrincipal Long userId) {
+            @CurrentUserId Long userId) {
 
         /// 서비스
         service.like(request, userId);
@@ -33,7 +33,7 @@ public class PostLikeApi implements PostLikeApiSpec {
     @DeleteMapping
     public ApiResponse<Void> unlike(
             @RequestParam Long postId,
-            @AuthenticationPrincipal Long userId) {
+            @CurrentUserId Long userId) {
 
         /// 서비스
         service.unlike(postId, userId);

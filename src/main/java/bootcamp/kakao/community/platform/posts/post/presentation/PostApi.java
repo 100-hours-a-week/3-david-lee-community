@@ -9,7 +9,7 @@ import bootcamp.kakao.community.platform.posts.post.application.dto.*;
 import bootcamp.kakao.community.platform.posts.post.presentation.swagger.PostApiSpec;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import bootcamp.kakao.community.security.auth.annotation.AuthenticationPrincipal;
+import bootcamp.kakao.community.security.auth.annotation.CurrentUserId;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,7 +24,7 @@ public class PostApi implements PostApiSpec {
     @PostMapping
     public ApiResponse<PostSaveResponse> createPost(
             @RequestBody @Valid PostRequest request,
-            @AuthenticationPrincipal Long userId) {
+            @CurrentUserId Long userId) {
 
         /// 서비스 작성
         var response = commandService.create(request, userId);
@@ -37,7 +37,7 @@ public class PostApi implements PostApiSpec {
     @GetMapping("/{postId}")
     public ApiResponse<PostDetailResponse> readPost(
             @PathVariable Long postId,
-            @AuthenticationPrincipal Long userId) {
+            @CurrentUserId Long userId) {
 
 
         /// 서비스 읽기
@@ -67,7 +67,7 @@ public class PostApi implements PostApiSpec {
     public ApiResponse<Void> updatePost(
             @PathVariable Long postId,
             @RequestBody @Valid PostUpdateRequest request,
-            @AuthenticationPrincipal Long userId) {
+            @CurrentUserId Long userId) {
 
         /// 서비스 수정
         commandService.update(postId, request, userId);
@@ -80,7 +80,7 @@ public class PostApi implements PostApiSpec {
     @PutMapping("/{postId}")
     public ApiResponse<Void> delete(
             @PathVariable Long postId,
-            @AuthenticationPrincipal Long userId) {
+            @CurrentUserId Long userId) {
 
         /// 서비스 삭제
         commandService.delete(postId, userId);

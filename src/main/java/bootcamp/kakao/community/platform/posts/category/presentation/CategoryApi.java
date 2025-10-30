@@ -7,7 +7,7 @@ import bootcamp.kakao.community.platform.posts.category.application.dto.Category
 import bootcamp.kakao.community.platform.posts.category.presentation.swaager.CategoryApiSpec;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import bootcamp.kakao.community.security.auth.annotation.AuthenticationPrincipal;
+import bootcamp.kakao.community.security.auth.annotation.CurrentUserId;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -21,7 +21,7 @@ public class CategoryApi implements CategoryApiSpec {
     /// 카테고리 생성
     @PostMapping()
     public ApiResponse<Void> create(@RequestBody @Valid CategoryRequest request,
-                                    @AuthenticationPrincipal Long userId) {
+                                    @CurrentUserId Long userId) {
 
 
         /// 서비스
@@ -47,7 +47,7 @@ public class CategoryApi implements CategoryApiSpec {
     @DeleteMapping()
     public ApiResponse<Void> delete(
             @RequestParam Long categoryId,
-            @AuthenticationPrincipal Long userId) {
+            @CurrentUserId Long userId) {
 
         /// 서비스
         service.deleteCategory(categoryId, userId);

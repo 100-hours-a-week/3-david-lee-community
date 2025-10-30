@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import bootcamp.kakao.community.security.auth.annotation.AuthenticationPrincipal;
+import bootcamp.kakao.community.security.auth.annotation.CurrentUserId;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -20,7 +20,7 @@ public interface PostLikeApiSpec {
     )
     ApiResponse<Void> like(
             @RequestBody @Valid PostLikeRequest request,
-            @AuthenticationPrincipal Long userId);
+            @CurrentUserId Long userId);
 
     /// 좋아요 취소
     @Operation(
@@ -30,7 +30,7 @@ public interface PostLikeApiSpec {
     ApiResponse<Void> unlike(
             @Parameter(example = "1")
             @RequestParam Long postId,
-            @AuthenticationPrincipal Long userId);
+            @CurrentUserId Long userId);
 
 
 }

@@ -10,7 +10,7 @@ import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentUp
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import bootcamp.kakao.community.security.auth.annotation.AuthenticationPrincipal;
+import bootcamp.kakao.community.security.auth.annotation.CurrentUserId;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,7 +25,7 @@ public interface CommentApiSpec {
     )
     ApiResponse<CommentResponse> createComment(
             @RequestBody @Valid CommentRequest request,
-            @AuthenticationPrincipal Long userId);
+            @CurrentUserId Long userId);
 
     /// 댓글 조회
     @Operation(
@@ -35,7 +35,7 @@ public interface CommentApiSpec {
     ApiResponse<SliceResponse<CommentListResponse>> listComments(
             SliceRequest sliceRequest,
             @RequestParam Long postId,
-            @AuthenticationPrincipal Long userId
+            @CurrentUserId Long userId
     );
 
 
@@ -47,7 +47,7 @@ public interface CommentApiSpec {
     ApiResponse<Void> updateComment(
             @PathVariable Long commentId,
             @RequestBody @Valid CommentUpdateRequest request,
-            @AuthenticationPrincipal Long userId);
+            @CurrentUserId Long userId);
 
 
     /// 댓글 삭제
@@ -57,5 +57,5 @@ public interface CommentApiSpec {
     )
     ApiResponse<Void> deleteComment(
             @PathVariable Long commentId,
-            @AuthenticationPrincipal Long userId);
+            @CurrentUserId Long userId);
 }

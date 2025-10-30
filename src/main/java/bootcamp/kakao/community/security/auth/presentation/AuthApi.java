@@ -1,7 +1,7 @@
 package bootcamp.kakao.community.security.auth.presentation;
 
 import bootcamp.kakao.community.common.response.ApiResponse;
-import bootcamp.kakao.community.security.auth.annotation.AuthenticationPrincipal;
+import bootcamp.kakao.community.security.auth.annotation.CurrentUserId;
 import bootcamp.kakao.community.security.auth.application.dto.AuthHistoryResponse;
 import bootcamp.kakao.community.security.auth.presentation.swagger.AuthApiSpec;
 import bootcamp.kakao.community.common.util.HttpUtil;
@@ -60,7 +60,7 @@ public class AuthApi implements AuthApiSpec {
     public ApiResponse<Void> logout(
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse,
-            @AuthenticationPrincipal Long userId) {
+            @CurrentUserId Long userId) {
 
         /// 디바이스 조회
         var requestType = httpUtil.getRequestInfo(httpServletRequest);
@@ -109,7 +109,7 @@ public class AuthApi implements AuthApiSpec {
      */
     @GetMapping()
     public ApiResponse<List<AuthHistoryResponse>> getAuthHistory(
-            @AuthenticationPrincipal Long userId
+            @CurrentUserId Long userId
     ) {
 
         /// 서비스 조회

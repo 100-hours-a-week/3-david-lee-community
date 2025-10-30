@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import bootcamp.kakao.community.security.auth.annotation.AuthenticationPrincipal;
+import bootcamp.kakao.community.security.auth.annotation.CurrentUserId;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,7 +33,7 @@ public interface UserApiSpec {
     )
     ApiResponse<Void> delete(
             HttpServletResponse httpServletResponse,
-            @AuthenticationPrincipal Long userId);
+            @CurrentUserId Long userId);
 
 
     /// 이메일 중복 API
@@ -56,7 +56,7 @@ public interface UserApiSpec {
             summary = "개인정보 조회 API",
             description = "나의 정보를 조회합니다."
     )
-    ApiResponse<MyPageResponse> getUser(@AuthenticationPrincipal Long userId);
+    ApiResponse<MyPageResponse> getUser(@CurrentUserId Long userId);
 
     /// 다른 유저 정보 조회
     @Operation(
@@ -71,7 +71,7 @@ public interface UserApiSpec {
             description = "나의 정보를 수정합니다."
     )
     ApiResponse<Void> updateUser(@RequestBody @Valid UserUpdateRequest request,
-                                 @AuthenticationPrincipal Long userId);
+                                 @CurrentUserId Long userId);
 
     /// 비밀번호 변경
     @Operation(
@@ -79,7 +79,7 @@ public interface UserApiSpec {
             description = "기존 비밀번호를 바탕으로 비밀번호 수정합니다."
     )
     ApiResponse<Void> updatePassword(@RequestBody @Valid PwUpdateRequest pwReq,
-                                     @AuthenticationPrincipal Long userId);
+                                     @CurrentUserId Long userId);
 
 
 }

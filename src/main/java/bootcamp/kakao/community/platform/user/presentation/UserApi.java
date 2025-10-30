@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import bootcamp.kakao.community.security.auth.annotation.AuthenticationPrincipal;
+import bootcamp.kakao.community.security.auth.annotation.CurrentUserId;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -52,7 +52,7 @@ public class UserApi implements UserApiSpec {
     @PutMapping
     public ApiResponse<Void> delete(
             HttpServletResponse httpServletResponse,
-            @AuthenticationPrincipal Long userId) {
+            @CurrentUserId Long userId) {
 
         /// 서비스 로직
         service.withdraw(userId);
@@ -89,7 +89,7 @@ public class UserApi implements UserApiSpec {
     /// 나의 정보 조회하기
     @GetMapping("/mypage")
     public ApiResponse<MyPageResponse> getUser(
-            @AuthenticationPrincipal Long userId) {
+            @CurrentUserId Long userId) {
 
         /// 서비스 로직
         MyPageResponse user = service.getUser(userId);
@@ -112,7 +112,7 @@ public class UserApi implements UserApiSpec {
     /// 나의 정보 수정하기
     @PutMapping("/mypage")
     public ApiResponse<Void> updateUser(@RequestBody @Valid UserUpdateRequest request,
-                                        @AuthenticationPrincipal Long userId) {
+                                        @CurrentUserId Long userId) {
 
         /// 서비스 로직
         service.updateUser(request, userId);
@@ -124,7 +124,7 @@ public class UserApi implements UserApiSpec {
     /// 비밀번호 변경
     @PutMapping("/password")
     public ApiResponse<Void> updatePassword(@RequestBody @Valid PwUpdateRequest pwReq,
-                                            @AuthenticationPrincipal Long userId) {
+                                            @CurrentUserId Long userId) {
 
         /// 서비스 로직
         service.updatePassword(userId, pwReq);

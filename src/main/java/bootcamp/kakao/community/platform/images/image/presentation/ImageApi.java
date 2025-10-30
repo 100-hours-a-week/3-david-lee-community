@@ -11,7 +11,7 @@ import bootcamp.kakao.community.platform.images.image.application.dto.response.P
 import bootcamp.kakao.community.platform.images.image.presentation.swagger.ImageApiSpec;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import bootcamp.kakao.community.security.auth.annotation.AuthenticationPrincipal;
+import bootcamp.kakao.community.security.auth.annotation.CurrentUserId;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -45,7 +45,7 @@ public class ImageApi implements ImageApiSpec {
     @PostMapping
     public ApiResponse<List<PreSignedImageResponse>> upload(
             @RequestBody @Valid PreSignedImageRequest request,
-            @AuthenticationPrincipal Long userId) throws IOException {
+            @CurrentUserId Long userId) throws IOException {
 
         /// 서비스
         List<PreSignedImageResponse> response = service.uploadImages(request);
@@ -77,7 +77,7 @@ public class ImageApi implements ImageApiSpec {
     @PatchMapping
     public ApiResponse<List<ImageResponse>> confirm(
             @RequestBody @Valid ConfirmImageRequest request,
-            @AuthenticationPrincipal Long userId) throws IOException {
+            @CurrentUserId Long userId) throws IOException {
 
         /// 서비스
         var response = service.confirmImages(request, userId);

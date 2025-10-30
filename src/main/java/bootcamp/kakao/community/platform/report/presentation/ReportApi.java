@@ -6,7 +6,7 @@ import bootcamp.kakao.community.platform.report.application.dto.ReportRequest;
 import bootcamp.kakao.community.platform.report.presentation.swagger.ReportApiSpec;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import bootcamp.kakao.community.security.auth.annotation.AuthenticationPrincipal;
+import bootcamp.kakao.community.security.auth.annotation.CurrentUserId;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +21,7 @@ public class ReportApi implements ReportApiSpec {
 
     @PostMapping()
     public ApiResponse<Void> report(@RequestBody @Valid ReportRequest request,
-                                    @AuthenticationPrincipal Long userId) {
+                                    @CurrentUserId Long userId) {
 
         /// 서비스
         service.createReport(request, userId);

@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import bootcamp.kakao.community.security.auth.annotation.AuthenticationPrincipal;
+import bootcamp.kakao.community.security.auth.annotation.CurrentUserId;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
@@ -33,7 +33,7 @@ public interface AuthApiSpec {
     ApiResponse<Void> logout(
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse,
-            @AuthenticationPrincipal Long userId);
+            @CurrentUserId Long userId);
 
     @Operation(
             summary = "액세스토큰 재발급 API",
@@ -50,6 +50,6 @@ public interface AuthApiSpec {
             description = "로그인 기록을 조회하는 API"
     )
     ApiResponse<List<AuthHistoryResponse>> getAuthHistory(
-            @AuthenticationPrincipal Long userId
+            @CurrentUserId Long userId
     );
 }

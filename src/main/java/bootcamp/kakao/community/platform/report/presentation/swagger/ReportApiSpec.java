@@ -5,7 +5,7 @@ import bootcamp.kakao.community.platform.report.application.dto.ReportRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import bootcamp.kakao.community.security.auth.annotation.AuthenticationPrincipal;
+import bootcamp.kakao.community.security.auth.annotation.CurrentUserId;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Tag(name = "신고 API", description = "유저/게시글/댓글 신고하는 API")
@@ -16,6 +16,6 @@ public interface ReportApiSpec {
             description = "회원만 유저/게시글/댓글 신고하는 API"
     )
     ApiResponse<Void> report(@RequestBody @Valid ReportRequest request,
-                             @AuthenticationPrincipal Long userId);
+                             @CurrentUserId Long userId);
 
 }
