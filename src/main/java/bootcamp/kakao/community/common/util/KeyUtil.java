@@ -19,6 +19,9 @@ public class KeyUtil {
     /// 좋아요
     private static final String LIKES = "likes";
 
+    /// 블랙 리스트
+    private static final String BLACKLIST = "BL";
+
     /// JWT
     public static final String REFRESH_TOKEN = "refresh_token";
     public static final String ID_CLAIM = "user_id";
@@ -27,10 +30,16 @@ public class KeyUtil {
     public static final String AUTHORIZATION = "Authorization";
     public static final String IP_CLAIM = "ip";
     public static final String DEVICE_CLAIM = "device";
+    public static final String JWT ="jwt";
 
     // =====================
     //  합쳐서 사용하는 키 목록
     // =====================
+
+    /// 블랙 리스트 생성 함수
+    public static String getBlackList(String token) {
+        return BLACKLIST + SEPARATOR + token;
+    }
 
     /// 키 생성 함수
     public static String getRefreshTokenKey(Long userId, String deviceType) {
