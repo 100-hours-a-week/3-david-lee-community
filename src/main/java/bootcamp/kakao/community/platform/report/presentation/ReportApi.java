@@ -4,6 +4,8 @@ import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.platform.report.application.ReportUseCase;
 import bootcamp.kakao.community.platform.report.application.dto.ReportRequest;
 import bootcamp.kakao.community.platform.report.presentation.swagger.ReportApiSpec;
+import bootcamp.kakao.community.platform.user.domain.entity.UserRole;
+import bootcamp.kakao.community.security.auth.annotation.Auth;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import bootcamp.kakao.community.security.auth.annotation.CurrentUserId;
@@ -20,6 +22,7 @@ public class ReportApi implements ReportApiSpec {
     private final ReportUseCase service;
 
     @PostMapping()
+    @Auth(role = UserRole.MEMBER)
     public ApiResponse<Void> report(@RequestBody @Valid ReportRequest request,
                                     @CurrentUserId Long userId) {
 

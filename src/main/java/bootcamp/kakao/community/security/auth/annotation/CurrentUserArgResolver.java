@@ -1,5 +1,7 @@
 package bootcamp.kakao.community.security.auth.annotation;
 
+import bootcamp.kakao.community.common.response.CustomException;
+import bootcamp.kakao.community.common.response.code.CommonErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -27,8 +29,13 @@ public class CurrentUserArgResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest req = (HttpServletRequest) webRequest.getNativeRequest();
 
         /// userId 속성 가져오기
+        Long userId = (Long) req.getAttribute("userId");
 
-        return req.getAttribute("userId");
+        if (userId == null) {
+            throw new CustomException(CommonErrorCode.UNAUTHORIZED);
+        }
+
+        return userId;
 
     }
 }

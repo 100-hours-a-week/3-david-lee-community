@@ -4,6 +4,8 @@ import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.platform.posts.post_likes.application.PostLikeUseCase;
 import bootcamp.kakao.community.platform.posts.post_likes.application.dto.PostLikeRequest;
 import bootcamp.kakao.community.platform.posts.post_likes.presentation.swagger.PostLikeApiSpec;
+import bootcamp.kakao.community.platform.user.domain.entity.UserRole;
+import bootcamp.kakao.community.security.auth.annotation.Auth;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import bootcamp.kakao.community.security.auth.annotation.CurrentUserId;
@@ -18,6 +20,7 @@ public class PostLikeApi implements PostLikeApiSpec {
 
     /// 좋아요 생성
     @PostMapping
+    @Auth(role = UserRole.MEMBER)
     public ApiResponse<Void> like(
             @RequestBody @Valid PostLikeRequest request,
             @CurrentUserId Long userId) {
@@ -31,6 +34,7 @@ public class PostLikeApi implements PostLikeApiSpec {
 
     /// 좋아요 취소
     @DeleteMapping
+    @Auth(role = UserRole.MEMBER)
     public ApiResponse<Void> unlike(
             @RequestParam Long postId,
             @CurrentUserId Long userId) {

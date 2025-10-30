@@ -9,6 +9,8 @@ import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentRe
 import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentResponse;
 import bootcamp.kakao.community.platform.posts.comment.application.dto.CommentUpdateRequest;
 import bootcamp.kakao.community.platform.posts.comment.presentation.swagger.CommentApiSpec;
+import bootcamp.kakao.community.platform.user.domain.entity.UserRole;
+import bootcamp.kakao.community.security.auth.annotation.Auth;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import bootcamp.kakao.community.security.auth.annotation.CurrentUserId;
@@ -23,6 +25,7 @@ public class CommentApi implements CommentApiSpec {
 
     /// 댓글 생성
     @PostMapping
+    @Auth(role = UserRole.MEMBER)
     public ApiResponse<CommentResponse> createComment(
             @RequestBody @Valid CommentRequest request,
             @CurrentUserId Long userId
@@ -37,6 +40,7 @@ public class CommentApi implements CommentApiSpec {
 
     /// 게시글에 따른 댓글 조회
     @GetMapping
+    @Auth(role = UserRole.MEMBER)
     public ApiResponse<SliceResponse<CommentListResponse>> listComments(
             SliceRequest sliceRequest,
             @RequestParam Long postId,
@@ -52,6 +56,7 @@ public class CommentApi implements CommentApiSpec {
 
     /// 댓글 수정
     @PatchMapping("/{commentId}")
+    @Auth(role = UserRole.MEMBER)
     public ApiResponse<Void> updateComment(
             @PathVariable Long commentId,
             @RequestBody @Valid CommentUpdateRequest request,
@@ -67,6 +72,7 @@ public class CommentApi implements CommentApiSpec {
 
     /// 댓글 삭제
     @PutMapping("/{commentId}")
+    @Auth(role = UserRole.MEMBER)
     public ApiResponse<Void> deleteComment(
             @PathVariable Long commentId,
             @CurrentUserId Long userId

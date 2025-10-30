@@ -3,8 +3,10 @@ package bootcamp.kakao.community.platform.user.presentation;
 import bootcamp.kakao.community.common.response.ApiResponse;
 import bootcamp.kakao.community.platform.user.application.UserUseCase;
 import bootcamp.kakao.community.platform.user.application.dto.*;
+import bootcamp.kakao.community.platform.user.domain.entity.UserRole;
 import bootcamp.kakao.community.platform.user.presentation.swagger.UserApiSpec;
 import bootcamp.kakao.community.common.util.HttpUtil;
+import bootcamp.kakao.community.security.auth.annotation.Auth;
 import bootcamp.kakao.community.security.jwt.application.dto.JwtTokenResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -50,6 +52,7 @@ public class UserApi implements UserApiSpec {
 
     /// 유저 소프트 삭제
     @PutMapping
+    @Auth(role = UserRole.MEMBER)
     public ApiResponse<Void> delete(
             HttpServletResponse httpServletResponse,
             @CurrentUserId Long userId) {
@@ -88,6 +91,7 @@ public class UserApi implements UserApiSpec {
 
     /// 나의 정보 조회하기
     @GetMapping("/mypage")
+    @Auth(role = UserRole.MEMBER)
     public ApiResponse<MyPageResponse> getUser(
             @CurrentUserId Long userId) {
 
@@ -111,6 +115,7 @@ public class UserApi implements UserApiSpec {
 
     /// 나의 정보 수정하기
     @PutMapping("/mypage")
+    @Auth(role = UserRole.MEMBER)
     public ApiResponse<Void> updateUser(@RequestBody @Valid UserUpdateRequest request,
                                         @CurrentUserId Long userId) {
 
@@ -123,6 +128,7 @@ public class UserApi implements UserApiSpec {
 
     /// 비밀번호 변경
     @PutMapping("/password")
+    @Auth(role = UserRole.MEMBER)
     public ApiResponse<Void> updatePassword(@RequestBody @Valid PwUpdateRequest pwReq,
                                             @CurrentUserId Long userId) {
 

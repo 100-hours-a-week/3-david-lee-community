@@ -1,6 +1,8 @@
 package bootcamp.kakao.community.security.auth.presentation;
 
 import bootcamp.kakao.community.common.response.ApiResponse;
+import bootcamp.kakao.community.platform.user.domain.entity.UserRole;
+import bootcamp.kakao.community.security.auth.annotation.Auth;
 import bootcamp.kakao.community.security.auth.annotation.CurrentUserId;
 import bootcamp.kakao.community.security.auth.application.dto.AuthHistoryResponse;
 import bootcamp.kakao.community.security.auth.presentation.swagger.AuthApiSpec;
@@ -12,10 +14,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/v1/auth")
 @RequiredArgsConstructor
@@ -57,6 +61,7 @@ public class AuthApi implements AuthApiSpec {
      * 로그아웃
      */
     @DeleteMapping
+    @Auth(role = UserRole.MEMBER)
     public ApiResponse<Void> logout(
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse,
@@ -108,9 +113,12 @@ public class AuthApi implements AuthApiSpec {
      * 나의 로그인 기록 보기
      */
     @GetMapping()
+    @Auth(role = UserRole.MEMBER)
     public ApiResponse<List<AuthHistoryResponse>> getAuthHistory(
             @CurrentUserId Long userId
     ) {
+
+        log.info("userId = {}", userId);
 
         /// 서비스 조회
         var response = service.getHistory(userId);
