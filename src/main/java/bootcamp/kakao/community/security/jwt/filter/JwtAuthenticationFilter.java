@@ -5,7 +5,6 @@ import bootcamp.kakao.community.common.response.CustomException;
 import bootcamp.kakao.community.common.response.ErrorCode;
 import bootcamp.kakao.community.common.response.code.SecurityErrorCode;
 import bootcamp.kakao.community.common.util.HttpUtil;
-import bootcamp.kakao.community.platform.user.domain.entity.User;
 import bootcamp.kakao.community.security.jwt.application.JwtBlackListValidator;
 import bootcamp.kakao.community.security.jwt.application.JwtValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,15 +59,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 blackListValidator.checkBlackList(accessToken);
 
                 /// 적절한 토큰인 지 파악하고, 유저를 체크 (상위에서 예외 처리하도록, 내부에서 던짐)
-                User user = jwtValidator.validateAccessToken(accessToken);
+                JwtValidator.UserSecurity userSecurity = jwtValidator.validateAccessToken(accessToken);
 
                 /// 기존 요청과 달라진 점이 존재하는지 체크 (상위에서 예외 처리하도록, 내부에서 던짐)
-                jwtValidator.validateIpAndDeviceFromToken(requestInfo.ip(), requestInfo.deviceType(), accessToken);
+                jwtValidator.validateIpFromToken(requestInfo.ip(), userSecurity, accessToken);
 
                 /// 다음 요청까지 계속 이어지도록 설정
                 /// 인증 객체 설정과 비슷하게끔 ...
-                request.setAttribute("userId", user.getId());
-                request.setAttribute("role", user.getRole());
+                request.setAttribute("userId", userSecurity.userId());
+                request.setAttribute("role", userSecurity.userRole());
 
             }
 

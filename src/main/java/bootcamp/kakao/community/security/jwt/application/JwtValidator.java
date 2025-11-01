@@ -3,19 +3,15 @@ package bootcamp.kakao.community.security.jwt.application;
 import bootcamp.kakao.community.common.response.CustomException;
 import bootcamp.kakao.community.common.response.code.CommonErrorCode;
 import bootcamp.kakao.community.common.response.code.SecurityErrorCode;
-import bootcamp.kakao.community.platform.user.domain.entity.User;
-import bootcamp.kakao.community.platform.user.domain.repository.UserRepository;
+import bootcamp.kakao.community.platform.user.domain.entity.UserRole;
 import bootcamp.kakao.community.security.jwt.domain.entity.JwtRefreshToken;
 import bootcamp.kakao.community.security.jwt.domain.repository.JwtRefreshTokenRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-
-import java.util.NoSuchElementException;
 
 import static bootcamp.kakao.community.common.util.KeyUtil.*;
 
@@ -24,7 +20,6 @@ import static bootcamp.kakao.community.common.util.KeyUtil.*;
 public class JwtValidator {
 
     private final SecretKey secretKey;
-    private final UserRepository userRepository;
 
     /// 레디스 저장소
     private final JwtRefreshTokenRepository repository;
@@ -35,18 +30,23 @@ public class JwtValidator {
     // =================
 
     /// 액세스 토큰 검증
-    public User validateAccessToken(String accessToken) {
+    public UserSecurity validateAccessToken(String accessToken) {
 
         try {
             /// 토큰 자체의 검증성 파악
-            assertJwtValid(accessToken);
+            Jws<Claims> jwtClaims = getJwtClaims(accessToken);
 
             /// 검증 완료되었다면 유저 정보 가져오기
-            Long userId = getUserIdFromToken(accessToken);
+            Long userId = getUserIdFromToken(jwtClaims);
 
-            /// 인증 객체 생성할 유저 가져오기
-            return userRepository.findById(userId)
-                    .orElseThrow(()-> new CustomException(SecurityErrorCode.USER_NOT_FOUND_IN_ACCESS_TOKEN));
+            /// 검증 완료되었다며 유저 역할 가져오기
+            UserRole role = getUserRoleFromToken(jwtClaims);
+
+            /// IP 정보도 넣기
+            String ip = getIpFromToken(jwtClaims);
+
+            /// 인증 객체 생성할 유저 정보 가져오기
+            return new UserSecurity(userId, role, ip);
 
         } catch (ExpiredJwtException e) {
             /// 만료된 토큰
@@ -83,18 +83,21 @@ public class JwtValidator {
     }
 
     /// 액세스 토큰 IP 와 디바이스 검증
-    public void validateIpAndDeviceFromToken(String ip, String device, String token) {
+    public void validateIpFromToken(String reqIp, UserSecurity userSecurity, String accessToken) {
 
-        if (ip == null || device == null) {
+        /// 없을 때 예외처리
+        if (reqIp == null ) {
 
             /// 존재하지 않으면 예외발생
             throw new CustomException(SecurityErrorCode.ACCESS_TOKEN_INVALID);
         }
 
-        if (!ip.equals(getIpFromToken(token))) {
+
+        /// IP가 다르다면?
+        if (!reqIp.equals(userSecurity.ip)) {
 
             /// 블랙리스트에 AT 넣기
-            jwtBlackListValidator.addBlackList(token);
+            jwtBlackListValidator.addBlackList(accessToken);
 
             /// 접속한 IP가 기존과 다르다면
             throw new CustomException(SecurityErrorCode.ACCESS_TOKEN_INVALID_IP);
@@ -113,10 +116,10 @@ public class JwtValidator {
 
         try {
             /// 토큰 자체의 유효성 검증 (서명, 만료일)
-            assertJwtValid(refreshToken);
+            Jws<Claims> claims = getJwtClaims(refreshToken);
 
             /// 토큰에서 유저 ID 추출
-            Long userId = getUserIdFromToken(refreshToken);
+            Long userId = getUserIdFromToken(claims);
 
             /// 리턴
             return repository.findByRefreshTokenAndDeviceTypeAndUserId(refreshToken, deviceType, userId)
@@ -161,45 +164,41 @@ public class JwtValidator {
     // =================
 
     /// 비밀키로 해석 가능한지 검증
-    private void assertJwtValid(String token) {
-         Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(token);
+    private Jws<Claims> getJwtClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token);
     }
 
     /// IP나 디바이스가 변경되었는지 체크
-    private String getIpFromToken(String token) {
+    private String getIpFromToken(Jws<Claims> jwtClaims) {
 
         /// 토큰 IP 추출
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
+        return jwtClaims.getBody()
                 .get(IP_CLAIM, String.class);
-
     }
-
-    private String getDeviceFromToken(String token) {
-
-        /// 토큰 디바이스 추출
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .get(DEVICE_CLAIM, String.class);
-    }
-
 
     /// 토큰에서 유저ID 추출하기
-    private Long getUserIdFromToken(String accessToken) {
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(accessToken)
-                .getBody()
+    private Long getUserIdFromToken(Jws<Claims> jwtClaims) {
+
+        /// 토큰 IP 추출
+        return jwtClaims.getBody()
                 .get(ID_CLAIM, Long.class);
     }
+
+    /// 토큰에서 유저 역할 추출하기
+    private UserRole getUserRoleFromToken(Jws<Claims> jwtClaims) {
+
+        /// 토큰 IP 추출
+        return jwtClaims.getBody()
+                .get(ROLE_CLAIM, UserRole.class);
+    }
+
+    /// 전달할 객체
+    public record UserSecurity(
+            Long userId,
+            UserRole userRole,
+            String ip
+    ){}
 }
