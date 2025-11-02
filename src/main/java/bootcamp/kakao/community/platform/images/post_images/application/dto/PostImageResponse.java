@@ -12,6 +12,10 @@ import java.util.List;
 )
 @Builder
 public record PostImageResponse(
+
+        @Schema(description = "이미지 Key", example = "images/image1.png")
+        String imageKey,
+
         @Schema(description = "이미지 URL", example = "https://example.com/images/image1.png")
         String imageUrl,
 
@@ -23,6 +27,7 @@ public record PostImageResponse(
     public static PostImageResponse from(PostImage postImage) {
 
         return PostImageResponse.builder()
+                .imageKey(postImage.getImage().getKey())
                 .imageUrl(ImageUtil.getUrlByKey(postImage.getImage().getKey()))
                 .order(postImage.getOrd())
                 .build();

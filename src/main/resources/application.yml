@@ -39,7 +39,7 @@ spring:
       port: 6379
 
   thymeleaf:
-    cache: false
+    cache: true
 
 # jwt
 auth:
