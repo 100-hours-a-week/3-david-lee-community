@@ -9,7 +9,7 @@ build/
 .env
 
 ### YML ###
-.yml
+*.yml
 application.yml
 
 ### STS ###
