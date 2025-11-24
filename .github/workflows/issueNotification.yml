@@ -39,9 +39,9 @@ jobs:
             **제목**: ${{ github.event.issue.title }}
             **링크**: ${{ github.event.issue.html_url }}
             즉시 확인이 필요합니다.
-        color: 0xff0000
-        username: Github Alert Bot
-        avatar_url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+          color: 0xff0000
+          username: Github Alert Bot
+          avatar_url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
 
       - name: 이슈 할당 알림
         if: github.event.action == 'assigned'
