@@ -25,7 +25,7 @@ jobs:
             ${{ github.event.issue.body }}
 
             [이슈 확인하기](${{ github.event.issue.html_url }})
-          color: 0xff6b35
+          color: 0x35ff35
           username: Github Bot
           avatar_url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
 
