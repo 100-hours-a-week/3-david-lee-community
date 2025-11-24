@@ -19,6 +19,7 @@ jobs:
           description: |
             **제목**: ${{ github.event.issue.title }}
             **작성자**: ${{ github.event.issue.user.login }}
+            **담당자**: ${{ github.event.issue.assignee.login || '없음' }}
             **라벨**: ${{ join(github.event.issue.labels.*.name, ', ') }}
 
             ${{ github.event.issue.body }}
@@ -27,6 +28,7 @@ jobs:
           color: 0xff6b35
           username: Github Bot
           avatar_url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+
 
       - name: 긴급한 이슈 알림
         if: contains(github.event.issue.labels.*.name, 'critical') || contains(github.event.issue.labels.*.name, 'bug')
@@ -41,18 +43,4 @@ jobs:
             즉시 확인이 필요합니다.
           color: 0xff0000
           username: Github Alert Bot
-          avatar_url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
-
-      - name: 이슈 할당 알림
-        if: github.event.action == 'assigned'
-        uses: sarisia/actions-status-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK_BACK_URL }}
-          title: "👤 이슈 할당됨"
-          description: |
-            **이슈**: [${{ github.event.issue.title }}](${{ github.event.issue.html_url }})
-            **담당자**: ${{ github.event.assignee.login }}
-            **할당자**: ${{ github.actor }}
-          color: 0x0366d6
-          username: Github Bot
           avatar_url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
