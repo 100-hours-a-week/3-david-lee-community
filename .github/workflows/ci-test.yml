@@ -49,12 +49,12 @@ jobs:
       - name: Test 결과 파싱
         id: parse
         run: |
-          PASSED=$(grep -o 'testsuite.*tests="[0-9]*"' -R build/test-results/test | sed 's/.*tests="\([0-9]*\)".*/\1/')
-          FAILED=$(grep -o 'failures="[0-9]*"' -R build/test-results/test | sed 's/.*failures="\([0-9]*\)".*/\1/')
-          TOTAL=$((PASSED + FAILED))
-
-          echo "passed=$PASSED" >> $GITHUB_OUTPUT
-          echo "failed=$FAILED" >> $GITHUB_OUTPUT
+          PASSED=$(grep -o 'testsuite.*tests="[0-9]*"' -R build/test-results/test | sed 's/.*tests="\([0-9]*\)".*/\1/' | tr -d '[:space:]')
+          FAILED=$(grep -o 'failures="[0-9]*"' -R build/test-results/test | sed 's/.*failures="\([0-9]*\)".*/\1/' | tr -d '[:space:]')
+          TOTAL=$(( ${PASSED:-0} + ${FAILED:-0} ))
+          
+          echo "passed=${PASSED:-0}" >> $GITHUB_OUTPUT
+          echo "failed=${FAILED:-0}" >> $GITHUB_OUTPUT
           echo "total=$TOTAL" >> $GITHUB_OUTPUT
 
   build:
