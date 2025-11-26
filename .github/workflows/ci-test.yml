@@ -1,0 +1,60 @@
+name: 아무말 대잔치 테스트 PR CI 파이프라인
+
+on:
+  pull_request:
+    branches: ["develop"]
+    types:
+      - opened
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 자바 21 설치
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Gradle 캐싱
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}
+
+      - name: 빌드하기
+        id: build
+        run: ./gradlew clean build -Dspring.profiles.active=prod
+
+  notify-discord:
+    runs-on: ubuntu-22.04
+    needs: build
+    if: always()
+    steps:
+      - name: Discord 빌드 알림
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_BACK_URL }}
+          title: "${{ needs.build.result == 'success' && '✅' || '❌' }} Pull Request 리포트 - ${{ github.repository }}"
+          description: |
+            **제목**: ${{ github.event.pull_request.title }}
+            **작성자**: ${{ github.event.pull_request.user.login }}
+            **브랜치**: `${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`
+            **변경사항**: +${{ github.event.pull_request.additions }} -${{ github.event.pull_request.deletions }}
+            **커밋**: [`${{ github.event.pull_request.head.sha }}`](https://github.com/${{ github.repository }}/commit/${{ github.event.pull_request.head.sha }})
+            
+            **📊 빌드 결과**:
+            - 상태: ${{ needs.build.result == 'success' && '성공' || '실패' }}
+            - 빌드 번호: ${{ github.run_number }}
+            
+            **🔗 링크**:
+            - [PR 확인하기](${{ github.event.pull_request.html_url }})
+          color: "${{ needs.build.result == 'success' && 65280 || 16711680 }}"
+          username: GitHub Build Bot
+          avatar_url: https://github.githubassets.com/favicon.ico
