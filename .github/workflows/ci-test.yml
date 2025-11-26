@@ -91,8 +91,8 @@ jobs:
             **브랜치**: `${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`
 
             **변경사항**:
-            <span style="color: green;">+${{ github.event.pull_request.additions }}</span>
-            <span style="color: red;">-${{ github.event.pull_request.deletions }}</span>
+            +${{ github.event.pull_request.additions }}
+            -${{ github.event.pull_request.deletions }}
 
             **🧪 테스트 결과**:
             - 전체: **${{ needs.test.outputs.total }}**
