@@ -84,7 +84,6 @@ jobs:
 
             **📊 빌드 결과**:
             - 상태: ${{ needs.build.result == 'success' && '성공' || '실패' }}
-            - 빌드 번호: ${{ github.run_number }}
 
             **🔗 링크**:
             - [PR 확인하기](${{ github.event.pull_request.html_url }})

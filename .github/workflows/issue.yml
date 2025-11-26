@@ -2,9 +2,7 @@ name: 아무말 대잔치 이슈 파이프라인
 
 on:
   issues:
-    types: [opened, closed, labeled, assigned]
-  issue_comment:
-    types: [created]
+    types: [opened]
 
 jobs:
   issue-automation:

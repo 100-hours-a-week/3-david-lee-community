@@ -1,0 +1,110 @@
+name: 아무말 대잔치 PROD CICD 파이프라인
+
+# 어떤 브랜치에서 쓰이는 지
+on:
+  push:
+    branches:
+      - develop
+
+# CICD JOBS
+jobs:
+
+  # 통합 테스트 환경 구축
+  test:
+    runs-on: ubuntu-22.04
+
+    # 통합 테스트용 컨테이너 띄우기
+    services:
+      # Mysql
+      mysql:
+        image: mysql:8.0
+        ports:
+          - '3306:3306'
+        env:
+          MYSQL_DATABASE=${{secrets.MYSQL_DATABASE}}
+          MYSQL_USER=${{secrets.MYSQL_USER}}
+          MYSQL_PASSWORD=${{secrets.MYSQL_PASSWORD}}
+          MYSQL_ROOT_PASSWORD=${{secrets.MYSQL_ROOT_PASSWORD}}
+
+      # 레디스
+      redis:
+        image: redis:7.2.5
+        ports:
+          - '6379:6379'
+
+    # 스텝 실행하기
+    steps:
+      - name: 체크아웃
+        uses: actions/checkout@v4
+
+      - name: 자바 설치하기
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Gradle 캐싱
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}
+
+      - name: 통합 및 단위 테스트 진행하기
+        run: |
+          ./gradlew check -Dspring.profiles.active=test
+
+  # 테스트가 모두 통과했을 때만, 빌드
+  build:
+    runs-on: ubuntu-22.04
+    needs: test
+    if: success()
+    steps:
+    - name: 체크아웃
+      uses: actions/checkout@v4
+
+    - name: 자바 설치하기
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Gradle 캐싱
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          gradle-${{ runner.os }}
+
+    - name: 빌드하기
+      run: |
+        gradlew clean -x test build -Dspring.profiles.active=prod
+
+  # 도커 이미지 빌드 + 푸시하기
+  docker-build-push-image:
+    needs: build
+    if: success()
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 도커 허브 로그인
+        uses: docker/login-action@v3
+        with:
+          username: ${{secrets.DOCKER_USERNAME}}
+          password: ${{secrets.DOCKER_TOKEN}}
+
+      - name: 도커 이미지 빌드 및 푸시
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/be:latest
