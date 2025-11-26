@@ -14,11 +14,6 @@ jobs:
       checks: write
       pull-requests: write
 
-    outputs:
-      passed: ${{ steps.parse.outputs.passed }}
-      failed: ${{ steps.parse.outputs.failed }}
-      total: ${{ steps.parse.outputs.total }}
-
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -46,21 +41,10 @@ jobs:
           junit_files: '**/build/test-results/test/TEST-*.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Test 결과 파싱
-        id: parse
-        run: |
-          PASSED=$(grep -o 'testsuite.*tests="[0-9]*"' -R build/test-results/test | sed 's/.*tests="\([0-9]*\)".*/\1/' | tr -d '[:space:]')
-          FAILED=$(grep -o 'failures="[0-9]*"' -R build/test-results/test | sed 's/.*failures="\([0-9]*\)".*/\1/' | tr -d '[:space:]')
-          TOTAL=$(( ${PASSED:-0} + ${FAILED:-0} ))
-          
-          echo "passed=${PASSED:-0}" >> $GITHUB_OUTPUT
-          echo "failed=${FAILED:-0}" >> $GITHUB_OUTPUT
-          echo "total=$TOTAL" >> $GITHUB_OUTPUT
-
   build:
     runs-on: ubuntu-22.04
     needs: test
-    if: needs.test.outputs.failed == '0'
+    if: success()
     steps:
       - uses: actions/checkout@v4
 
@@ -85,7 +69,7 @@ jobs:
 
   notify-discord:
     runs-on: ubuntu-22.04
-    needs: [test, build]
+    needs: build
     if: always()
     steps:
       - name: Discord 빌드 알림
@@ -101,11 +85,6 @@ jobs:
             **변경사항**:
             +${{ github.event.pull_request.additions }}
             -${{ github.event.pull_request.deletions }}
-
-            **🧪 테스트 결과**:
-            - 전체: **${{ needs.test.outputs.total }}**
-            - 통과: **${{ needs.test.outputs.passed }}**
-            - 실패: **${{ needs.test.outputs.failed }}**
 
             **📊 빌드 결과**:
             - 상태: ${{ needs.build.result == 'success' && '성공' || '실패' }}
