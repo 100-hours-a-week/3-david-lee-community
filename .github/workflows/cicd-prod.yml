@@ -21,10 +21,10 @@ jobs:
         ports:
           - '3306:3306'
         env:
-          MYSQL_DATABASE=${{secrets.MYSQL_DATABASE}}
-          MYSQL_USER=${{secrets.MYSQL_USER}}
-          MYSQL_PASSWORD=${{secrets.MYSQL_PASSWORD}}
-          MYSQL_ROOT_PASSWORD=${{secrets.MYSQL_ROOT_PASSWORD}}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
 
       # 레디스
       redis:
@@ -55,7 +55,7 @@ jobs:
 
       - name: 통합 및 단위 테스트 진행하기
         run: |
-          ./gradlew check -Dspring.profiles.active=test
+          ./gradlew clean check -Dspring.profiles.active=test
 
   # 테스트가 모두 통과했을 때만, 빌드
   build:
