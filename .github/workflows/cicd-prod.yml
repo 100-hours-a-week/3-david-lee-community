@@ -87,6 +87,11 @@ jobs:
         restore-keys: |
           gradle-${{ runner.os }}
 
+    - name: application-prod.yml 넣기
+      run: |
+        mkdir -p src/main/resources
+        echo "${{secrets.APPLICATION_PROD_YML}}" > ./src/main/resources/application-prod.yml
+
     - name: 빌드하기
       run: |
         gradlew clean -x test build -Dspring.profiles.active=prod
