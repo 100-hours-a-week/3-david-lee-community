@@ -14,7 +14,6 @@ jobs:
     runs-on: ubuntu-22.04
 
     # 통합 테스트용 컨테이너 띄우기
-    -name: 컨테이너 띄우기
     services:
       # Mysql
       mysql:
