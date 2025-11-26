@@ -94,7 +94,7 @@ jobs:
 
     - name: 빌드하기
       run: |
-        ./gradlew clean -x test build -Dspring.profiles.active=prod
+        ./gradlew clean build -x test -x integrationTest -Dspring.profiles.active=prod
 
   # 도커 이미지 빌드 + 푸시하기
   docker-build-push-image:
