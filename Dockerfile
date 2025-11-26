@@ -1,14 +1,19 @@
-# Java 21기반의 공식 이미지를 사용합니다.
-FROM eclipse-temurin:21-jdk
+# ====== Build Stage ======
+FROM eclipse-temurin:21-jdk-alpine AS  builder
+# 작업 디렉토리를 /build로 설정합니다.
+WORKDIR /build
+# 파일을 이동시킵니다.
+COPY . .
+# 실행 가능한 Jar를 만듭니다.
+RUN ./gradlew bootJar
 
-# 작업 디렉토리를 /app으로 설정합니다.
+# ====== Runtime Stage ======
+FROM eclipse-temurin:21-jre-alpine
+# 실행 파일 이동
 WORKDIR /app
-
-# 기존 JAR 파일을 이동시킵니다.
-COPY build/libs/*.jar app.jar
-
-# 애플리케이션이 사용할 포트를 노출합니다.
+# 빌드한 jar 파일 가져오기
+COPY --from=builder /build/libs/community-0.0.1-SNAPSHOT.jar app.jar
+# 노출할 포트
 EXPOSE 8080
-
-# 컨테이너가 실행될 때 앱을 시작합니다.
+# 실행하기
 CMD ["java", "-Dspring.profiles.active=prod", "-jar", "app.jar"]
