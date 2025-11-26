@@ -18,11 +18,19 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
-    integrationTestImplementation.extendsFrom implementation
-    integrationTestImplementation.extendsFrom testImplementation
-    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+
+    integrationTestImplementation
+    integrationTestRuntimeOnly
 }
 
+configurations {
+    integrationTestImplementation {
+        extendsFrom testImplementation
+    }
+    integrationTestRuntimeOnly {
+        extendsFrom testRuntimeOnly
+    }
+}
 repositories {
     mavenCentral()
 }
@@ -61,7 +69,7 @@ dependencies {
     /// 스웨거
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
 
-    /// 테스트 의존성
+    /// 테스트 의존성 (단위 테스트)
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -74,10 +82,13 @@ tasks.named('test') {
 sourceSets {
     integrationTest {
         java.srcDir "$projectDir/src/integrationTest/java"
-        resources.srcDir "$projectDir/src/integrationTest/resources"
-        compileClasspath += main.output + test.output
-        runtimeClasspath += main.output + test.output
+        compileClasspath += sourceSets.main.output + test.output
+        runtimeClasspath += sourceSets.main.output + test.output
     }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
 }
 
 tasks.register('integrationTest', Test) {
@@ -85,6 +96,13 @@ tasks.register('integrationTest', Test) {
     classpath = sourceSets.integrationTest.runtimeClasspath
     useJUnitPlatform()
 }
+
+
+tasks.named('check') {
+    dependsOn tasks.named('test')
+    dependsOn tasks.named('integrationTest')
+}
+
 
 clean {
     delete file('src/main/generated')
