@@ -3,12 +3,57 @@ name: 아무말 대잔치 테스트 PR CI 파이프라인
 on:
   pull_request:
     branches: ["develop"]
-    types:
-      - opened
+    types: [opened]
 
 jobs:
+  test:
+    runs-on: ubuntu-22.04
+    outputs:
+      passed: ${{ steps.parse.outputs.passed }}
+      failed: ${{ steps.parse.outputs.failed }}
+      total: ${{ steps.parse.outputs.total }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}
+
+      - name: 테스트 실행
+        run: |
+          ./gradlew test -Dspring.profiles.active=test || true
+
+      - name: Test 결과 업로드
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          junit_files: '**/build/test-results/test/TEST-*.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Test 결과 파싱
+        id: parse
+        run: |
+          PASSED=$(grep -o 'testsuite.*tests="[0-9]*"' -R build/test-results/test | sed 's/.*tests="\([0-9]*\)".*/\1/')
+          FAILED=$(grep -o 'failures="[0-9]*"' -R build/test-results/test | sed 's/.*failures="\([0-9]*\)".*/\1/')
+          TOTAL=$((PASSED + FAILED))
+
+          echo "passed=$PASSED" >> $GITHUB_OUTPUT
+          echo "failed=$FAILED" >> $GITHUB_OUTPUT
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+
   build:
     runs-on: ubuntu-22.04
+    needs: test
+    if: needs.test.outputs.failed == '0'
     steps:
       - uses: actions/checkout@v4
 
@@ -29,32 +74,39 @@ jobs:
             gradle-${{ runner.os }}
 
       - name: 빌드하기
-        id: build
-        run: ./gradlew clean build -Dspring.profiles.active=prod
+        run: ./gradlew clean -x test build -Dspring.profiles.active=prod
 
   notify-discord:
     runs-on: ubuntu-22.04
-    needs: build
+    needs: [test, build]
     if: always()
     steps:
       - name: Discord 빌드 알림
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK_BACK_URL }}
-          title: "${{ needs.build.result == 'success' && '✅' || '❌' }} Pull Request 리포트 - ${{ github.repository }}"
+          title: "${{ needs.build.result == 'success' && '✅' || '❌' }} 새로운 PR 리포트"
           description: |
             **제목**: ${{ github.event.pull_request.title }}
             **작성자**: ${{ github.event.pull_request.user.login }}
             **브랜치**: `${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`
-            **변경사항**: +${{ github.event.pull_request.additions }} -${{ github.event.pull_request.deletions }}
-            **커밋**: [`${{ github.event.pull_request.head.sha }}`](https://github.com/${{ github.repository }}/commit/${{ github.event.pull_request.head.sha }})
-            
+
+            **변경사항**:
+            <span style="color: green;">+${{ github.event.pull_request.additions }}</span>
+            <span style="color: red;">-${{ github.event.pull_request.deletions }}</span>
+
+            **🧪 테스트 결과**:
+            - 전체: **${{ needs.test.outputs.total }}**
+            - 통과: **${{ needs.test.outputs.passed }}**
+            - 실패: **${{ needs.test.outputs.failed }}**
+
             **📊 빌드 결과**:
             - 상태: ${{ needs.build.result == 'success' && '성공' || '실패' }}
             - 빌드 번호: ${{ github.run_number }}
-            
+
             **🔗 링크**:
             - [PR 확인하기](${{ github.event.pull_request.html_url }})
+
           color: "${{ needs.build.result == 'success' && 65280 || 16711680 }}"
-          username: GitHub Build Bot
-          avatar_url: https://github.githubassets.com/favicon.ico
+          username: GitHub PR Bot
+          avatar_url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
