@@ -55,6 +55,6 @@ jobs:
             
             **🔗 링크**:
             - [PR 확인하기](${{ github.event.pull_request.html_url }})
-          color: "${{ needs.build.result == 'success' ? 65280 : 16711680 }}"
+          color: "${{ needs.build.result == 'success' && 65280 || 16711680 }}"
           username: GitHub Build Bot
           avatar_url: https://github.githubassets.com/favicon.ico
