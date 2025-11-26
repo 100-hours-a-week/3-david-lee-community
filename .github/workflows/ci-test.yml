@@ -76,15 +76,11 @@ jobs:
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK_BACK_URL }}
-          title: "${{ needs.build.result == 'success' && '✅' || '❌' }} 새로운 PR 리포트"
+          title: "${{ needs.build.result == 'success' && '✅' || '❌' }} 새로운 PR이 올라왔습니다!"
           description: |
             **제목**: ${{ github.event.pull_request.title }}
             **작성자**: ${{ github.event.pull_request.user.login }}
-            **브랜치**: `${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`
-
-            **변경사항**:
-            +${{ github.event.pull_request.additions }}
-            -${{ github.event.pull_request.deletions }}
+            **브랜치**: `${{ github.event.pull_request.base.ref }}`←`${{ github.event.pull_request.head.ref }}`
 
             **📊 빌드 결과**:
             - 상태: ${{ needs.build.result == 'success' && '성공' || '실패' }}
