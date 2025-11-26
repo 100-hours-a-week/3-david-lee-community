@@ -12,7 +12,7 @@ FROM eclipse-temurin:21-jre-alpine
 # 실행 파일 이동
 WORKDIR /app
 # 빌드한 jar 파일 가져오기
-COPY --from=builder /build/libs/community-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=builder /build/build/libs/community-0.0.1-SNAPSHOT.jar app.jar
 # 노출할 포트
 EXPOSE 8080
 # 실행하기
