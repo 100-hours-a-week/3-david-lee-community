@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     # 통합 테스트용 컨테이너 띄우기
+    -name: 컨테이너 띄우기
     services:
       # Mysql
       mysql:
@@ -56,7 +57,7 @@ jobs:
       - name: application-test.yml 넣기
         run: |
           mkdir -p src/integrationTest/resources
-          echo ${{secrets.APPLICATION_TEST_YML}} > ./src/integrationTest/resources/application-test.yml
+          echo "${{secrets.APPLICATION_TEST_YML}}" > ./src/integrationTest/resources/application-test.yml
 
       - name: 통합 및 단위 테스트 진행하기
         run: |
