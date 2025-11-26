@@ -1,0 +1,61 @@
+name: 아무말 대잔치 PROD 배포 파이프라인
+
+on:
+  release:
+    types: [published, prereleased]
+  deployment:
+    types: [created]
+  deployment_status:
+    types: [success, failure]
+
+jobs:
+  release-notification:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 릴리즈
+        if: github.event.action == 'published'
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_PROD }}
+          title: "🚀 새로운 릴리즈 발행!"
+          description: |
+            **버전**: [${{ github.event.release.tag_name }}](${{ github.event.release.html_url }})
+            **제목**: ${{ github.event.release.name }}
+            **작성자**: ${{ github.event.release.author.login }}
+            **프리릴리즈**: ${{ github.event.release.prerelease && 'Yes' || 'No' }}
+
+            **📋 릴리즈 노트**:
+            ${{ github.event.release.body }}
+
+            **📦 다운로드**:
+            ${{ github.event.release.assets_url && format('[다운로드 링크]({0})', github.event.release.assets_url) || '다운로드 파일 없음' }}
+          color: ${{ github.event.release.prerelease && '0xffa500' || '0x28a745' }}
+          username: Release Bot
+
+      - name: 배포 성공
+        if: github.event.deployment_status.state == 'success'
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_PROD }}
+          title: "✅ 백엔드 배포 성공"
+          description: |
+            **환경**: ${{ github.event.deployment.environment }}
+            **커밋**: `${{ github.event.deployment.sha }}`
+            **배포 시간**: ${{ github.event.deployment_status.created_at }}
+
+            [배포 로그 확인](${{ github.event.deployment_status.target_url }})
+          color: 0x28a745
+
+      - name: 배포 실패
+        if: github.event.deployment_status.state == 'failure'
+        uses: tsickert/discord-webhook@v7.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URGENT }}
+          content: |
+            ❌ **백엔드 배포 실패** @channel
+
+            **환경**: ${{ github.event.deployment.environment }}
+            **오류 시간**: ${{ github.event.deployment_status.created_at }}
+            **로그**: ${{ github.event.deployment_status.target_url }}
+
+            즉시 확인 및 롤백이 필요합니다.
