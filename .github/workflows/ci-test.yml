@@ -41,7 +41,7 @@ jobs:
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK_BACK_URL }}
-          title: "${{ needs.build.result == 'success' ? '✅' : '❌' }} Pull Request 리포트 - ${{ github.repository }}"
+          title: "${{ needs.build.result == 'success' && '✅' || '❌' }} Pull Request 리포트 - ${{ github.repository }}"
           description: |
             **제목**: ${{ github.event.pull_request.title }}
             **작성자**: ${{ github.event.pull_request.user.login }}
