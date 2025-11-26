@@ -55,8 +55,8 @@ jobs:
 
       - name: application-test.yml 넣기
         run: |
-          mkdir src/integrationTest/resources
-          echo ${{secrets.APPLICATION_TEST_YML}} > src/integrationTest/resources/application-test.yml
+          mkdir -p src/integrationTest/resources
+          echo ${{secrets.APPLICATION_TEST_YML}} > ./src/integrationTest/resources/application-test.yml
 
       - name: 통합 및 단위 테스트 진행하기
         run: |
