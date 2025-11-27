@@ -62,59 +62,31 @@ jobs:
         run: |
           ./gradlew clean check -Dspring.profiles.active=test
 
-  # 테스트가 모두 통과했을 때만, 빌드
-  build:
+  # 테스트가 모두 통과했을 때만, 도커 이미지 빌드 + 푸시하기
+  build-push-image:
     runs-on: ubuntu-22.04
     needs: test
     if: success()
     steps:
-    - name: 체크아웃
-      uses: actions/checkout@v4
+      - name: 체크아웃
+        uses: actions/checkout@v4
 
-    - name: 자바 설치하기
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
-
-    - name: Gradle 캐싱
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          gradle-${{ runner.os }}
-
-    - name: application-prod.yml 넣기
-      run: |
-        mkdir -p src/main/resources
-        echo "${{secrets.APPLICATION_PROD_YML}}" > ./src/main/resources/application-prod.yml
-
-    - name: 빌드하기
-      run: |
-        ./gradlew clean build -x test -x integrationTest -Dspring.profiles.active=prod
-
-  # 도커 이미지 빌드 + 푸시하기
-  docker-build-push-image:
-    needs: build
-    if: success()
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: 도커 허브 로그인
-        uses: docker/login-action@v3
+      - name: AWS 자격 증명 설정
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          username: ${{secrets.DOCKER_USERNAME}}
-          password: ${{secrets.DOCKER_TOKEN}}
+          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY}}
+          aws-secret-access-key: ${{secrets.AWS_SECRET_KEY}}
+          aws-region: ${{secrets.AWS_REGION}}
 
-      - name: 도커 이미지 빌드 및 푸시
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/be:latest
+      - name: 도커 이미지 빌드 및 태그
+        run: |
+          docker build --platform linux/amd64 -t ktb-be:latest .
+          docker tag ktb-be:latest ${{secrets.AWS_ECR_BE}}/ktb/be:latest
+
+      - name: ECR 로그인하기
+        run: |
+          aws ecr get-login-password --region ${{secrets.AWS_REGION}} | docker login --username AWS --password-stdin ${{secrets.AWS_ECR_BE}}
+
+      - name: ECR 푸시
+        run: |
+          docker push ${{secrets.AWS_ECR_BE}}/ktb/be:latest
