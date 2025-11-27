@@ -71,17 +71,17 @@ jobs:
       - name: 체크아웃
         uses: actions/checkout@v4
 
+      - name: 도커 이미지 빌드 및 태그
+        run: |
+          docker build --platform linux/amd64 -t ktb-be:latest .
+          docker tag ktb-be:latest ${{secrets.AWS_ECR_BE}}/ktb/be:latest
+
       - name: AWS 자격 증명 설정
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{secrets.AWS_ACCESS_KEY}}
           aws-secret-access-key: ${{secrets.AWS_SECRET_KEY}}
           aws-region: ${{secrets.AWS_REGION}}
-
-      - name: 도커 이미지 빌드 및 태그
-        run: |
-          docker build --platform linux/amd64 -t ktb-be:latest .
-          docker tag ktb-be:latest ${{secrets.AWS_ECR_BE}}/ktb/be:latest
 
       - name: ECR 로그인하기
         run: |
