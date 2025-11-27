@@ -94,7 +94,7 @@ jobs:
       - name: ZIP 파일 설정
         run: |
           mkdir -p ./scripts
-          echo "${{secrets.AFTER_INSTALL_SH}}" > ./scripts/afterInstall.sh
+          echo "${{secrets.DEPLOY_SH}}" > ./scripts/deploy.sh
           echo "${{secrets.DOCKER_COMPOSE_YML}}" > ./docker-compose.yml
           echo "${{secrets.APPSPEC_YML}}" > ./appspec.yml
 
