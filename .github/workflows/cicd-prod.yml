@@ -87,6 +87,42 @@ jobs:
         run: |
           aws ecr get-login-password --region ${{secrets.AWS_REGION}} | docker login --username AWS --password-stdin ${{secrets.AWS_ECR_BE}}
 
-      - name: ECR 푸시
+      - name: ECR 이미지 전달
         run: |
           docker push ${{secrets.AWS_ECR_BE}}/ktb/be:latest
+
+      - name: ZIP 파일 설정
+        run: |
+          mkdir -p ./scripts
+          echo "${{secrets.AFTER_INSTALL_SH}}" > ./scripts/afterInstall.sh
+          echo "${{secrets.DOCKER_COMPOSE_YML}}" > ./docker-compose.yml
+          echo "${{secrets.APPSPEC_YML}}" > ./appspec.yml
+
+      - name: S3 스크립트 전달
+        run: |
+          zip -r ./$GITHUB_SHA.zip ./scripts appspec.yml docker-compose.yml
+          aws s3 cp --region ${{secrets.AWS_REGION}} ./$GITHUB_SHA.zip s3://${{secrets.S3_BUCKET_NAME}}
+
+  deploy :
+    runs-on: ubuntu-22.04
+    needs: build-push-image
+    if: success()
+    steps:
+      - name: 체크아웃
+        uses: actions/checkout@v4
+
+      - name: AWS 자격 증명 설정
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY}}
+          aws-secret-access-key: ${{secrets.AWS_SECRET_KEY}}
+          aws-region: ${{secrets.AWS_REGION}}
+
+      - name: CodeDeploy 통한 배포 시작
+        run: |
+          aws deploy create-deployment \
+            --application-name "ktb-be-code-deploy" \
+            --deployment-group-name "ktb-deploy-group" \
+            --deployment-config-name "CodeDeployDefault.OneAtATime" \
+            --description "GitHub Actions CI/CD for commit $GITHUB_SHA" \
+            --s3-location bucket=${{secrets.S3_BUCKET_NAME}},key=$GITHUB_SHA.zip,bundleType=zip
