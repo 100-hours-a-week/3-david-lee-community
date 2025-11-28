@@ -19,6 +19,12 @@ public class HttpUtil {
     @Value("${auth.jwt.refresh.expiration}")
     private long refreshExpiration;
 
+    @Value("${auth.jwt.secure}")
+    private boolean secure;
+
+    @Value("${auth.jwt.sameSite}")
+    private String sameSite;
+
     /// 액세스 토큰 헤더 가져오기
     public Optional<String> getAccessToken(HttpServletRequest request) {
 
@@ -116,8 +122,8 @@ public class HttpUtil {
                 .maxAge(maxAge)
                 .path("/")
                 .httpOnly(true)
-                .secure(false)  // Dev/Prod 환경에 따라 설정됨
-                .sameSite("Lax")
+                .secure(secure)  // Dev/Prod 환경에 따라 설정됨
+                .sameSite(sameSite)
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
