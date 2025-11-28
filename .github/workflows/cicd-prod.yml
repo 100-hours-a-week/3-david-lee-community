@@ -126,3 +126,28 @@ jobs:
             --deployment-config-name "CodeDeployDefault.OneAtATime" \
             --description "GitHub Actions CI/CD for commit $GITHUB_SHA" \
             --s3-location bucket=${{secrets.S3_BUCKET_NAME}},key=$GITHUB_SHA.zip,bundleType=zip
+
+  notify-discord:
+    runs-on: ubuntu-22.04
+    needs: deploy
+    if: always()
+    steps:
+      - name: Discord 배포 요청 알림
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_BACK_URL }}
+          title: "${{ needs.deploy.result == 'success' && '✅' || '❌' }} develop 브랜치 배포 결과"
+          description: |
+            **커밋 메시지**: ${{ github.event.head_commit.message }}
+            **작성자**: ${{ github.event.pusher.name }}
+            **브랜치**: `${{ github.ref_name }}`
+
+            **📊 빌드/배포 결과**:
+            - 상태: ${{ needs.deploy.result == 'success' && '성공' || '실패' }}
+
+            **🔗 링크**:
+            - [커밋 확인하기](${{ github.event.head_commit.url }})
+
+          color: "${{ needs.deploy.result == 'success' && 65280 || 16711680 }}"
+          username: GitHub Deploy Bot
+          avatar_url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
