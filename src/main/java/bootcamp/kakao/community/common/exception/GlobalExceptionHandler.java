@@ -95,7 +95,7 @@ public class GlobalExceptionHandler {
     public ApiResponse<?> handleRedisConnectionFailureException(RedisConnectionFailureException e) {
 
         /// 에러 이유 로그 찍기
-        log.error(e.getMessage());
+        log.error(e.getMessage(), e);
 
         /// 기본 에러 코드로 응답 생성
         ErrorCode errorCode = CommonErrorCode.INTERNAL_REDIS_SERVER_ERROR;
