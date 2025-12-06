@@ -65,7 +65,7 @@ jobs:
             gradle-${{ runner.os }}
 
       - name: 빌드하기
-        run: ./gradlew clean -x test build -Dspring.profiles.active=prod
+        run: ./gradlew clean -x test -x integrationTest build -Dspring.profiles.active=prod
 
   notify-discord:
     runs-on: ubuntu-22.04
