@@ -20,3 +20,21 @@ services:
     container_name: ktb-redis
     ports:
       - '6379:6379'
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus
+    container_name: ktb-prometheus
+    volumes:
+      - "./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+    ports:
+      - '9090:9090'
+
+  # Grafana
+  grafana:
+    image: grafana/grafana
+    container_name: ktb-grafana
+    ports:
+      - '9001:3000'
+    depends_on:
+      - prometheus
