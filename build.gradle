@@ -69,6 +69,11 @@ dependencies {
     /// 스웨거
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
 
+    /// PLG Stack (프로메테우스, 그라파나, 로키)
+    implementation 'org.springframework.boot:spring-boot-starter-actuator:3.5.6'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'com.github.loki4j:loki-logback-appender:2.0.1'
+
     /// 테스트 의존성 (단위 테스트)
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
