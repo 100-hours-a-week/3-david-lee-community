@@ -21,6 +21,8 @@ public class RequestMatcherHolder {
             // 공통
             new RequestInfo(OPTIONS, "/**", null),
             new RequestInfo(GET, "/", null),
+            new RequestInfo(GET, "/actuator/prometheus", null),
+            new RequestInfo(GET, "/actuator", null),
 
             /// 인증
             new RequestInfo(PUT, "/v1/auth", null),     /// 재발급
