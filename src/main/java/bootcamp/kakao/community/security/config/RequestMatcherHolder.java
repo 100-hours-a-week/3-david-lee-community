@@ -81,6 +81,7 @@ public class RequestMatcherHolder {
             new RequestInfo(GET, "/resources/**", null),
             new RequestInfo(GET, "/css/**", null),
             new RequestInfo(GET, "/style.css", null),
+            new RequestInfo(GET, "/home.css", null),
             new RequestInfo(GET, "/index.html", null),
             new RequestInfo(GET, "/error", null),
 
