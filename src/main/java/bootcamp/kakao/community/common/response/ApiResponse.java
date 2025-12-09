@@ -12,7 +12,7 @@ import java.util.List;
  * API 응답을 표준화하기 위한 레코드 클래스입니다.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Schema(name = "공통응답객체")
+@Schema(name = "[응답][공통] 공통 응답 객체")
 public record ApiResponse<T>(
         @JsonIgnore
         HttpStatus httpStatus,
