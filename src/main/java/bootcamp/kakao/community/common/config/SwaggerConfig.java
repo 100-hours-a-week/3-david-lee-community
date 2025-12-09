@@ -7,6 +7,7 @@ import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springdoc.core.customizers.OpenApiCustomizer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -17,9 +18,12 @@ import java.util.TreeMap;
 import static bootcamp.kakao.community.common.util.KeyUtil.BEARER;
 import static bootcamp.kakao.community.common.util.KeyUtil.JWT;
 
-@Profile("local")
+@Profile("prod")
 @Configuration
-public class LocalSwaggerConfig {
+public class SwaggerConfig {
+
+    @Value("${cors.back.host}")
+    private String backHost;
 
     @Bean
     public OpenAPI openAPI() {
@@ -30,16 +34,23 @@ public class LocalSwaggerConfig {
                 .scheme(BEARER)
                 .bearerFormat(JWT)
         );
+
+        /// 개발 환경 추가
+        io.swagger.v3.oas.models.servers.Server server = new io.swagger.v3.oas.models.servers.Server()
+                .url(backHost)
+                .description("개발자 커뮤니티 서버");
+
         return new OpenAPI()
                 .components(components)
                 .info(apiInfo())
+                .addServersItem(server)
                 .addSecurityItem(securityRequirement);
     }
 
     private Info apiInfo() {
         return new Info()
-                .title("KTB Community Swagger")
-                .description("카카오테크 부트캠프 로컬 커뮤니티 스웨거입니다.")
+                .title("KTB Developer Community Swagger")
+                .description("개발자 커뮤니티 스웨거입니다.")
                 .version("1.0.1");
     }
 
