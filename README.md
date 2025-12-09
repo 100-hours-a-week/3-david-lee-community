@@ -266,6 +266,8 @@ CD
 * 확장성과 안전성 확보
 
 ## 프로메테우스, 그라파나
+<img width="1121" height="714" alt="image" src="https://github.com/user-attachments/assets/7269dce0-092c-4dcc-9b03-081eba415dda" />
+
 * 본 프로젝트는 Auto Scaling 환경에서 서버 개수가 동적으로 변하기 때문에,
 새로운 인스턴스가 생성·삭제되더라도 메트릭이 안정적으로 수집되는 구조를 목표로
 Prometheus + Grafana 기반의 관찰성(Observability) 을 구성했습니다.
