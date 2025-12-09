@@ -1,0 +1,311 @@
+/* ─────────── 다크 개발자 테마 기본 색상 ─────────── */
+:root {
+    --bg: #020617;
+    --card: #020617;
+    --border: #1f2937;
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+    --primary: #8b5cf6;
+}
+
+/* 전체 배경 스타일 */
+body {
+    background: radial-gradient(circle at top, rgba(139,92,246,0.22), transparent 55%),
+    radial-gradient(circle at bottom, rgba(56,189,248,0.18), transparent 60%),
+    var(--bg);
+    font-family: 'Pretendard', 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text);
+}
+
+/* 메인 컨테이너 (코드 카드 느낌) */
+.container {
+    position: relative;
+    max-width: 720px;
+    width: 92%;
+    padding: 40px 32px 32px;
+    border-radius: 18px;
+    background: radial-gradient(circle at top left, rgba(139,92,246,0.12), transparent 50%),
+    radial-gradient(circle at bottom right, rgba(56,189,248,0.10), transparent 55%),
+    rgba(15,23,42,0.96);
+    border: 1px solid var(--border);
+    box-shadow:
+            0 22px 45px rgba(0, 0, 0, 0.75),
+            0 0 0 1px rgba(148,163,184,0.05);
+    text-align: left;
+    overflow: hidden;
+    z-index: 1;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.container:hover {
+    transform: translateY(-4px);
+    box-shadow:
+            0 30px 60px rgba(0, 0, 0, 0.9),
+            0 0 0 1px rgba(129,140,248,0.25);
+    border-color: rgba(129,140,248,0.45);
+}
+
+/* 배경 글로우 (은은한 네온 느낌) */
+.glow {
+    content: "";
+    position: absolute;
+    inset: -40%;
+    background:
+            radial-gradient(circle at 20% 0%, rgba(139,92,246,0.38), transparent 60%),
+            radial-gradient(circle at 80% 100%, rgba(56,189,248,0.38), transparent 55%);
+    opacity: 0.38;
+    filter: blur(40px);
+    z-index: 0;
+    animation: floatGlow 18s ease-in-out infinite alternate;
+}
+
+@keyframes floatGlow {
+    0% {
+        transform: translate3d(-10px, 10px, 0) rotate(0deg);
+    }
+    50% {
+        transform: translate3d(12px, -16px, 0) rotate(3deg);
+    }
+    100% {
+        transform: translate3d(-8px, 20px, 0) rotate(-2deg);
+    }
+}
+
+/* 배지 */
+.badge {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(15,23,42,0.9);
+    border: 1px solid rgba(148,163,184,0.4);
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 16px;
+}
+
+.badge::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: #22c55e;
+    box-shadow: 0 0 0 4px rgba(34,197,94,0.3);
+}
+
+/* 제목 */
+h1 {
+    position: relative;
+    z-index: 1;
+    font-size: 2.1rem;
+    margin: 0 0 12px 0;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    animation: fadeInDown 0.5s ease;
+}
+
+h1 span {
+    color: var(--primary);
+}
+
+/* 설명 문구 */
+p {
+    position: relative;
+    z-index: 1;
+    font-size: 0.98rem;
+    line-height: 1.7;
+    color: var(--muted);
+    margin: 0 0 24px 0;
+    animation: fadeInUp 0.55s ease;
+}
+
+
+/* ─────────── 추천 링크 섹션 ─────────── */
+.links-section {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 22px;
+    animation: fadeInUp 0.6s ease 0.1s backwards;
+}
+
+.links-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 10px;
+}
+
+.links-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.link-item {
+    flex: 1 1 160px;
+    min-width: 150px;
+    max-width: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(15,23,42,0.96);
+    border: 1px solid rgba(31,41,55,1);
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.22s ease;
+}
+
+.link-item:hover {
+    background: #020617;
+    border-color: rgba(129,140,248,0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 22px rgba(15,23,42,0.9);
+}
+
+.link-icon {
+    font-size: 20px;
+}
+
+.link-text-main {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.link-text-sub {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+/* 메인 액션 버튼 래퍼 */
+.primary-action {
+    position: relative;
+    z-index: 1;
+    margin-top: 10px;
+    animation: fadeInUp 0.6s ease 0.15s backwards;
+}
+
+/* 버튼 (다크 테마 액션 버튼) */
+.swagger-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 26px;
+    min-width: 200px;
+    border-radius: 999px;
+    border: 1px solid rgba(129,140,248,0.75);
+    background: radial-gradient(circle at 0% 0%, rgba(96,165,250,0.7), transparent 55%),
+    linear-gradient(135deg, #4c1d95, #1d4ed8);
+    color: #f9fafb;
+    font-size: 0.97rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow:
+            0 12px 30px rgba(37,99,235,0.6),
+            0 0 0 1px rgba(30,64,175,0.75);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+}
+
+.swagger-button::after {
+    content: "→";
+    font-size: 0.9rem;
+    opacity: 0.9;
+    transform: translateX(0);
+    transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+.swagger-button:hover {
+    transform: translateY(-2px);
+    background: radial-gradient(circle at 10% 0%, rgba(129,140,248,0.9), transparent 55%),
+    linear-gradient(135deg, #581c87, #1d4ed8);
+    border-color: rgba(191,219,254,0.9);
+    box-shadow:
+            0 18px 40px rgba(59,130,246,0.85),
+            0 0 0 1px rgba(191,219,254,0.8);
+}
+
+.swagger-button:hover::after {
+    transform: translateX(4px);
+    opacity: 1;
+}
+
+/* ─────────── 간단한 페이드 애니메이션 ─────────── */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ─────────── 반응형 ─────────── */
+@media (max-width: 768px) {
+    .container {
+        padding: 32px 22px 24px;
+        width: 92%;
+    }
+
+    h1 {
+        font-size: 1.7rem;
+    }
+
+    p {
+        font-size: 0.95rem;
+    }
+
+    .links-list {
+        flex-direction: column;
+    }
+
+    .primary-action {
+        margin-top: 16px;
+    }
+
+    .swagger-button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 26px 18px 20px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .swagger-button {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+}
