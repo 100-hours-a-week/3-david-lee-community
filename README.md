@@ -199,19 +199,78 @@ erDiagram
 <img width="1080" height="1270" alt="아키텍쳐" src="https://github.com/user-attachments/assets/3366081d-6cdc-4bc1-b88b-34cb6b26a062" />
 * AWS 3-tier 아키텍쳐 구현
 
+이번 프로젝트는 비용적인 부분은 최소화시킨 채, 이용자 증가를 대비한 확장성 확보, 빠른 응답속도를 목표로 AWS에서 3-Tier 기반 아키텍처를 설계했습니다.
+
 ### 퍼블릭 서브넷
+FE 
+* 외부 유저가 직접 접근하는 웹 서비스이므로 퍼블릭 서브넷에 배치
+* Route53 → ALB(SSL) → EC2 FE 서버
+* SSL/TLS는 ALB에서 처리
+* FE 이미지는 DockerHub에서 pull
+
+BE 
+* Route53 → API Gateway(SSL) → ALB(HTTP) → ASG
+* 초기에 개발/테스트/비용 편의성을 위해 퍼블릭 서브넷에서 운영
+
+* ⚠ 주의: BE가 퍼블릭에 있다고 해서 외부에서 바로 접근 가능한 것은 아니며,
+  ALB Security Group만 허용하도록 제한하여 직접 접근을 방지했습니다.
+즉, 인터넷에서 바로 API 서버를 때릴 수 있는 구조가 아님.
 
 ### 프라이빗 서브넷
+* RDS / ElastiCache는 프라이빗 서브넷
+* 외부 접근 차단, DB 보안 강화
+* 단일 AZ 구성
+* 애플리케이션 서버와만 통신
 
 ### ECR 구조
+* 백엔드 이미지는 보안을 이유로 Private ECR 사용
+* GitHub Actions에서 ECR로 push → CodeDeploy에서 pull
 
 ## 멀티 스테이징 도커파일 구성
+```
+# ====== Build Stage ======
+FROM eclipse-temurin:21-jdk-alpine AS builder
+WORKDIR /build
+COPY . .
+RUN ./gradlew bootJar
 
+# ====== Runtime Stage ======
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=builder /build/build/libs/community-0.0.1-SNAPSHOT.jar app.jar
 
-## CICD 파이프라인 구조도
+EXPOSE 8080
+CMD ["java", "-Dspring.profiles.active=prod", "-jar", "app.jar"]
 
+```
+* Build Stage: JDK + Gradle로 JAR 빌드
+* Runtime Stage: JRE만 포함 → 더 가벼움
+* application-prod.yml은 이미지에 포함하지 않음
+* 자주 사용하는 레이어는 고정시켜 빌드 시간 단축
+
+## CI/CD 파이프라인 구조도
+CI
+* PR 단계: 단위 테스트만 수행 → 빠른 피드백 목표
+
+CD
+* develop merge 시: 단위 + 통합 테스트
+* ECR push
+* 앱 실행 스크립트 & docker-compose & appspec.zip → S3 업로드
+* CodeDeploy가 ASG 대상 그룹에 Blue/Green 배포 자동 처리
 
 ## 블루/그린 배포
+* CodeDeploy + ASG 활용
+* Green 인스턴스 자동 생성 후 검증
+* 정상 시 트래픽 100% 전환
+* 문제 발생 시 자동 롤백
+* 확장성과 안전성 확보
 
+## 프로메테우스, 그라파나
+* 본 프로젝트는 Auto Scaling 환경에서 서버 개수가 동적으로 변하기 때문에,
+새로운 인스턴스가 생성·삭제되더라도 메트릭이 안정적으로 수집되는 구조를 목표로
+Prometheus + Grafana 기반의 관찰성(Observability) 을 구성했습니다.
 
-
+* EC2 Service Discovery 적용
+ASG 환경에서는 인스턴스가 계속 생성/삭제되기 때문에
+Prometheus가 AWS API를 통해 EC2 인스턴스를 자동 검색(SD) 하고
+필요한 대상만 스크랩하도록 구성했습니다.
