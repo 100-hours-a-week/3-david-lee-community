@@ -3,6 +3,14 @@
 
 ---
 
+## 🧑🏻‍💻 개발 정보
+
+- 개발 기간: 2025.10 - 2025.12 (2개월)
+- 개발 인원: 1인 (개인 프로젝트)
+- [프런트 리포지토리 바로가기](https://github.com/100-hours-a-week/3-david-lee-community-FE)
+
+---
+
 ## 🧰 기술 스택
 
 **백엔드**
@@ -22,12 +30,15 @@
 
 ---
 
-## 시연 영상
-https://youtu.be/aW3katNhdAo
+## 🖥️ 시연 영상
+> https://youtu.be/aW3katNhdAo 유튜브에서 확인할 수 있습니다
+
+https://github.com/user-attachments/assets/08d9d643-a6b8-44bc-9420-bd56566d8d02
+
 
 ---
 
-## 💡서비스 기능 및 이유 설명
+## 💡 서비스 기능 및 이유 설명
 
 ### 🔐 인증/보안
 * 요청 시 JWT 검증 필터가 토큰을 확인하여 인증
