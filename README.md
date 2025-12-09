@@ -8,10 +8,11 @@
 **백엔드**
 * **Java 21**, **Spring Boot 3.56**
 * Spring Web, Spring Validation, Spring Data JPA, Spring Security
-* **JWT**(Access/Refresh) – 쿠키 발급
-* **QueryDSL** – 동적 조회
-* **MySQL** (InnoDB), **Redis**, **S3**
+* **JWT**(Access/Refresh)
+* **QueryDSL**
+* * **MySQL** (InnoDB), **Redis**, **S3**
 * Gradle, Docker
+* **Thymeleaf**
 
 **인프라**
 * **AWS EC2**, **ALB**, **API Gateway**
@@ -22,7 +23,7 @@
 ---
 
 ## 시연 영상
-https://youtu.be/-OU1zNI22rg?si=DQVjqFTWri5dhAem
+https://youtu.be/aW3katNhdAo
 
 ---
 
