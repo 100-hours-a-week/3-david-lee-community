@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>개발자 커뮤니티 백엔드 서버</title>
+    <link rel="stylesheet" href="home.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="glow"></div>
+
+    <div class="badge">KTB Developer Community · Backend</div>
+
+    <h1>개발자 커뮤니티 <span>백엔드 서버</span>입니다</h1>
+    <p>
+        이곳은 개발자 커뮤니티 프로젝트의 백엔드 서버입니다.<br>
+        API 상태를 확인하거나, Swagger 문서에서 엔드포인트를 테스트할 수 있습니다.
+    </p>
+
+    <!-- 추천 링크 + 아이콘 -->
+    <section class="links-section">
+        <div class="links-title">바로가기 링크</div>
+        <div class="links-list">
+            <a class="link-item" href="https://api.ktb-david.cloud/swagger-ui/index.html" target="_blank">
+                <div class="link-icon">📘</div>
+                <div class="link-text-main">Swagger API 문서</div>
+                <div class="link-text-sub">엔드포인트/스키마 확인</div>
+            </a>
+            <a class="link-item" href="https://api.ktb-david.cloud/actuator" target="_blank">
+                <div class="link-icon">🩺</div>
+                <div class="link-text-main">Health 체크</div>
+                <div class="link-text-sub">현재 서버 상태 보기</div>
+            </a>
+            <a class="link-item" href="https://github.com/100-hours-a-week/3-david-lee-community-BE.git" target="_blank">
+                <div class="link-icon">💻</div>
+                <div class="link-text-main">프로젝트 레포지토리</div>
+                <div class="link-text-sub">소스 코드 & 이슈 확인</div>
+            </a>
+        </div>
+    </section>
+
+    <!-- 메인 액션 버튼 -->
+    <div class="primary-action">
+        <a class="swagger-button" href="https://api.ktb-david.cloud/swagger-ui/index.html" target="_blank">
+            Swagger API 열기
+        </a>
+    </div>
+</div>
+</body>
+</html>

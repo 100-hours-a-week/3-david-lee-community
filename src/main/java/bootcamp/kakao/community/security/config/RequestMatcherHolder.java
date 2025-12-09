@@ -23,6 +23,7 @@ public class RequestMatcherHolder {
             new RequestInfo(GET, "/", null),
             new RequestInfo(GET, "/actuator/prometheus", null),
             new RequestInfo(GET, "/actuator", null),
+            new RequestInfo(GET, "/actuator/health", null),
 
             /// 인증
             new RequestInfo(PUT, "/v1/auth", null),     /// 재발급

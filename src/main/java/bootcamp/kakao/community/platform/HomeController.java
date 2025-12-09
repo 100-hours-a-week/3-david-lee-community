@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/actuator")
 public class HomeController {
 
-    @GetMapping
+    @GetMapping("/health")
     public String healthCheck() {
         return "Health Check";
     }

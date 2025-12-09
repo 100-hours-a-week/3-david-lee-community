@@ -30,6 +30,8 @@ public record PostRequest(
         @Size(max = 1000, message = "게시글의 길이가 1000자를 넘을 수 없습니다.")
         String content,
 
+        @Schema(description = "첨부 이미지 URL 리스트", example = "[\"image1.png\", \"image2.png\"]")
+        @Size(max = 10,message = "이미지는 최대 10장까지 가능합니다.")
         List<String> imageKeys
 ) {
 }
